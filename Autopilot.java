@@ -1,10 +1,7 @@
 package autopilot;
-import p_en_o_cw_2017.AutopilotInputsReader ;
-import p_en_o_cw_2017.AutopilotOutputsWriter ;
-import p_en_o_cw_2017.AutopilotConfigReader;
-import p_en_o_cw_2017.AutopilotInputs;
-import p_en_o_cw_2017.AutopilotOutputs;
-import p_en_o_cw_2017.AutopilotConfig;
+
+import autopilot.p_en_o_cw_2017.autopilot_src_generated.*;
+
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
