@@ -31,24 +31,27 @@ public class Autopilot {
     }
 
     public java.io.DataOutputStream getOutput(java.io.DataInputStream inputStream) {
-
+        AutopilotInputs input;
         try {
-            AutopilotInputs input = reader.read(inputStream);
-            InputToOutput calc = new InputToOutput();
-            AutopilotOutputs output = calc.calculate(input,imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()), config.getNbRows(), config.getNbColumns());
-            DataOutputStream outputStream = new DataOutputStream(new OutputStream() {
-                @Override
-                public void write(int b) throws IOException {
-
-                }
-            });
-            writer.write(outputStream, output);
-            return outputStream;
-
+            input = reader.read(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        InputToOutput calc = new InputToOutput();
+        AutopilotOutputs output = calc.calculate(input,imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()), config.getNbRows(), config.getNbColumns());
+        DataOutputStream outputStream = new DataOutputStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
 
+            }
+        });
+        try {
+            writer.write(outputStream, output);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        return outputStream;
 
     }
 
