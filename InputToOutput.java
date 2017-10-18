@@ -9,22 +9,8 @@ public class InputToOutput {
         float leftWingInclination;
         float rightWingInclination;
         float horStabInclination;
-        if (imageVector[0]!=0 || imageVector[1]!=0) {
-            //if (input.getPitch() == 0 && input.getRoll() == 0) {
-                //turning left or right
-                    float angle = x/(nbColumns/2)*45;
-                    leftWingInclination = angle;
-                    rightWingInclination = -angle;
-                //up or down
-                    angle = y/(nbRows/2)*45;
-                    horStabInclination = angle;
-            //}
-        }
-        else {
-            leftWingInclination = 0;
-            rightWingInclination = 0;
-            horStabInclination = 0;
-        }
+        
+
         return new AutopilotOutputs() {
             public float getThrust() { return 0; }
             public float getLeftWingInclination() { return leftWingInclination; }
