@@ -39,7 +39,11 @@ public class Autopilot {
             e.printStackTrace();
         }
         InputToOutput calc = new InputToOutput();
-        AutopilotOutputs output = calc.calculate(input,imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()), config.getNbRows(), config.getNbColumns());
+        AutopilotOutputs output = calc.calculate(
+                input,
+                imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()),
+                config.getNbRows(),
+                config.getNbColumns());
         DataOutputStream outputStream = new DataOutputStream(new ByteArrayOutputStream());
         try {
             writer.write(outputStream, output);
