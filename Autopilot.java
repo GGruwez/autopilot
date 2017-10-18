@@ -3,10 +3,7 @@ package autopilot;
 import autopilot.p_en_o_cw_2017.autopilot_src_generated.*;
 
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 
 /**
  * Created by ndbae06 on 16/10/2017.
@@ -27,11 +24,18 @@ public class Autopilot {
         this.configReader = new AutopilotConfigReader();
         try { this.config = this.configReader.read(configstream);}
         catch (IOException e) {e.printStackTrace();}
-
     }
 
     public java.io.DataOutputStream getOutput(java.io.DataInputStream inputStream) {
-        AutopilotInputs input;
+        AutopilotInputs input = new AutopilotInputs() {
+            public byte[] getImage() {return new byte[0];}
+            public float getX() {return 0;}
+            public float getY() {return 0;}
+            public float getZ() {return 0;}
+            public float getHeading() {return 0;}
+            public float getPitch() {return 0;}
+            public float getRoll() {return 0;}
+            public float getElapsedTime() {return 0;}};
         try {
             input = reader.read(inputStream);
         } catch (IOException e) {
@@ -39,12 +43,7 @@ public class Autopilot {
         }
         InputToOutput calc = new InputToOutput();
         AutopilotOutputs output = calc.calculate(input,imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()), config.getNbRows(), config.getNbColumns());
-        DataOutputStream outputStream = new DataOutputStream(new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-
-            }
-        });
+        DataOutputStream outputStream = new DataOutputStream(new ByteArrayOutputStream());
         try {
             writer.write(outputStream, output);
         } catch(IOException e) {
