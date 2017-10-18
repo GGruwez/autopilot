@@ -1,4 +1,5 @@
-import autopilot.p_en_o_cw_2017.autopilot_src_generated.*;
+import p_en_o_cw_2017.*;
+
 public class InputToOutput {
 
     public AutopilotOutputs calculate(AutopilotInputs input, float[] imageVector, int nbColumns, int nbRows) {
