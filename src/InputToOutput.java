@@ -7,12 +7,13 @@ import p_en_o_cw_2017.*;
 >>>>>>> 4a9f7758de3cd800b3c95df128aec3669ebf7849
 public class InputToOutput {
 
-    public AutopilotOutputs calculate(AutopilotInputs input, float[] imageVector, int nbColumns, int nbRows, AutopilotInputs prev, Autopilot autopilot) {
+    public AutopilotOutputs calculate(AutopilotInputs input, float[] imageVector, int nbColumns, int nbRows, Autopilot autopilot) {
         float x = imageVector[0];
         float y = imageVector[1];
         float leftWingInclination;
         float rightWingInclination;
         float horStabInclination;
+        AutopilotInputs prev = autopilot.getPreviousInput();
         //eerst draaien
         if (imageVector[0]!=0) {
             float r = x/(nbColumns/2)*autopilot.config.getHorizontalAngleOfView();
@@ -32,6 +33,10 @@ public class InputToOutput {
         else if(imageVector[1]!=0) {
             float r = y/(nbRows/2)*autopilot.config.getHorizontalAngleOfView();
             horStabInclination = r; //??
+        }
+        //anders gewoon blijven verder vliegen in een rechte lijn
+        else {
+
         }
 
         return new AutopilotOutputs() {

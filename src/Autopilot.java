@@ -13,6 +13,7 @@ public class Autopilot {
     AutopilotOutputsWriter writer;
     AutopilotConfig config;
     AutopilotInputs previousInput;
+    AutopilotOutputs previousOutput;
 
     public Autopilot(DataInputStream configstream) {
         this.imageRecognition = new ImageRecognition();
@@ -38,13 +39,17 @@ public class Autopilot {
             input = getReader().read(inputStream);
 
             InputToOutput calc = new InputToOutput();
-
-            AutopilotOutputs output = calc.calculate(
-                    input,
-                    imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()),
-                    config.getNbRows(),
-                    config.getNbColumns());
-
+            if (this.previousInput==null) {
+                AutopilotOutputs output= new AutopilotOutputs() {
+                    public float getThrust() {return 0;}
+                    public float getLeftWingInclination() {return 0;}
+                    public float getRightWingInclination() {return 0;}
+                    public float getHorStabInclination() {return 0;}
+                    public float getVerStabInclination() {return 0;}};
+            }
+            else {
+                AutopilotOutputs output = calc.calculate(input,imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()), config.getNbRows(), config.getNbColumns(), this);
+            }
             try {
                 getWriter().write(outputStream, output);
             } catch(IOException e) {
@@ -53,36 +58,17 @@ public class Autopilot {
         } catch (IOException e) {
             e.printStackTrace();
         }
-<<<<<<< HEAD
-        InputToOutput calc = new InputToOutput();
-        if (this.previousInput==null) {
-            AutopilotOutputs output= new AutopilotOutputs() {
-                public float getThrust() {return 0;}
-                public float getLeftWingInclination() {return 0;}
-                public float getRightWingInclination() {return 0;}
-                public float getHorStabInclination() {return 0;}
-                public float getVerStabInclination() {return 0;}};
-        }
-        else {
-            AutopilotOutputs output = calc.calculate(input,imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()), config.getNbRows(), config.getNbColumns(), this.previousInput, this);
-        }
-        DataOutputStream outputStream = new DataOutputStream(new ByteArrayOutputStream());
-        try {
-            writer.write(outputStream, output);
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
         this.previousInput = input;
-        return outputStream;
-=======
-
->>>>>>> 4a9f7758de3cd800b3c95df128aec3669ebf7849
+        this.previousOutput = output;
 
     }
 
-    public java.io.DataOutputStream getOutputFirstTime(java.io.DataInputStream inputStream) {
-
+    public AutopilotInputs getPreviousInput() {
+        return this.previousInput;
     }
 
+    public AutopilotOutputs getPreviousOutput() {
+        return this.previousOutput;
+    }
 
 }
