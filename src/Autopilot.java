@@ -1,5 +1,4 @@
-import autopilot.p_en_o_cw_2017.autopilot_src_generated.*;
-
+import p_en_o_cw_2017.*;
 
 import java.io.*;
 
@@ -24,22 +23,37 @@ public class Autopilot {
         try { this.config = this.configReader.read(configstream);}
         catch (IOException e) {e.printStackTrace();}
     }
+    
+    public AutopilotInputsReader getReader() {
+    	return this.reader;
+    }
+    
+    public AutopilotOutputsWriter getWriter() {
+    	return this.writer;
+    }
 
-    public java.io.DataOutputStream getOutput(java.io.DataInputStream inputStream) {
-        AutopilotInputs input = new AutopilotInputs() {
-            public byte[] getImage() {return new byte[0];}
-            public float getX() {return 0;}
-            public float getY() {return 0;}
-            public float getZ() {return 0;}
-            public float getHeading() {return 0;}
-            public float getPitch() {return 0;}
-            public float getRoll() {return 0;}
-            public float getElapsedTime() {return 0;}};
+    public void getOutput(java.io.DataInputStream inputStream, java.io.DataOutputStream outputStream) {
+        AutopilotInputs input;
         try {
-            input = reader.read(inputStream);
+            input = getReader().read(inputStream);
+
+            InputToOutput calc = new InputToOutput();
+
+            AutopilotOutputs output = calc.calculate(
+                    input,
+                    imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()),
+                    config.getNbRows(),
+                    config.getNbColumns());
+
+            try {
+                getWriter().write(outputStream, output);
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+<<<<<<< HEAD
         InputToOutput calc = new InputToOutput();
         if (this.previousInput==null) {
             AutopilotOutputs output= new AutopilotOutputs() {
@@ -60,6 +74,9 @@ public class Autopilot {
         }
         this.previousInput = input;
         return outputStream;
+=======
+
+>>>>>>> 4a9f7758de3cd800b3c95df128aec3669ebf7849
 
     }
 
