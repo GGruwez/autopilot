@@ -1,5 +1,3 @@
-package autopilot;
-
 import java.util.ArrayList;
 
 public class ImageRecognition {
