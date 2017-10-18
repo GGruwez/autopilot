@@ -25,32 +25,29 @@ public class Autopilot {
         try { this.config = this.configReader.read(configstream);}
         catch (IOException e) {e.printStackTrace();}
     }
+    
+    public AutopilotInputsReader getReader() {
+    	return this.reader;
+    }
+    
+    public AutopilotOutputsWriter getWriter() {
+    	return this.writer;
+    }
 
-    public java.io.DataOutputStream getOutput(java.io.DataInputStream inputStream) {
-        AutopilotInputs input = new AutopilotInputs() {
-            public byte[] getImage() {return new byte[0];}
-            public float getX() {return 0;}
-            public float getY() {return 0;}
-            public float getZ() {return 0;}
-            public float getHeading() {return 0;}
-            public float getPitch() {return 0;}
-            public float getRoll() {return 0;}
-            public float getElapsedTime() {return 0;}};
+    public void getOutput(java.io.DataInputStream inputStream, java.io.DataOutputStream outputStream) {
+        AutopilotInputs input = };
         try {
-            input = reader.read(inputStream);
+            input = getReader().read(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
         InputToOutput calc = new InputToOutput();
         AutopilotOutputs output = calc.calculate(input,imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()), config.getNbRows(), config.getNbColumns());
-        DataOutputStream outputStream = new DataOutputStream(new ByteArrayOutputStream());
         try {
-            writer.write(outputStream, output);
+            getWriter().write(outputStream, output);
         } catch(IOException e) {
             e.printStackTrace();
         }
-
-        return outputStream;
 
     }
 
