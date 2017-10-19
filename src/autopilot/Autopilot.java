@@ -20,7 +20,7 @@ public class Autopilot {
         this.inputToOutput = new InputToOutput();
     }
 
-    public void getOutput(java.io.DataInputStream inputStream, java.io.DataOutputStream outputStream) {
+    public void fillStreamWithOutput(java.io.DataInputStream inputStream, java.io.DataOutputStream outputStream) {
         AutopilotInputs input;
         AutopilotOutputs output;
         try {
