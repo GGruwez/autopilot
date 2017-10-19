@@ -1,3 +1,5 @@
+package autopilot;
+
 import p_en_o_cw_2017.*;
 public class InputToOutput {
 
@@ -39,13 +41,8 @@ public class InputToOutput {
 
         }
 
-        return new AutopilotOutputs() {
-            public float getThrust() { return 0; } //moet nog over nagedacht worden
-            public float getLeftWingInclination() { return leftWingInclination; }
-            public float getRightWingInclination() { return rightWingInclination; }
-            public float getHorStabInclination() { return horStabInclination; }
-            public float getVerStabInclination() { return 0; }
-        };
+
+        return new AutopilotOutputs(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
     }
 
 
