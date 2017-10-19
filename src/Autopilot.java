@@ -35,12 +35,13 @@ public class Autopilot {
 
     public void getOutput(java.io.DataInputStream inputStream, java.io.DataOutputStream outputStream) {
         AutopilotInputs input;
+        AutopilotOutputs output;
         try {
             input = getReader().read(inputStream);
 
             InputToOutput calc = new InputToOutput();
             if (this.previousInput==null) {
-                AutopilotOutputs output= new AutopilotOutputs() {
+                output = new AutopilotOutputs() {
                     public float getThrust() {return 0;}
                     public float getLeftWingInclination() {return 0;}
                     public float getRightWingInclination() {return 0;}
@@ -48,18 +49,18 @@ public class Autopilot {
                     public float getVerStabInclination() {return 0;}};
             }
             else {
-                AutopilotOutputs output = calc.calculate(input,imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()), config.getNbRows(), config.getNbColumns(), this);
+                output = calc.calculate(input,imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()), config.getNbRows(), config.getNbColumns(), this);
             }
             try {
                 getWriter().write(outputStream, output);
             } catch(IOException e) {
                 e.printStackTrace();
             }
+            this.previousInput = input;
+            this.previousOutput = output;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.previousInput = input;
-        this.previousOutput = output;
 
     }
 

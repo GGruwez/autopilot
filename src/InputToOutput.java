@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-import autopilot.p_en_o_cw_2017.Autopilot;
-import autopilot.p_en_o_cw_2017.autopilot_src_generated.*;
-=======
 import p_en_o_cw_2017.*;
-
->>>>>>> 4a9f7758de3cd800b3c95df128aec3669ebf7849
 public class InputToOutput {
 
     public AutopilotOutputs calculate(AutopilotInputs input, float[] imageVector, int nbColumns, int nbRows, Autopilot autopilot) {
