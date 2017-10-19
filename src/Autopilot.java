@@ -14,6 +14,8 @@ public class Autopilot {
     AutopilotInputsReader reader;
     AutopilotOutputsWriter writer;
     AutopilotConfig config;
+    AutopilotInputs previousInput;
+    AutopilotOutputs previousOutput;
 
     public Autopilot(DataInputStream configstream) {
         this.imageRecognition = new ImageRecognition();
@@ -39,13 +41,17 @@ public class Autopilot {
             input = getReader().read(inputStream);
 
             InputToOutput calc = new InputToOutput();
-
-            AutopilotOutputs output = calc.calculate(
-                    input,
-                    imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()),
-                    config.getNbRows(),
-                    config.getNbColumns());
-
+            if (this.previousInput==null) {
+                AutopilotOutputs output= new AutopilotOutputs() {
+                    public float getThrust() {return 0;}
+                    public float getLeftWingInclination() {return 0;}
+                    public float getRightWingInclination() {return 0;}
+                    public float getHorStabInclination() {return 0;}
+                    public float getVerStabInclination() {return 0;}};
+            }
+            else {
+                AutopilotOutputs output = calc.calculate(input,imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()), config.getNbRows(), config.getNbColumns(), this);
+            }
             try {
                 getWriter().write(outputStream, output);
             } catch(IOException e) {
@@ -54,9 +60,17 @@ public class Autopilot {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        this.previousInput = input;
+        this.previousOutput = output;
 
     }
 
+    public AutopilotInputs getPreviousInput() {
+        return this.previousInput;
+    }
+
+    public AutopilotOutputs getPreviousOutput() {
+        return this.previousOutput;
+    }
 
 }
