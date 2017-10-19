@@ -1,3 +1,5 @@
+package autopilot;
+
 import p_en_o_cw_2017.*;
 public class InputToOutput {
 
@@ -13,7 +15,7 @@ public class InputToOutput {
             float r = x/(nbColumns/2)*autopilot.config.getHorizontalAngleOfView();
             float U0 = -(input.getZ()-prev.getZ())/prev.getElapsedTime()-input.getElapsedTime();
             float W0 = (input.getY()-prev.getY())/prev.getElapsedTime()-input.getElapsedTime();
-            float g = autopilot.config;
+            float g = autopilot.config.getGravity();
             float omega = input.getPitch();
             float p = (float) (r*U0/W0 - g/W0*Math.sin(omega));
             if (x>0) {
@@ -35,9 +37,9 @@ public class InputToOutput {
 
         return new AutopilotOutputs() {
             public float getThrust() { return 0; } //moet nog over nagedacht worden
-            public float getLeftWingInclination() { return leftWingInclination; }
-            public float getRightWingInclination() { return rightWingInclination; }
-            public float getHorStabInclination() { return horStabInclination; }
+            public float getLeftWingInclination() { return 0; }
+            public float getRightWingInclination() { return 0; }
+            public float getHorStabInclination() { return 0; }
             public float getVerStabInclination() { return 0; }
         };
     }
