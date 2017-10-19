@@ -6,9 +6,12 @@ public class InputToOutput {
     public AutopilotOutputs calculate(AutopilotInputs input, float[] imageVector, int nbColumns, int nbRows, Autopilot autopilot) {
         float x = imageVector[0];
         float y = imageVector[1];
-        float leftWingInclination;
-        float rightWingInclination;
-        float horStabInclination;
+        float leftWingInclination = 0;
+        float rightWingInclination = 0;
+        float horStabInclination = 0;
+        float verStabInclination = 0;
+        float thrust = 0;
+        
         AutopilotInputs prev = autopilot.getPreviousInput();
         //eerst draaien
         if (imageVector[0]!=0) {
@@ -35,12 +38,7 @@ public class InputToOutput {
 
         }
 
-        return new AutopilotOutputs() {
-            public float getThrust() { return 0; } //moet nog over nagedacht worden
-            public float getLeftWingInclination() { return 0; }
-            public float getRightWingInclination() { return 0; }
-            public float getHorStabInclination() { return 0; }
-            public float getVerStabInclination() { return 0; }
+        return new AutopilotOutputs(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination) {
         };
     }
 
