@@ -6,9 +6,11 @@ public class InputToOutput {
     public AutopilotOutputs calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, Autopilot autopilot) {
         float horizontalError = targetVector[0];
         float verticalError = targetVector[1];
-        float leftWingInclination;
-        float rightWingInclination;
-        float horStabInclination;
+        float leftWingInclination = 0;
+        float rightWingInclination = 0;
+        float horStabInclination = 0;
+        float verStabInclination = 0;
+        float thrust = 0;
         Vector velocityWorld;
         Vector velocityDrone;
         AutopilotInputs prev = autopilot.getPreviousInput();
