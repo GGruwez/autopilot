@@ -41,12 +41,7 @@ public class Autopilot {
 
             InputToOutput calc = new InputToOutput();
             if (this.previousInput==null) {
-                output = new AutopilotOutputs() {
-                    public float getThrust() {return 0;}
-                    public float getLeftWingInclination() {return 0;}
-                    public float getRightWingInclination() {return 0;}
-                    public float getHorStabInclination() {return 0;}
-                    public float getVerStabInclination() {return 0;}};
+                output = new AutopilotOutputs();
             }
             else {
                 output = calc.calculate(input,imageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()), config.getNbRows(), config.getNbColumns(), this);
