@@ -1,13 +1,9 @@
-import autopilot.p_en_o_cw_2017.Autopilot;
-import autopilot.p_en_o_cw_2017.autopilot_src_generated.*;
 import p_en_o_cw_2017.*;
-
 public class InputToOutput {
 
     public AutopilotOutputs calculate(AutopilotInputs input, float[] imageVector, int nbColumns, int nbRows, Autopilot autopilot) {
         float x = imageVector[0];
         float y = imageVector[1];
-
         float leftWingInclination;
         float rightWingInclination;
         float horStabInclination;
