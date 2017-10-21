@@ -3,7 +3,7 @@ package autopilot;
 import p_en_o_cw_2017.*;
 public class InputToOutput {
 
-    public AutopilotOutputs calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, Autopilot autopilot) {
+    public static AutopilotOutputs calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, Autopilot autopilot) {
         float horizontalError = targetVector[0];
         float verticalError = targetVector[1];
         float leftWingInclination = 0;
