@@ -36,8 +36,7 @@ public class InputToOutput {
         }
         //daarna omhoog/omlaag
         else if(verticalError >=10) {
-            float r = verticalError/(nbRows/2)*autopilot.config.getHorizontalAngleOfView();
-            horStabInclination = r; //??
+            float verticalAngleError = verticalError/((nbRows/2)*autopilot.getConfig().getVerticalAngleOfView();
         }
         //anders gewoon blijven verder vliegen in een rechte lijn
         else {
