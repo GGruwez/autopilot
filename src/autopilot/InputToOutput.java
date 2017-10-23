@@ -34,7 +34,7 @@ public class InputToOutput {
             }
         }
         //daarna omhoog/omlaag
-        else if(targetVector[1]!=0) {
+        else if(verticalError >=10) {
             float r = verticalError/(nbRows/2)*autopilot.config.getHorizontalAngleOfView();
             horStabInclination = r; //??
         }
