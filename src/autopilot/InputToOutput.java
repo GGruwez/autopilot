@@ -44,7 +44,7 @@ public class InputToOutput {
         }
 
 
-        return new AutopilotOutputs(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
+        return new AutopilotOutputs(1, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
     }
 
 
