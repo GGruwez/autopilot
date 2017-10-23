@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class ImageRecognition {
 
 	
-	public float[] FindTarget(byte[] image, int nbColumns, int nbRows ){
+	public static float[] FindTarget(byte[] image, int nbColumns, int nbRows ){
 		ArrayList<Integer> positions = new ArrayList<Integer>();
 		for (int position=0; position<nbColumns*nbRows; position+=3) {
 			byte[] pixel = new byte[3];
@@ -43,7 +43,7 @@ public class ImageRecognition {
 		
 	}
 	
-	public byte[] RBGToHSV(byte[] pixel){
+	public static byte[] RBGToHSV(byte[] pixel){
 		float R = pixel[0]/255;
 		float G = pixel[1]/255;
 		float B = pixel[2]/255;
@@ -71,7 +71,7 @@ public class ImageRecognition {
 		return HSVPixel;
 	}
 		
-	public float Max(float R, float B, float G){
+	public static float Max(float R, float B, float G){
 		if (R>B){
 			if (R>G)
 				return R;
@@ -86,7 +86,7 @@ public class ImageRecognition {
 		}
 	}
 	
-	public float Min(float R, float B, float G){
+	public static float Min(float R, float B, float G){
 		
 		if (R<B){
 			if (R<G)

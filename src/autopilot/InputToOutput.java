@@ -5,12 +5,14 @@ import java.util.Vector;
 import p_en_o_cw_2017.*;
 public class InputToOutput {
 
-    public AutopilotOutputs calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, Autopilot autopilot) {
+    public static AutopilotOutputs calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, Autopilot autopilot) {
         float horizontalError = targetVector[0];
         float verticalError = targetVector[1];
-        float leftWingInclination;
-        float rightWingInclination;
-        float horStabInclination;
+        float leftWingInclination = 0;
+        float rightWingInclination = 0;
+        float horStabInclination = 0;
+        float verStabInclination = 0;
+        float thrust = 0;
         Vector velocityWorld;
         Vector<E> velocityDrone;
         AutopilotInputs prev = autopilot.getPreviousInput();
@@ -33,7 +35,7 @@ public class InputToOutput {
             
         }
         //daarna omhoog/omlaag
-        else if(targetVector[1]!=0) {
+        else if(verticalError >=10) {
             float r = verticalError/(nbRows/2)*autopilot.config.getHorizontalAngleOfView();
             horStabInclination = r; //??
         }
