@@ -1,6 +1,6 @@
 package autopilot;
+import autopilot.Vector;
 
-import java.util.Vector;
 
 import p_en_o_cw_2017.*;
 public class InputToOutput {
@@ -14,12 +14,12 @@ public class InputToOutput {
         float verStabInclination = 0;
         float thrust = 0;
         Vector velocityWorld;
-        Vector<E> velocityDrone;
+        Vector velocityDrone;
         AutopilotInputs prev = autopilot.getPreviousInput();
         
         velocityWorld = new Vector((input.getX()-prev.getX())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getY()-prev.getY())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getZ()-prev.getZ())/(prev.getElapsedTime()-input.getElapsedTime()));
         velocityDrone = velocityWorld.inverseTransform(prev.getHeading(),prev.getPitch(),prev.getRoll());
-        angularVelocity = new Vector((input.getRoll()-prev.getRoll())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getHeading()-prev.getHeading())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getPitch()-prev.getPitch())/(prev.getElapsedTime()-input.getElapsedTime()))
+        angularVelocity = new Vector((input.getHeading()-prev.getHeading())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getPitch()-prev.getPitch())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getRoll()-prev.getRoll())/(prev.getElapsedTime()-input.getElapsedTime()))
         
         //eerst draaien
         
