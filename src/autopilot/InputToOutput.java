@@ -42,8 +42,6 @@ public class InputToOutput {
         else {
 
         }
-
-
         return new AutopilotOutputs(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
     }
 
