@@ -1,0 +1,7 @@
+.project
+.DS_Store
+/bin/
+.idea
+autopilot.iml
+.classpath
+/bin

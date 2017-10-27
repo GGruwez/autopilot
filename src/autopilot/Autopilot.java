@@ -1,8 +1,9 @@
 package autopilot;
 
 import p_en_o_cw_2017.*;
-
+import javax.swing.*;
 import java.io.*;
+import src.autopilot.*;
 
 /**
  * Created by ndbae06 on 16/10/2017.
@@ -13,6 +14,7 @@ public class Autopilot {
     AutopilotConfig config;
     AutopilotInputs previousInput;
     AutopilotOutputs previousOutput;
+    UI userInterface = new UI();
 
     public void fillStreamWithOutput(java.io.DataInputStream inputStream, java.io.DataOutputStream outputStream) {
         AutopilotInputs input;
@@ -24,6 +26,7 @@ public class Autopilot {
             }
             else {
                 output = InputToOutput.calculate(input,ImageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()), config.getNbRows(), config.getNbColumns(), this);
+
             }
             try {
                 AutopilotOutputsWriter.write(outputStream, output);
