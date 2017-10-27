@@ -1,9 +1,8 @@
 package autopilot;
-import autopilot.Vector;
 import p_en_o_cw_2017.*;
-public class InputToOutput {
+class InputToOutput {
 
-    public static AutopilotOutputs calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, Autopilot autopilot) {
+    static AutopilotOutputs calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, Autopilot autopilot) {
         float horizontalError = targetVector[0];
         float verticalError = targetVector[1];
         float leftWingInclination = 0;
@@ -22,8 +21,8 @@ public class InputToOutput {
         //eerst draaien
         
         if (horizontalError >= 10){
-            float horizontalAngleError = (float) (horizontalError/((nbColumns/2))*autopilot.config.getHorizontalAngleOfView()*(Math.PI/180));
-            float g = autopilot.config.getGravity();
+            float horizontalAngleError = (float) (horizontalError/((nbColumns/2))*autopilot.getConfig().getHorizontalAngleOfView()*(Math.PI/180));
+            float g = autopilot.getConfig().getGravity();
             float roll = input.getRoll();
             float tconstant = (float) (velocityDrone.getY()/-velocityDrone.getZ() * angularVelocity.getZ() + g/-velocityDrone.getZ() * Math.sin(input.getRoll()));
             float t2constant = velocityDrone.getY()/-velocityDrone.getZ() * 2;
@@ -33,7 +32,7 @@ public class InputToOutput {
         }
         //daarna omhoog/omlaag
         else if(verticalError >=10) {
-            float r = verticalError/(nbRows/2)*autopilot.config.getHorizontalAngleOfView();
+            float r = verticalError/(nbRows/2)*autopilot.getConfig().getHorizontalAngleOfView();
             horStabInclination = r; //??
         }
         //anders gewoon blijven verder vliegen in een rechte lijn

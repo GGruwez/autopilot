@@ -16,7 +16,7 @@ public class AutopilotOutputs implements p_en_o_cw_2017.AutopilotOutputs{
     private float horStabInclination;
     private float verStabInclination;
     
-    public AutopilotOutputs(float thrust, float leftIncl, float rightIncl, float horIncl, float verIncl) {
+    AutopilotOutputs(float thrust, float leftIncl, float rightIncl, float horIncl, float verIncl) {
     	this.thrust = thrust;
     	this.leftWingInclination = leftIncl;
     	this.rightWingInclination = rightIncl;
@@ -24,7 +24,7 @@ public class AutopilotOutputs implements p_en_o_cw_2017.AutopilotOutputs{
     	this.verStabInclination = verIncl;
     }
     
-    public AutopilotOutputs() {
+    AutopilotOutputs() {
     	new AutopilotOutputs(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
     }
 
