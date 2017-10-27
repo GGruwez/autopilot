@@ -1,6 +1,8 @@
 package autopilot;
 
 import p_en_o_cw_2017.*;
+import javax.swing.*;
+import java.io.*;
 
 public class Autopilot implements p_en_o_cw_2017.Autopilot {
 
@@ -8,6 +10,7 @@ public class Autopilot implements p_en_o_cw_2017.Autopilot {
     private AutopilotConfig config;
     private AutopilotInputs previousInput;
     private AutopilotOutputs previousOutput;
+    UI userInterface = new UI();
 
     AutopilotInputs getPreviousInput() {
         return this.previousInput;
