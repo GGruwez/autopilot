@@ -27,11 +27,19 @@ public class InputToOutput {
             float horizontalAngleError = (float) (horizontalError/((nbColumns/2))*autopilot.config.getHorizontalAngleOfView()*(Math.PI/180));
             float g = autopilot.config.getGravity();
             float roll = input.getRoll();
-            float tconstant = (float) (velocityDrone.getY()/-velocityDrone.getZ() * angularVelocity.getZ() + g/-velocityDrone.getZ() * Math.sin(input.getRoll()));
-            float t2constant = velocityDrone.getY()/-velocityDrone.getZ() * 2;
-            float target = horizontalAngleError ;
-            
-            
+            float U = -velocityDrone.getZ();
+            float W = velocityDrone.getY();
+            float enginePlace =autopilot.getConfig().getTailSize()*-autopilot.getConfig().getTailMass()/autopilot.getConfig().getEngineMass();
+            float constant = horizontalAngleError*U/W;
+            float tcoef = (float) (-g*Math.sin(roll)/W-angularVelocity.getZ());
+            float t2coef = (float) (2*autopilot.getConfig().getWingLiftSlope()*velocityDrone.dotProduct(velocityDrone)*
+            				((-autopilot.getConfig().getMaxAOA()/2)/(autopilot.getConfig().getEngineMass()*Math.pow(enginePlace,2) + autopilot.getConfig().getTailMass()*Math.pow(autopilot.getConfig().getTailSize(),2) + 2*autopilot.getConfig().getWingMass()*Math.pow(autopilot.getConfig().getWingX(),2))
+            						-(autopilot.getConfig().getMaxAOA()/2 -2)/(4*autopilot.getConfig().getWingMass()*Math.pow(autopilot.getConfig().getWingX(),2))));
+            									
+            float D = (float) (Math.pow(tcoef, 2)- 4*constant*t2coef);
+            float x = (float) ((-tcoef+ Math.sqrt(D))/(2*t2coef));
+            System.out.println("x : " + x);
+           
         }
         //daarna omhoog/omlaag
         else if(verticalError >=10) {
