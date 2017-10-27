@@ -1,7 +1,5 @@
 package autopilot;
 import autopilot.Vector;
-
-
 import p_en_o_cw_2017.*;
 public class InputToOutput {
 
@@ -50,8 +48,6 @@ public class InputToOutput {
         else {
 
         }
-
-
         return new AutopilotOutputs(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
     }
 
