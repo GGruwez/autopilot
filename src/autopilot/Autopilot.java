@@ -30,6 +30,7 @@ public class Autopilot {
             }
             try {
                 AutopilotOutputsWriter.write(outputStream, output);
+                this.userInterface.updateData(output);
             } catch(IOException e) {
                 e.printStackTrace();
             }
