@@ -48,7 +48,9 @@ public class Vector {
 		return (float) Math.acos(this.dotProduct(other)/(this.euclideanLength()*other.euclideanLength()));
 	}
 	
-
+	 public void printVector(String name){
+	        System.out.println(name + this.getX() + " " + this.getY() + " " + this.getZ());
+	        }
 	/**
 	 * 
 	 * @param heading - heading van de aircraft tov wereld

@@ -2,48 +2,49 @@ package autopilot;
 
 import java.util.ArrayList;
 
-public class ImageRecognition {
+class ImageRecognition {
 
-	
+
 	public static float[] FindTarget(byte[] image, int nbColumns, int nbRows ){
-		ArrayList<Integer> positions = new ArrayList<Integer>();
-		for (int position=0; position<nbColumns*nbRows; position+=3) {
-			byte[] pixel = new byte[3];
-			pixel[0] = image[position];
-			pixel[1] = image[position+1];
-			pixel[2] = image[position+2];
-			
-			byte[] HSVPixel = RBGToHSV(pixel);
-			if (((HSVPixel[0] <= 8) || (HSVPixel[0]>= 172)) && (HSVPixel[1] >= 100) && (HSVPixel[2] >38))
-				positions.add(position/3);
-		}	
-		int maxColumn = 0;
-		int minColumn = nbColumns;
-		int maxRow = 0;
-		int minRow = nbRows;
-		for (int position :positions){
-			int currentRow = (int) Math.floor(position/nbColumns);
-			int currentColumn = position%nbColumns;
-			
-			if (currentRow > maxRow)
-				maxRow = currentRow;
-			if (currentRow < minRow)
-				minRow = currentRow;
-			if (currentColumn > maxColumn)
-				maxColumn = currentColumn;
-			if (currentColumn < minColumn)
-				minColumn = currentColumn;
-		}
-		
-		float xVector = minColumn + (maxColumn - minColumn)/2 - nbColumns/2;
-		float yVector = minRow + (maxRow - minRow)/2 - nbRows/2;
-		
-		
-		return new float[]{xVector,yVector} ;
+//		ArrayList<Integer> positions = new ArrayList<Integer>();
+//		for (int position=0; position<nbColumns*nbRows; position+=3) {
+//			byte[] pixel = new byte[3];
+//			pixel[0] = image[position];
+//			pixel[1] = image[position+1];
+//			pixel[2] = image[position+2];
+//			
+//			byte[] HSVPixel = RBGToHSV(pixel);
+//			if (((HSVPixel[0] <= 8) || (HSVPixel[0]>= 172)) && (HSVPixel[1] >= 100) && (HSVPixel[2] >38))
+//				positions.add(position/3);
+//		}	
+//		int maxColumn = 0;
+//		int minColumn = nbColumns;
+//		int maxRow = 0;
+//		int minRow = nbRows;
+//		for (int position :positions){
+//			int currentRow = (int) Math.floor(position/nbColumns);
+//			int currentColumn = position%nbColumns;
+//			
+//			if (currentRow > maxRow)
+//				maxRow = currentRow;
+//			if (currentRow < minRow)
+//				minRow = currentRow;
+//			if (currentColumn > maxColumn)
+//				maxColumn = currentColumn;
+//			if (currentColumn < minColumn)
+//				minColumn = currentColumn;
+//		}
+//		
+//		float xVector = minColumn + (maxColumn - minColumn)/2 - nbColumns/2;
+//		float yVector = minRow + (maxRow - minRow)/2 - nbRows/2;
+//		
+//		
+//		return new float[]{xVector,yVector} ;
+		return new float[]{0,0};
 		
 	}
 	
-	public static byte[] RBGToHSV(byte[] pixel){
+	static byte[] RBGToHSV(byte[] pixel){
 		float R = pixel[0]/255;
 		float G = pixel[1]/255;
 		float B = pixel[2]/255;
@@ -71,7 +72,7 @@ public class ImageRecognition {
 		return HSVPixel;
 	}
 		
-	public static float Max(float R, float B, float G){
+	static float Max(float R, float B, float G){
 		if (R>B){
 			if (R>G)
 				return R;
@@ -86,7 +87,7 @@ public class ImageRecognition {
 		}
 	}
 	
-	public static float Min(float R, float B, float G){
+	static float Min(float R, float B, float G){
 		
 		if (R<B){
 			if (R<G)

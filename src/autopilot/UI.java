@@ -1,4 +1,4 @@
-package src.autopilot;
+package autopilot;
 
 import javax.swing.*;
 import java.awt.*;
