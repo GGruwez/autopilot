@@ -1,8 +1,6 @@
 package autopilot;
 
 import p_en_o_cw_2017.*;
-import javax.swing.*;
-import java.io.*;
 
 public class Autopilot implements p_en_o_cw_2017.Autopilot {
 
@@ -44,9 +42,7 @@ public class Autopilot implements p_en_o_cw_2017.Autopilot {
         if (!isSimulating) {
             output = new AutopilotOutputs();
             this.isSimulating = true;
-            System.out.println("why");
         } else {
-        	System.out.println("done");
             output = InputToOutput.calculate(inputs, ImageRecognition.FindTarget(inputs.getImage(), config.getNbColumns(), config.getNbRows()), config.getNbRows(), config.getNbColumns(), this);
             this.userInterface.updateData(output);
         }
