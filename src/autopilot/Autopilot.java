@@ -48,6 +48,7 @@ public class Autopilot implements p_en_o_cw_2017.Autopilot {
         } else {
         	System.out.println("done");
             output = InputToOutput.calculate(inputs, ImageRecognition.FindTarget(inputs.getImage(), config.getNbColumns(), config.getNbRows()), config.getNbRows(), config.getNbColumns(), this);
+            this.userInterface.updateData(output);
         }
         this.previousInput = new PreviousInputs(inputs);
         this.previousOutput = output;
