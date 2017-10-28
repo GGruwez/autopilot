@@ -4,33 +4,7 @@ import p_en_o_cw_2017.*;
 import javax.swing.*;
 import java.io.*;
 
-<<<<<<< HEAD
-    public void fillStreamWithOutput(java.io.DataInputStream inputStream, java.io.DataOutputStream outputStream) {
-        AutopilotInputs input;
-        AutopilotOutputs output;
-        try {
-            input = AutopilotInputsReader.read(inputStream);
-            if (this.previousInput==null) {
-                output = new AutopilotOutputs();
-            }
-            else {
-                output = InputToOutput.calculate(input,ImageRecognition.FindTarget(input.getImage(), config.getNbColumns(),config.getNbRows()), config.getNbRows(), config.getNbColumns(), this);
-
-            }
-            try {
-                AutopilotOutputsWriter.write(outputStream, output);
-                this.userInterface.updateData(output);
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
-            this.previousInput = input;
-            this.previousOutput = output;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-=======
 public class Autopilot implements p_en_o_cw_2017.Autopilot {
->>>>>>> 00d14e58b126e5ff363ca8c17461c20b667e3160
 
     private boolean isSimulating = false; // TODO: never used for the moment
     private AutopilotConfig config;
@@ -70,6 +44,7 @@ public class Autopilot implements p_en_o_cw_2017.Autopilot {
             output = new AutopilotOutputs();
         } else {
             output = InputToOutput.calculate(inputs, ImageRecognition.FindTarget(inputs.getImage(), config.getNbColumns(), config.getNbRows()), config.getNbRows(), config.getNbColumns(), this);
+            this.userInterface.updateData(output);
         }
         this.previousInput = inputs;
         this.previousOutput = output;
