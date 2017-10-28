@@ -8,11 +8,11 @@ public class Autopilot implements p_en_o_cw_2017.Autopilot {
 
     private boolean isSimulating = false; // TODO: never used for the moment
     private AutopilotConfig config;
-    private AutopilotInputs previousInput;
+    private PreviousInputs previousInput;
     private AutopilotOutputs previousOutput;
     UI userInterface = new UI();
 
-    AutopilotInputs getPreviousInput() {
+    PreviousInputs getPreviousInput() {
         return this.previousInput;
     }
 
@@ -31,21 +31,25 @@ public class Autopilot implements p_en_o_cw_2017.Autopilot {
     @Override
     public p_en_o_cw_2017.AutopilotOutputs simulationStarted(AutopilotConfig config, AutopilotInputs inputs) {
         this.setConfig(config);
-        this.isSimulating = true;
+        p_en_o_cw_2017.AutopilotOutputs output = new AutopilotOutputs();//timePassed(inputs);
+        
         // TODO: Is this the correct way to handle the incoming inputs?
-        return timePassed(inputs);
+        return output;
     }
 
     @Override
     public p_en_o_cw_2017.AutopilotOutputs timePassed(AutopilotInputs inputs) {
         AutopilotOutputs output;
 
-        if (this.previousInput == null) {
+        if (!isSimulating) {
             output = new AutopilotOutputs();
+            this.isSimulating = true;
+            System.out.println("why");
         } else {
+        	System.out.println("done");
             output = InputToOutput.calculate(inputs, ImageRecognition.FindTarget(inputs.getImage(), config.getNbColumns(), config.getNbRows()), config.getNbRows(), config.getNbColumns(), this);
         }
-        this.previousInput = inputs;
+        this.previousInput = new PreviousInputs(inputs);
         this.previousOutput = output;
 
         return output;

@@ -12,8 +12,8 @@ class InputToOutput {
         float thrust = 0;
         Vector velocityWorld;
         Vector velocityDrone;
-        AutopilotInputs prev = autopilot.getPreviousInput();
-        
+        PreviousInputs prev = autopilot.getPreviousInput();
+        AutopilotConfig config = autopilot.getConfig();
         velocityWorld = new Vector((input.getX()-prev.getX())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getY()-prev.getY())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getZ()-prev.getZ())/(prev.getElapsedTime()-input.getElapsedTime()));
         velocityDrone = velocityWorld.inverseTransform(prev.getHeading(),prev.getPitch(),prev.getRoll());
         Vector angularVelocity = new Vector((input.getHeading()-prev.getHeading())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getPitch()-prev.getPitch())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getRoll()-prev.getRoll())/(prev.getElapsedTime()-input.getElapsedTime()));
@@ -22,27 +22,47 @@ class InputToOutput {
 
      //   if (horizontalError >= 10){
             horizontalError = 50;
-            double horizontalAngleError =  (horizontalError/((nbColumns/2))*autopilot.getConfig().getHorizontalAngleOfView()*(Math.PI/180));
-            float g = autopilot.getConfig().getGravity();
+            
+            double horizontalAngleError =  (horizontalError/((nbColumns/2))*config.getHorizontalAngleOfView()*(Math.PI/180));
+            float g = config.getGravity();
             float roll = input.getRoll();
             float U = -velocityDrone.getZ();
             float W = velocityDrone.getY();
-            float enginePlace =autopilot.getConfig().getTailSize()*-autopilot.getConfig().getTailMass()/autopilot.getConfig().getEngineMass();
+            float enginePlace =config.getTailSize()*-config.getTailMass()/config.getEngineMass();
             double constant = horizontalAngleError*U/W;
             double tcoef = (-g*Math.sin(roll)/W-angularVelocity.getZ());
-            double t2coef =  (2*autopilot.getConfig().getWingLiftSlope()*velocityDrone.dotProduct(velocityDrone)*
-            				((-autopilot.getConfig().getMaxAOA()/2)/(autopilot.getConfig().getEngineMass()*Math.pow(enginePlace,2) + autopilot.getConfig().getTailMass()*Math.pow(autopilot.getConfig().getTailSize(),2) + 2*autopilot.getConfig().getWingMass()*Math.pow(autopilot.getConfig().getWingX(),2))
-            						-(autopilot.getConfig().getMaxAOA()/2 -2)/(4*autopilot.getConfig().getWingMass()*Math.pow(autopilot.getConfig().getWingX(),2))));
+            double t2coef =  (2*config.getWingLiftSlope()*velocityDrone.dotProduct(velocityDrone)*
+            				((-config.getMaxAOA()/2)/(config.getEngineMass()*Math.pow(enginePlace,2) + config.getTailMass()*Math.pow(config.getTailSize(),2) + 2*config.getWingMass()*Math.pow(config.getWingX(),2))
+            						-(config.getMaxAOA()/2 -2)/(4*config.getWingMass()*Math.pow(config.getWingX(),2))));
             									
             float D = (float) (Math.pow(tcoef, 2)- 4*constant*t2coef);
             float x = (float) ((-tcoef+ Math.sqrt(D))/(2*t2coef));
-            System.out.println("time" + input.getX());
-            velocityDrone.printVector("vel");
-            System.out.println("x : " + x);
-            System.out.println("D : " + D);
-            System.out.println("constant : " + constant);
-            System.out.println("tcoef : " + tcoef);
-            System.out.println("t2coef : " + t2coef);
+            
+            double t = 1;
+            double rollRate=(input.getRoll()-prev.getRoll())/(input.getElapsedTime()-prev.getElapsedTime());
+            double Ix = config.getEngineMass()*Math.pow(enginePlace,2)+config.getTailMass()*Math.pow(config.getTailSize(),2);
+            double Iz = 2*config.getWingMass()*Math.pow(config.getWingX(), 2);
+            double Iy = Ix + Iz;
+            double s= velocityDrone.euclideanLength();
+            double s2=Math.pow(s, 2);
+            
+            double sig = config.getWingLiftSlope()*W*Iy*(2*W*rollRate*t*Math.pow(Iz,2) - U*horizontalAngleError*Iy*Iz - 2*U*horizontalAngleError*Math.pow(Iz,2) + 2*g*t*Math.pow(Iz,2)*Math.sin(roll) + config.getWingLiftSlope()*W*s2*Math.pow(t,2)*Iy + W*rollRate*t*Iy*Iz + g*t*Iy*Iz*Math.sin(roll));
+            double sig1 = Math.sqrt(sig);
+            double sig3 = config.getWingLiftSlope()*W*s*t*Iy;
+            double sig2 = sig3 + config.getWingLiftSlope()*W*s*t*Iz;
+            
+            double a1 = (sig1+sig3-input.getPitch()*config.getWingLiftSlope()*W*s*t*Iy-2*input.getPitch()*config.getWingLiftSlope()*W*s*t*Iz)/sig2;
+            double a2 = -(sig1-sig3+input.getPitch()*config.getWingLiftSlope()*W*s*t*Iy+2*input.getPitch()*config.getWingLiftSlope()*W*s*t*Iz)/sig2;
+            
+            
+            
+//            System.out.println("x : " + x);
+//            System.out.println("D : " + D);
+//            System.out.println("constant : " + constant);
+//            System.out.println("tcoef : " + tcoef);
+//            System.out.println("t2coef : " + t2coef);
+            System.out.println("a1 : " + a1);
+            System.out.println("a2 : " + a2);
 //      //  }
 //        //daarna omhoog/omlaag
 //        else if(verticalError >=10) {

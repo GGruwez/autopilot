@@ -1,74 +1,89 @@
 package autopilot;
 
+
+
 import java.util.ArrayList;
+
+
 
 class ImageRecognition {
 
 
 	public static float[] FindTarget(byte[] image, int nbColumns, int nbRows ){
-//		ArrayList<Integer> positions = new ArrayList<Integer>();
-//		for (int position=0; position<nbColumns*nbRows; position+=3) {
-//			byte[] pixel = new byte[3];
-//			pixel[0] = image[position];
-//			pixel[1] = image[position+1];
-//			pixel[2] = image[position+2];
-//			
-//			byte[] HSVPixel = RBGToHSV(pixel);
-//			if (((HSVPixel[0] <= 8) || (HSVPixel[0]>= 172)) && (HSVPixel[1] >= 100) && (HSVPixel[2] >38))
-//				positions.add(position/3);
-//		}	
-//		int maxColumn = 0;
-//		int minColumn = nbColumns;
-//		int maxRow = 0;
-//		int minRow = nbRows;
-//		for (int position :positions){
-//			int currentRow = (int) Math.floor(position/nbColumns);
-//			int currentColumn = position%nbColumns;
-//			
-//			if (currentRow > maxRow)
-//				maxRow = currentRow;
-//			if (currentRow < minRow)
-//				minRow = currentRow;
-//			if (currentColumn > maxColumn)
-//				maxColumn = currentColumn;
-//			if (currentColumn < minColumn)
-//				minColumn = currentColumn;
-//		}
-//		
-//		float xVector = minColumn + (maxColumn - minColumn)/2 - nbColumns/2;
-//		float yVector = minRow + (maxRow - minRow)/2 - nbRows/2;
-//		
-//		
-//		return new float[]{xVector,yVector} ;
-		return new float[]{0,0};
+		ArrayList<Integer> positions = new ArrayList<Integer>();
+		System.out.println(image.length);
+		for (int row=0; row<nbRows; row+=1) {
+			for (int column =0; column<nbColumns ; column +=1){
+				ArrayList<Integer> pixel = new ArrayList<Integer>();
+
+				System.out.println((image[3*(row*nbColumns+column)+0] & 0xff) + "   "+ (3*(row*nbColumns+column)+0));
+				System.out.println((image[3*(row*nbColumns+column)+1] & 0xff) + "   " + (3*(row*nbColumns+column)+1));
+				System.out.println((image[3*(row*nbColumns+column)+2] & 0xff)+ "   " + (3*(row*nbColumns+column)+2));
+				pixel.add(image[3*(row*nbColumns+column)+0] & 0xff) ;
+				pixel.add(image[3*(row*nbColumns+column)+1] & 0xff);
+				pixel.add(image[3*(row*nbColumns+column)+2] & 0xff);
+				//System.out.println("pixel: "+ pixel.get(0) +", "+ pixel.get(1) + ", " + pixel.get(2));
+				ArrayList<Integer> HSVPixel = RBGToHSV(pixel);
+				if (((HSVPixel.get(0) <= 8) || (HSVPixel.get(0)>= 172)) && (HSVPixel.get(1) >= 100) && (HSVPixel.get(2)>38)){
+					positions.add(row*nbColumns+column);
+					//System.out.println("position added: " + position/3);
+				}
+			}	
+		}	
+		int maxColumn = 0;
+		int minColumn = nbColumns;
+		int maxRow = 0;
+		int minRow = nbRows;
+		for (int position :positions){
+			int currentRow = (int) Math.floor(position/nbColumns);
+			int currentColumn = position%nbColumns;
+			
+			if (currentRow > maxRow)
+				maxRow = currentRow;
+			if (currentRow < minRow)
+				minRow = currentRow;
+			if (currentColumn > maxColumn)
+				maxColumn = currentColumn;
+			if (currentColumn < minColumn)
+				minColumn = currentColumn;
+		}
+		
+		float xVector = minColumn + (maxColumn - minColumn)/2 - nbColumns/2;
+		float yVector = minRow + (maxRow - minRow)/2 - nbRows/2;
+		//System.out.println(minColumn + "   "+ maxColumn);
+		//System.out.println(xVector + "   "+ yVector);
+		return new float[]{xVector,yVector} ;
+
 		
 	}
 	
-	static byte[] RBGToHSV(byte[] pixel){
-		float R = pixel[0]/255;
-		float G = pixel[1]/255;
-		float B = pixel[2]/255;
+	static ArrayList<Integer> RBGToHSV(ArrayList<Integer> pixel){
+		float R = pixel.get(0)/255;
+		float G = pixel.get(1)/255;
+		float B = pixel.get(2)/255;
 		float Cmax = Max(R,G,B);
 		float Cmin = Min(R,G,B);
 		float delta = Cmax- Cmin;
-		byte[] HSVPixel = new byte[3];
+		//System.out.println("pixel: "+ pixel.get(0) +", "+ pixel.get(1) + ", " + pixel.get(2));
+		//System.out.println("delta: "+ delta);
+		ArrayList<Integer> HSVPixel = new ArrayList<Integer>();
 		
 		if (delta == 0)
-			HSVPixel[0] = 0;
+			HSVPixel.add(0);
 		else if (Cmax == R)
-			HSVPixel[0] = (byte) Math.floor((30*((G-B)/delta)%6));
+			HSVPixel.add((int) Math.floor((30*((G-B)/delta)%6)));
 		else if (Cmax == G)
-			HSVPixel[0] = (byte) Math.floor((30*((B-R)/delta)+2));
+			HSVPixel.add((int) Math.floor((30*((B-R)/delta)+2)));
 		else if (Cmax == B)
-			HSVPixel[0] = (byte) Math.floor((30*((R-G)/delta)+4));
+			HSVPixel.add((int) Math.floor((30*((R-G)/delta)+4)));
 		
 		if (Cmax == 0)
-			HSVPixel[1] = 0;
+			HSVPixel.add(0);
 		else
-			HSVPixel[1] = (byte) Math.floor(delta/Cmax*255);
+			HSVPixel.add((int) Math.floor(delta/Cmax*255));
 		
-		HSVPixel[2] = (byte) Math.floor(Cmax);
-		
+		HSVPixel.add((int) Math.floor(Cmax));
+		//System.out.println("pixel: "+ HSVPixel.get(0) +", "+ HSVPixel.get(1) + ", " + HSVPixel.get(2));
 		return HSVPixel;
 	}
 		
