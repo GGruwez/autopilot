@@ -74,7 +74,7 @@ class InputToOutput {
         if(Math.abs(verticalError) >=5) {
         	double verticalAngleError =  (verticalError/((nbRows/2))*config.getVerticalAngleOfView()*(Math.PI/180));
            
-        	double sig = -config.getHorStabLiftSlope()*config.getTailSize()*U*Iy(4*verticalAngleError*Math.pow(Iz, 2)+4*W*t*Math.pow(Iz, 2)+2*verticalAngleError*Iy*Iz + 2*W*t*Iy*Iz - 4*input.getPitch()*U*t*Math.pow(Iz, 2)-2*input.getPitch()*U*t*Iy*Iz - config.getHorStabLiftSlope()*config.getTailSize()*U*s2*Math.pow(t, 2)*Iy);
+        	double sig = -config.getHorStabLiftSlope()*config.getTailSize()*U*Iy*(4*verticalAngleError*Math.pow(Iz, 2)+4*W*t*Math.pow(Iz, 2)+2*verticalAngleError*Iy*Iz + 2*W*t*Iy*Iz - 4*input.getPitch()*U*t*Math.pow(Iz, 2)-2*input.getPitch()*U*t*Iy*Iz - config.getHorStabLiftSlope()*config.getTailSize()*U*s2*Math.pow(t, 2)*Iy);
         	double sig1 = Math.sqrt(sig);
         	double sig3 = config.getHorStabLiftSlope()*config.getTailSize()*U*s*t*Iy;
         	double sig2 = sig3 + 2*config.getHorStabLiftSlope()*config.getTailSize()*U*s*t*Iz;
