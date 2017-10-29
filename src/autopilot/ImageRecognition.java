@@ -1,30 +1,26 @@
 package autopilot;
 
-
-
 import java.util.ArrayList;
-
-
 
 class ImageRecognition {
 
 
 	public static float[] FindTarget(byte[] image, int nbColumns, int nbRows ){
 		ArrayList<Integer> positions = new ArrayList<Integer>();
-		System.out.println(image.length);
+//		System.out.println(image.length);
 		for (int row=0; row<nbRows; row+=1) {
 			for (int column =0; column<nbColumns ; column +=1){
 				ArrayList<Integer> pixel = new ArrayList<Integer>();
 
-				System.out.println((image[3*(row*nbColumns+column)+0] & 0xff) + "   "+ (3*(row*nbColumns+column)+0));
-				System.out.println((image[3*(row*nbColumns+column)+1] & 0xff) + "   " + (3*(row*nbColumns+column)+1));
-				System.out.println((image[3*(row*nbColumns+column)+2] & 0xff)+ "   " + (3*(row*nbColumns+column)+2));
+//				System.out.println((image[3*(row*nbColumns+column)+0] & 0xff) + "   "+ (3*(row*nbColumns+column)+0));
+//				System.out.println((image[3*(row*nbColumns+column)+1] & 0xff) + "   " + (3*(row*nbColumns+column)+1));
+//				System.out.println((image[3*(row*nbColumns+column)+2] & 0xff)+ "   " + (3*(row*nbColumns+column)+2));
 				pixel.add(image[3*(row*nbColumns+column)+0] & 0xff) ;
 				pixel.add(image[3*(row*nbColumns+column)+1] & 0xff);
 				pixel.add(image[3*(row*nbColumns+column)+2] & 0xff);
-				//System.out.println("pixel: "+ pixel.get(0) +", "+ pixel.get(1) + ", " + pixel.get(2));
+//				System.out.println("pixel: "+ pixel.get(0) +", "+ pixel.get(1) + ", " + pixel.get(2));
 				ArrayList<Integer> HSVPixel = RBGToHSV(pixel);
-				if (((HSVPixel.get(0) <= 8) || (HSVPixel.get(0)>= 172)) && (HSVPixel.get(1) >= 100) && (HSVPixel.get(2)>38)){
+				if (((HSVPixel.get(0) <= 8) || (HSVPixel.get(0)>= 172)) && (HSVPixel.get(1) >= 0.3) && (HSVPixel.get(2)>0.3)){
 					positions.add(row*nbColumns+column);
 					//System.out.println("position added: " + position/3);
 				}
@@ -51,8 +47,8 @@ class ImageRecognition {
 		float xVector = minColumn + (maxColumn - minColumn)/2 - nbColumns/2;
 		float yVector = minRow + (maxRow - minRow)/2 - nbRows/2;
 		//System.out.println(minColumn + "   "+ maxColumn);
-		//System.out.println(xVector + "   "+ yVector);
-		return new float[]{xVector,yVector} ;
+		System.out.println(xVector + "   "+ yVector);
+		return new float[]{xVector,yVector};
 
 		
 	}
@@ -80,10 +76,10 @@ class ImageRecognition {
 		if (Cmax == 0)
 			HSVPixel.add(0);
 		else
-			HSVPixel.add((int) Math.floor(delta/Cmax*255));
+			HSVPixel.add((int) Math.floor(delta/Cmax));
 		
 		HSVPixel.add((int) Math.floor(Cmax));
-		//System.out.println("pixel: "+ HSVPixel.get(0) +", "+ HSVPixel.get(1) + ", " + HSVPixel.get(2));
+//		System.out.println("pixel: "+ HSVPixel.get(0) +", "+ HSVPixel.get(1) + ", " + HSVPixel.get(2));
 		return HSVPixel;
 	}
 		

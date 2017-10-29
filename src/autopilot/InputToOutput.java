@@ -61,12 +61,12 @@ class InputToOutput {
 //            System.out.println("constant : " + constant);
 //            System.out.println("tcoef : " + tcoef);
 //            System.out.println("t2coef : " + t2coef);
-            System.out.println("a1 : " + a1);
-            System.out.println("a2 : " + a2);
+//            System.out.println("a1 : " + a1);
+//            System.out.println("a2 : " + a2);
 //      //  }
 //        //daarna omhoog/omlaag
 //        else if(verticalError >=10) {
-//            float r = verticalError/(nbRows/2)*autopilot.config.getHorizontalAngleOfView();
+//            float r = verticalError/(nbRows/2)*autopilot.getConfig().getHorizontalAngleOfView();
 //            horStabInclination = r; //??
 //        }
 //        //anders gewoon blijven verder vliegen in een rechte lijn
