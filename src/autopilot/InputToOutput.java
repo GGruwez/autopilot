@@ -20,8 +20,8 @@ class InputToOutput {
         
         //eerst draaien
 
-     //   if (horizontalError >= 10){
-            horizontalError = 50;
+        if (horizontalError >= 5){
+            
             
             double horizontalAngleError =  (horizontalError/((nbColumns/2))*config.getHorizontalAngleOfView()*(Math.PI/180));
             float g = config.getGravity();
@@ -54,6 +54,8 @@ class InputToOutput {
             double a1 = (sig1+sig3-input.getPitch()*config.getWingLiftSlope()*W*s*t*Iy-2*input.getPitch()*config.getWingLiftSlope()*W*s*t*Iz)/sig2;
             double a2 = -(sig1-sig3+input.getPitch()*config.getWingLiftSlope()*W*s*t*Iy+2*input.getPitch()*config.getWingLiftSlope()*W*s*t*Iz)/sig2;
             
+            leftWingInclination = (float) a2;
+            rightWingInclination = (float) -a2;
             
             
 //            System.out.println("x : " + x);
@@ -63,7 +65,7 @@ class InputToOutput {
 //            System.out.println("t2coef : " + t2coef);
 //            System.out.println("a1 : " + a1);
 //            System.out.println("a2 : " + a2);
-//      //  }
+        }
 //        //daarna omhoog/omlaag
 //        else if(verticalError >=10) {
 //            float r = verticalError/(nbRows/2)*autopilot.getConfig().getHorizontalAngleOfView();
