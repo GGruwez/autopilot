@@ -20,7 +20,7 @@ class InputToOutput {
         
         //eerst draaien
 
-        if (horizontalError >= 5){
+        if (Math.abs(horizontalError) >= 5){
             
             
             double horizontalAngleError =  (horizontalError/((nbColumns/2))*config.getHorizontalAngleOfView()*(Math.PI/180));
@@ -54,8 +54,8 @@ class InputToOutput {
             double a1 = (sig1+sig3-input.getPitch()*config.getWingLiftSlope()*W*s*t*Iy-2*input.getPitch()*config.getWingLiftSlope()*W*s*t*Iz)/sig2;
             double a2 = -(sig1-sig3+input.getPitch()*config.getWingLiftSlope()*W*s*t*Iy+2*input.getPitch()*config.getWingLiftSlope()*W*s*t*Iz)/sig2;
             
-            leftWingInclination = (float) a2;
-            rightWingInclination = (float) -a2;
+            leftWingInclination = (float) a1;
+            rightWingInclination = (float) -a1;
             
             
 //            System.out.println("x : " + x);
