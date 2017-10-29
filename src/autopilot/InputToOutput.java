@@ -27,15 +27,23 @@ class InputToOutput {
         float W = velocityDrone.getY();
         float enginePlace =config.getTailSize()*-config.getTailMass()/config.getEngineMass();
         
-        double t = 1;
+        double t = 0.05;
         double rollRate=(input.getRoll()-prev.getRoll())/(input.getElapsedTime()-prev.getElapsedTime());
         double Ix = config.getEngineMass()*Math.pow(enginePlace,2)+config.getTailMass()*Math.pow(config.getTailSize(),2);
         double Iz = 2*config.getWingMass()*Math.pow(config.getWingX(), 2);
         double Iy = Ix + Iz;
         double s= velocityDrone.euclideanLength();
         double s2=Math.pow(s, 2);
+
+
+        double x = velocityDrone.getY();
+        double y = velocityDrone.getZ();
+        double z = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / (Math.pow(x, 2) + Math.pow(y, 2));
+        double incR = Math.atan2(y*z,x*z);
+        double incRImag = -Math.log(Math.sqrt(Math.pow(x*z,2) + Math.pow(y*z, 2))); // imaginary part, approximately 0 so we can ignore this
+
         
-        if (Math.abs(horizontalError) >= 5){
+        if (true){
             
             
 
@@ -44,12 +52,12 @@ class InputToOutput {
 //            double t2coef =  (2*config.getWingLiftSlope()*velocityDrone.dotProduct(velocityDrone)*
 //            				((-config.getMaxAOA()/2)/(config.getEngineMass()*Math.pow(enginePlace,2) + config.getTailMass()*Math.pow(config.getTailSize(),2) + 2*config.getWingMass()*Math.pow(config.getWingX(),2))
 //            						-(config.getMaxAOA()/2 -2)/(4*config.getWingMass()*Math.pow(config.getWingX(),2))));
-//            									
+//
 //            float D = (float) (Math.pow(tcoef, 2)- 4*constant*t2coef);
 //            float x = (float) ((-tcoef+ Math.sqrt(D))/(2*t2coef));
-//            
-            
-            
+
+
+
             double sig = config.getWingLiftSlope()*W*Iy*(2*W*rollRate*t*Math.pow(Iz,2) - U*horizontalAngleError*Iy*Iz - 2*U*horizontalAngleError*Math.pow(Iz,2) + 2*g*t*Math.pow(Iz,2)*Math.sin(roll) + config.getWingLiftSlope()*W*s2*Math.pow(t,2)*Iy + W*rollRate*t*Iy*Iz + g*t*Iy*Iz*Math.sin(roll));
             double sig1 = Math.sqrt(sig);
             double sig3 = config.getWingLiftSlope()*W*s*t*Iy;
@@ -71,19 +79,25 @@ class InputToOutput {
 //            System.out.println("a2 : " + a2);
         }
 //        //daarna omhoog/omlaag
-        if(Math.abs(verticalError) >=5) {
+        if(true) {
         	double verticalAngleError =  (verticalError/((nbRows/2))*config.getVerticalAngleOfView()*(Math.PI/180));
-           
-        	double sig = -config.getHorStabLiftSlope()*config.getTailSize()*U*Iy*(4*verticalAngleError*Math.pow(Iz, 2)+4*W*t*Math.pow(Iz, 2)+2*verticalAngleError*Iy*Iz + 2*W*t*Iy*Iz - 4*input.getPitch()*U*t*Math.pow(Iz, 2)-2*input.getPitch()*U*t*Iy*Iz - config.getHorStabLiftSlope()*config.getTailSize()*U*s2*Math.pow(t, 2)*Iy);
-        	double sig1 = Math.sqrt(sig);
-        	double sig3 = config.getHorStabLiftSlope()*config.getTailSize()*U*s*t*Iy;
-        	double sig2 = sig3 + 2*config.getHorStabLiftSlope()*config.getTailSize()*U*s*t*Iz;
-        	
-        	double a1 = (sig1 + sig3- input.getPitch()*config.getHorStabLiftSlope()*config.getTailSize()*U*s*t*Iy - 2*input.getPitch()*config.getTailSize()*config.getHorStabLiftSlope()*U*s*t*Iz)/sig2;
-        	double a2 = -(sig1 - sig3+ input.getPitch()*config.getHorStabLiftSlope()*config.getTailSize()*U*s*t*Iy + 2*input.getPitch()*config.getTailSize()*config.getHorStabLiftSlope()*U*s*t*Iz)/sig2;
-        
-        	horStabInclination = (float) a2;
-        
+
+            if(input.getPitch() > 0.1){
+        	    horStabInclination = 0;
+            }else{
+
+                double sig = -config.getHorStabLiftSlope()*config.getTailSize()*U*Iy*(4*verticalAngleError*Math.pow(Iz, 2)+4*W*t*Math.pow(Iz, 2)+2*verticalAngleError*Iy*Iz + 2*W*t*Iy*Iz - 4*input.getPitch()*U*t*Math.pow(Iz, 2)-2*input.getPitch()*U*t*Iy*Iz - config.getHorStabLiftSlope()*config.getTailSize()*U*s2*Math.pow(t, 2)*Iy);
+                double sig1 = Math.sqrt(sig);
+                double sig3 = config.getHorStabLiftSlope()*config.getTailSize()*U*s*t*Iy;
+                double sig2 = sig3 + 2*config.getHorStabLiftSlope()*config.getTailSize()*U*s*t*Iz;
+
+                double a1 = (sig1 + sig3- input.getPitch()*config.getHorStabLiftSlope()*config.getTailSize()*U*s*t*Iy - 2*input.getPitch()*config.getTailSize()*config.getHorStabLiftSlope()*U*s*t*Iz)/sig2;
+                double a2 = -(sig1 - sig3+ input.getPitch()*config.getHorStabLiftSlope()*config.getTailSize()*U*s*t*Iy + 2*input.getPitch()*config.getTailSize()*config.getHorStabLiftSlope()*U*s*t*Iz)/sig2;
+
+                horStabInclination = (float) -a2;
+
+            }
+            horStabInclination -= incR;
         }
        
         return new AutopilotOutputs(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
