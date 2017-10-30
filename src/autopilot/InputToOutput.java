@@ -81,11 +81,11 @@ class InputToOutput {
 //        //daarna omhoog/omlaag
         if(true) {
         	double verticalAngleError =  (verticalError/((nbRows/2))*config.getVerticalAngleOfView()*(Math.PI/180));
-
-            if(input.getPitch() > 0.1) {
+        	thrust = config.getMaxThrust();
+            if(input.getPitch() > 0.05) {
                 horStabInclination = 0;
-                thrust = config.getMaxThrust();
-//                horStabInclination -= incR;
+//                thrust = config.getMaxThrust();
+                horStabInclination -= incR;
             }else{
 
                 double sig = -config.getHorStabLiftSlope()*config.getTailSize()*U*Iy*(4*verticalAngleError*Math.pow(Iz, 2)+4*W*t*Math.pow(Iz, 2)+2*verticalAngleError*Iy*Iz + 2*W*t*Iy*Iz - 4*input.getPitch()*U*t*Math.pow(Iz, 2)-2*input.getPitch()*U*t*Iy*Iz - config.getHorStabLiftSlope()*config.getTailSize()*U*s2*Math.pow(t, 2)*Iy);
