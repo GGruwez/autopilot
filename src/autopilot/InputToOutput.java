@@ -43,7 +43,7 @@ class InputToOutput {
         double incRImag = -Math.log(Math.sqrt(Math.pow(x*z,2) + Math.pow(y*z, 2))); // imaginary part, approximately 0 so we can ignore this
 
         
-        if (true){
+        if (Math.abs(horizontalError) > 1){
             
             
 
@@ -66,8 +66,8 @@ class InputToOutput {
             double a1 = (sig1+sig3-input.getPitch()*config.getWingLiftSlope()*W*s*t*Iy-2*input.getPitch()*config.getWingLiftSlope()*W*s*t*Iz)/sig2;
             double a2 = -(sig1-sig3+input.getPitch()*config.getWingLiftSlope()*W*s*t*Iy+2*input.getPitch()*config.getWingLiftSlope()*W*s*t*Iz)/sig2;
             
-            leftWingInclination = (float) a1;
-            rightWingInclination = (float) -a1;
+            leftWingInclination = (float) a2;
+            rightWingInclination = (float) -a2;
             
             
 //            System.out.println("x : " + x);
@@ -82,8 +82,10 @@ class InputToOutput {
         if(true) {
         	double verticalAngleError =  (verticalError/((nbRows/2))*config.getVerticalAngleOfView()*(Math.PI/180));
 
-            if(input.getPitch() > 0.1){
-        	    horStabInclination = 0;
+            if(input.getPitch() > 0.1) {
+                horStabInclination = 0;
+                thrust = config.getMaxThrust();
+//                horStabInclination -= incR;
             }else{
 
                 double sig = -config.getHorStabLiftSlope()*config.getTailSize()*U*Iy*(4*verticalAngleError*Math.pow(Iz, 2)+4*W*t*Math.pow(Iz, 2)+2*verticalAngleError*Iy*Iz + 2*W*t*Iy*Iz - 4*input.getPitch()*U*t*Math.pow(Iz, 2)-2*input.getPitch()*U*t*Iy*Iz - config.getHorStabLiftSlope()*config.getTailSize()*U*s2*Math.pow(t, 2)*Iy);
