@@ -16,7 +16,7 @@ class InputToOutput {
         AutopilotConfig config = autopilot.getConfig();
         velocityWorld = new Vector((input.getX()-prev.getX())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getY()-prev.getY())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getZ()-prev.getZ())/(prev.getElapsedTime()-input.getElapsedTime()));
         velocityDrone = velocityWorld.inverseTransform(prev.getHeading(),prev.getPitch(),prev.getRoll());
-        Vector angularVelocity = new Vector((input.getHeading()-prev.getHeading())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getPitch()-prev.getPitch())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getRoll()-prev.getRoll())/(prev.getElapsedTime()-input.getElapsedTime()));
+        Vector angularVelocity = new Vector((input.getPitch()-prev.getPitch())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getHeading()-prev.getHeading())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getRoll()-prev.getRoll())/(prev.getElapsedTime()-input.getElapsedTime()));
         
         //eerst draaien
 
@@ -25,15 +25,15 @@ class InputToOutput {
         float roll = input.getRoll();
         float U = -velocityDrone.getZ();
         float W = velocityDrone.getY();
-        float enginePlace =config.getTailSize()*-config.getTailMass()/config.getEngineMass();
+        float enginePlace = config.getTailSize()*-config.getTailMass()/config.getEngineMass();
         
         double t = 0.05;
         double rollRate=(input.getRoll()-prev.getRoll())/(input.getElapsedTime()-prev.getElapsedTime());
         double Ix = config.getEngineMass()*Math.pow(enginePlace,2)+config.getTailMass()*Math.pow(config.getTailSize(),2);
         double Iz = 2*config.getWingMass()*Math.pow(config.getWingX(), 2);
         double Iy = Ix + Iz;
-        double s= velocityDrone.euclideanLength();
-        double s2=Math.pow(s, 2);
+        double s = velocityDrone.euclideanLength();
+        double s2 = Math.pow(s, 2);
 
 
         double x = velocityDrone.getY();
@@ -97,7 +97,7 @@ class InputToOutput {
                 horStabInclination = (float) -a2;
 
             }
-            horStabInclination -= incR;
+            //horStabInclination -= incR;
         }
        
         return new AutopilotOutputs(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
