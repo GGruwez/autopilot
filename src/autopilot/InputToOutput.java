@@ -43,10 +43,8 @@ class InputToOutput {
         double incRImag = -Math.log(Math.sqrt(Math.pow(x*z,2) + Math.pow(y*z, 2))); // imaginary part, approximately 0 so we can ignore this
 
         
-        if (Math.abs(horizontalError) > 1){
+        if (Math.abs(horizontalError) > 1) {
             
-            
-
 //            double constant = horizontalAngleError*U/W;
 //            double tcoef = (-g*Math.sin(roll)/W-angularVelocity.getZ());
 //            double t2coef =  (2*config.getWingLiftSlope()*velocityDrone.dotProduct(velocityDrone)*
@@ -82,10 +80,10 @@ class InputToOutput {
         if(true) {
         	double verticalAngleError =  (verticalError/((nbRows/2))*config.getVerticalAngleOfView()*(Math.PI/180));
         	thrust = config.getMaxThrust();
-            if(input.getPitch() > 0.05) {
+            if(input.getPitch() > 0.01) {
                 horStabInclination = 0;
-//                thrust = config.getMaxThrust();
-                horStabInclination -= incR;
+                thrust = config.getMaxThrust();
+//                horStabInclination -= incR;
             }else{
 
                 double sig = -config.getHorStabLiftSlope()*config.getTailSize()*U*Iy*(4*verticalAngleError*Math.pow(Iz, 2)+4*W*t*Math.pow(Iz, 2)+2*verticalAngleError*Iy*Iz + 2*W*t*Iy*Iz - 4*input.getPitch()*U*t*Math.pow(Iz, 2)-2*input.getPitch()*U*t*Iy*Iz - config.getHorStabLiftSlope()*config.getTailSize()*U*s2*Math.pow(t, 2)*Iy);
@@ -98,9 +96,8 @@ class InputToOutput {
 
                 horStabInclination = (float) -a2;
 
-            }
             //horStabInclination -= incR;
-        }
+        }}
        
         return new AutopilotOutputs(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
     }
