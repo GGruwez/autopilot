@@ -2,7 +2,7 @@ package autopilot;
 import p_en_o_cw_2017.*;
 class InputToOutput {
 
-	static PIDcontroller PitchController = new PIDcontroller(0,0,0);
+	static PIDcontroller PitchController = new PIDcontroller(0.5f,0,Float.MAX_VALUE);
 	
 	
 	
@@ -27,6 +27,13 @@ class InputToOutput {
         
         
         horStabInclination = PitchController.getOutput(dt, input.getPitch(), 0);
+        if (input.getPitch() + horStabInclination > Math.PI/9){
+        	horStabInclination = (float) (Math.PI/9);
+        }
+        else if(input.getPitch() + horStabInclination < -Math.PI/9){
+        	horStabInclination = (float) (-Math.PI/9);
+        }
+        
         
         return new AutopilotOutputs(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
     }
