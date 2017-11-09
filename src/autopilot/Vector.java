@@ -1,7 +1,5 @@
 package autopilot;
 
-import mygame.Vector;
-
 public class Vector {
 
 	private final float x;
