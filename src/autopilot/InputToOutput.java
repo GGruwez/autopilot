@@ -2,15 +2,15 @@ package autopilot;
 import p_en_o_cw_2017.*;
 class InputToOutput {
 
-	static PIDcontroller PitchController = new PIDcontroller(0.7f, 0f, 3f);
+	static PIDcontroller PitchController = new PIDcontroller(0.7f, 0f, 3.5f);
 	static PIDcontroller ThrustController = new PIDcontroller(1f, 0f, 0f);
 	
     static AutopilotOutputs calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, Autopilot autopilot) {
         PreviousInputs prev = autopilot.getPreviousInput();
         float horizontalError = targetVector[0];
         float verticalError = targetVector[1];
-        float leftWingInclination = 0;
-        float rightWingInclination = 0;
+        float leftWingInclination = -input.getPitch();
+        float rightWingInclination = -input.getPitch();
         float horStabInclination = 0;
         float verStabInclination = 0;
         float thrust = 0;
