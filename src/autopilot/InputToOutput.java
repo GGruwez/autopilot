@@ -48,6 +48,11 @@ class InputToOutput {
             else if(input.getPitch() + horStabInclination < -Math.PI/9){
     	        horStabInclination = (float) (-Math.PI/9);
     	    }
+            
+            if (input.getY()<refHeight) {
+            	thrust = 50;
+            	horStabInclination = (float) Math.PI/120 - input.getPitch();
+            }
         }
         
         else if (ascending) {
