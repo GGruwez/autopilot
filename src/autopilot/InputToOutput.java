@@ -3,7 +3,8 @@ import p_en_o_cw_2017.*;
 class InputToOutput {
 
 	static PIDcontroller PitchController = new PIDcontroller(3f, 0f, 4f);
-	static boolean ascending;
+	static boolean ascending = false;
+	static boolean ascendFinished = false;
 	static float refHeight = 20;
 	static boolean cruising = false;
 	
@@ -25,17 +26,27 @@ class InputToOutput {
         velocityDrone = velocityWorld.inverseTransform(prev.getHeading(),prev.getPitch(),prev.getRoll());
         Vector angularVelocity = (new Vector((input.getPitch()-prev.getPitch())/dt,(input.getHeading()-prev.getHeading())/dt,(input.getRoll()-prev.getRoll())/dt));
         
-        ascending = (input.getElapsedTime() > 3)&&(input.getY() < (refHeight));
-//        cruising = (input.getElapsedTime() > 3)&&(! ascending);
-        cruising = false;
+        ascending = (input.getElapsedTime()>3)&&(! cruising);
+        if ((input.getY()>=refHeight)&&(ascending)) {
+        	ascending = false;
+        	ascendFinished = true;
+        }
+        if (ascendFinished) {
+        	ascendFinished = false;
+        	cruising = true;
+        }
         
         if (cruising) {
         	if (input.getY() < refHeight) {
-        		leftWingInclination = 0;
-                rightWingInclination = 0;
-                horStabInclination = 0;
-                verStabInclination = 0;
-                thrust = 50;
+        		leftWingInclination = input.getPitch();
+                rightWingInclination = input.getPitch();
+            	horStabInclination = PitchController.getOutput(input.getPitch(), 0);
+    	        if (input.getPitch() + horStabInclination > Math.PI/9){
+    	        	horStabInclination = (float) (Math.PI/9);
+    	        }
+    	        else if(input.getPitch() + horStabInclination < -Math.PI/9){
+    	        	horStabInclination = (float) (-Math.PI/9);
+    	        }
         	}
         	
         	else {
@@ -50,7 +61,6 @@ class InputToOutput {
 		        	horStabInclination = (float) (-Math.PI/9);
 		        }
         	}
-        	
         }
         
         if (ascending) {
