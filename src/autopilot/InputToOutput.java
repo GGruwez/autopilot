@@ -3,6 +3,7 @@ import p_en_o_cw_2017.*;
 class InputToOutput {
 
 	static PIDcontroller PitchController = new PIDcontroller(3f, 0f, 4f);
+	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
 	static boolean ascending = false;
 	static boolean ascendFinished = false;
 	static float refHeight = 20;
