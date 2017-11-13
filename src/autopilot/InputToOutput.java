@@ -3,6 +3,7 @@ import p_en_o_cw_2017.*;
 class InputToOutput {
 
 	static PIDcontroller PitchController = new PIDcontroller(3f, 0f, 4f);
+	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
 	static boolean ascending = false;
 	static boolean ascendFinished = false;
 	static float refHeight = 20;
@@ -37,30 +38,28 @@ class InputToOutput {
         }
         
         if (cruising) {
-        	if (input.getY() < refHeight) {
-        		leftWingInclination = input.getPitch();
-                rightWingInclination = input.getPitch();
-            	horStabInclination = PitchController.getOutput(input.getPitch(), 0);
-    	        if (input.getPitch() + horStabInclination > Math.PI/9){
-    	        	horStabInclination = (float) (Math.PI/9);
-    	        }
-    	        else if(input.getPitch() + horStabInclination < -Math.PI/9){
-    	        	horStabInclination = (float) (-Math.PI/9);
-    	        }
-        	}
+        	leftWingInclination = -input.getPitch();
+            rightWingInclination = -input.getPitch();
+            thrust = 5;
+            
+            float refPitch = HeightController.getOutput(input.getY(), refHeight);
+            
+            if (refPitch > Math.PI/12){
+	        	refPitch = (float) (Math.PI/12);
+	        }
+	        else if(refPitch < -Math.PI/12){
+	        	refPitch = (float) (-Math.PI/12);
+	        }
+                        
+        	horStabInclination = PitchController.getOutput(input.getPitch(), refPitch);
         	
-        	else {
-        		leftWingInclination = input.getPitch();
-                rightWingInclination = input.getPitch();
-                
-	        	horStabInclination = PitchController.getOutput(input.getPitch(), 0);
-		        if (input.getPitch() + horStabInclination > Math.PI/9){
-		        	horStabInclination = (float) (Math.PI/9);
-		        }
-		        else if(input.getPitch() + horStabInclination < -Math.PI/9){
-		        	horStabInclination = (float) (-Math.PI/9);
-		        }
-        	}
+	        if (input.getPitch() + horStabInclination > Math.PI/9){
+	        	horStabInclination = (float) (Math.PI/9);
+	        }
+	        else if(input.getPitch() + horStabInclination < -Math.PI/9){
+	        	horStabInclination = (float) (-Math.PI/9);
+	        }
+        	
         }
         
         if (ascending) {
