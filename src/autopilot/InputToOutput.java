@@ -6,7 +6,7 @@ class InputToOutput {
 	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
 	static boolean ascending = false;
 	static boolean ascendFinished = false;
-	static float refHeight = 20;
+	static float refHeight = 80;
 	static boolean cruising = false;
 	static boolean descending = false;
 	
@@ -42,6 +42,7 @@ class InputToOutput {
         	ascending = false;
         	ascendFinished = false;
         	descending = true;
+        	refHeight = 0;
         }
         if (input.getY()<=0) {
         	cruising = true;
@@ -49,6 +50,12 @@ class InputToOutput {
         	ascendFinished = false;
         	descending = false;
         	refHeight = 0;
+        }
+        if ((descending)&&(input.getY()<=(refHeight+3))) {
+        	cruising = true;
+        	ascending = false;
+        	ascendFinished = false;
+        	descending = false;
         }
         
         if (cruising) {
@@ -64,26 +71,8 @@ class InputToOutput {
     	    }
             
             if (input.getY()<refHeight) {
-            	if (refHeight==0) {
-            		leftWingInclination = input.getPitch();
-                    rightWingInclination = input.getPitch();
-                  	horStabInclination = PitchController.getOutput(input.getPitch(), 0);
-                  	
-                    if (input.getPitch() + horStabInclination > Math.PI/9){
-                    	horStabInclination = (float) (Math.PI/9);
-                    }
-                    else if(input.getPitch() + horStabInclination < -Math.PI/9){
-            	        horStabInclination = (float) (-Math.PI/9);
-            	    }
-//                    if (Math.abs(input.getPitch())<=0.02f) {
-//                    	thrust = 50;
-//    	            	horStabInclination = (float) Math.PI/120 - input.getPitch();
-//                    }
-            	}
-            	else {
-	            	thrust = 50;
-	            	horStabInclination = (float) Math.PI/120 - input.getPitch();
-            	}
+	            thrust = 50;
+	            horStabInclination = (float) Math.PI/120 - input.getPitch();
             }
         }
         
