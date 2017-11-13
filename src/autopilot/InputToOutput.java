@@ -7,6 +7,7 @@ class InputToOutput {
 	static boolean ascendFinished = false;
 	static float refHeight = 20;
 	static boolean cruising = false;
+	static boolean descending = false;
 	
     static AutopilotOutputs calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, Autopilot autopilot) {
         PreviousInputs prev = autopilot.getPreviousInput();
@@ -35,6 +36,19 @@ class InputToOutput {
         	ascendFinished = false;
         	cruising = true;
         }
+        if (input.getElapsedTime()>20) {
+        	cruising = false;
+        	ascending = false;
+        	ascendFinished = false;
+        	descending = true;
+        }
+        if (input.getY()<=0) {
+        	cruising = true;
+        	ascending = false;
+        	ascendFinished = false;
+        	descending = false;
+        	refHeight = 0;
+        }
         
         if (cruising) {
         	leftWingInclination = input.getPitch();
@@ -49,8 +63,26 @@ class InputToOutput {
     	    }
             
             if (input.getY()<refHeight) {
-            	thrust = 50;
-            	horStabInclination = (float) Math.PI/120 - input.getPitch();
+            	if (refHeight==0) {
+            		leftWingInclination = input.getPitch();
+                    rightWingInclination = input.getPitch();
+                  	horStabInclination = PitchController.getOutput(input.getPitch(), 0);
+                  	
+                    if (input.getPitch() + horStabInclination > Math.PI/9){
+                    	horStabInclination = (float) (Math.PI/9);
+                    }
+                    else if(input.getPitch() + horStabInclination < -Math.PI/9){
+            	        horStabInclination = (float) (-Math.PI/9);
+            	    }
+//                    if (Math.abs(input.getPitch())<=0.02f) {
+//                    	thrust = 50;
+//    	            	horStabInclination = (float) Math.PI/120 - input.getPitch();
+//                    }
+            	}
+            	else {
+	            	thrust = 50;
+	            	horStabInclination = (float) Math.PI/120 - input.getPitch();
+            	}
             }
         }
         
@@ -62,6 +94,21 @@ class InputToOutput {
             thrust = 100;
             
             horStabInclination = PitchController.getOutput(input.getPitch(), (float) Math.PI/18);
+	        if (input.getPitch() + horStabInclination > Math.PI/9){
+	        	horStabInclination = (float) (Math.PI/9);
+	        }
+	        else if(input.getPitch() + horStabInclination < -Math.PI/9){
+	        	horStabInclination = (float) (-Math.PI/9);
+	        }
+        }
+        else if (descending) {
+        	leftWingInclination = input.getPitch();
+            rightWingInclination = input.getPitch();
+            horStabInclination = 0;
+            verStabInclination = 0;
+            thrust = 0;
+            
+            horStabInclination = PitchController.getOutput(input.getPitch(), (float) -Math.PI/18);
 	        if (input.getPitch() + horStabInclination > Math.PI/9){
 	        	horStabInclination = (float) (Math.PI/9);
 	        }
