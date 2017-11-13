@@ -3,7 +3,6 @@ import p_en_o_cw_2017.*;
 class InputToOutput {
 
 	static PIDcontroller PitchController = new PIDcontroller(3f, 0f, 4f);
-	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
 	static boolean ascending = false;
 	static boolean ascendFinished = false;
 	static float refHeight = 20;
@@ -48,6 +47,11 @@ class InputToOutput {
             else if(input.getPitch() + horStabInclination < -Math.PI/9){
     	        horStabInclination = (float) (-Math.PI/9);
     	    }
+            
+            if (input.getY()<refHeight) {
+            	thrust = 50;
+            	horStabInclination = (float) Math.PI/120 - input.getPitch();
+            }
         }
         
         else if (ascending) {
