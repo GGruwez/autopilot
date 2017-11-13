@@ -6,7 +6,7 @@ class InputToOutput {
 	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
 	static boolean ascending = false;
 	static boolean ascendFinished = false;
-	static float refHeight = 80;
+	static float refHeight = 20;
 	static boolean cruising = false;
 	static boolean descending = false;
 	
