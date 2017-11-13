@@ -38,31 +38,19 @@ class InputToOutput {
         }
         
         if (cruising) {
-        	leftWingInclination = -input.getPitch();
-            rightWingInclination = -input.getPitch();
-            thrust = 5;
-            
-            float refPitch = HeightController.getOutput(input.getY(), refHeight);
-            
-            if (refPitch > Math.PI/12){
-	        	refPitch = (float) (Math.PI/12);
-	        }
-	        else if(refPitch < -Math.PI/12){
-	        	refPitch = (float) (-Math.PI/12);
-	        }
-                        
-        	horStabInclination = PitchController.getOutput(input.getPitch(), refPitch);
-        	
-	        if (input.getPitch() + horStabInclination > Math.PI/9){
-	        	horStabInclination = (float) (Math.PI/9);
-	        }
-	        else if(input.getPitch() + horStabInclination < -Math.PI/9){
-	        	horStabInclination = (float) (-Math.PI/9);
-	        }
-        	
+        	leftWingInclination = input.getPitch();
+            rightWingInclination = input.getPitch();
+          	horStabInclination = PitchController.getOutput(input.getPitch(), 0);
+          	
+            if (input.getPitch() + horStabInclination > Math.PI/9){
+            	horStabInclination = (float) (Math.PI/9);
+            }
+            else if(input.getPitch() + horStabInclination < -Math.PI/9){
+    	        horStabInclination = (float) (-Math.PI/9);
+    	    }
         }
         
-        if (ascending) {
+        else if (ascending) {
         	leftWingInclination = input.getPitch();
             rightWingInclination = input.getPitch();
             horStabInclination = 0;
