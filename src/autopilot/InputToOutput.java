@@ -5,7 +5,7 @@
  	static PIDcontroller PitchController = new PIDcontroller(3f, 0f, 4f);
   	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
   	static boolean ascending = false;
-  	static boolean ascendFinished = false;
+//  	static boolean ascendFinished = false;
  	static float refHeight = 20;
   	static boolean cruising = false;
   	static boolean descending = false;
@@ -28,36 +28,40 @@
          velocityDrone = velocityWorld.inverseTransform(prev.getHeading(),prev.getPitch(),prev.getRoll());
          Vector angularVelocity = (new Vector((input.getPitch()-prev.getPitch())/dt,(input.getHeading()-prev.getHeading())/dt,(input.getRoll()-prev.getRoll())/dt));
          
-         ascending = (input.getElapsedTime()>3)&&(! cruising);
-         if ((input.getY()>=refHeight)&&(ascending)) {
-         	ascending = false;
-         	ascendFinished = true;
+         if (input.getElapsedTime()<=20) {
+        	 refHeight = 20;
          }
-         if (ascendFinished) {
-         	ascendFinished = false;
-         	cruising = true;
+         else {
+        	 refHeight = 0;
          }
-         if (input.getElapsedTime()>20) {
-         	cruising = false;
-          	ascending = false;
-          	ascendFinished = false;
-          	descending = true;
-         	refHeight = 0;
-          }
-          if (input.getY()<=0) {
-          	cruising = true;
-         	ascending = false;
-         	ascendFinished = false;
-          	descending = false;
-          	refHeight = 0;
-          }
-         if ((descending)&&(input.getY()<=(refHeight+3))) {
-         	cruising = true;
-         	ascending = false;
-         	ascendFinished = false;
-         	descending = false;
+         
+         if (input.getY()<(refHeight-2)) {
+        	 descending = false;
+        	 cruising = false;
+        	 ascending = true;
          }
-          
+         else if ((ascending)&&(input.getY()>=refHeight)) {
+        	 descending = false;
+        	 cruising = true;
+        	 ascending = false;
+         }
+         else if (input.getY()>(refHeight+5)) {
+        	 descending = true;
+        	 cruising = false;
+        	 ascending = false;
+         }
+         else if ((descending)&&(input.getY()<=(refHeight+3))) {
+        	 descending = false;
+        	 cruising = true;
+        	 ascending = false;
+         }
+         else {
+        	 descending = false;
+        	 cruising = true;
+        	 ascending = false;
+         }
+         
+         
          if (cruising) {
           	leftWingInclination = input.getPitch();
              rightWingInclination = input.getPitch();
