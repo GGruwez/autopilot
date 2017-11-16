@@ -1,109 +1,129 @@
-package interfaces;
-
-class InputToOutput {
-
-    static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
-        float horizontalError = targetVector[0];
-        float verticalError = targetVector[1];
-        float leftWingInclination = 0;
-        float rightWingInclination = 0;
-        float horStabInclination = 0;
-        float verStabInclination = 0;
-        float thrust = 0;
-        Vector velocityWorld;
-        Vector velocityDrone;
-        PreviousInputs prev = autopilot.getPreviousInput();
-        AutopilotConfig config = autopilot.getConfig();
-        velocityWorld = new Vector((input.getX()-prev.getX())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getY()-prev.getY())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getZ()-prev.getZ())/(prev.getElapsedTime()-input.getElapsedTime()));
-        velocityDrone = velocityWorld.inverseTransform(prev.getHeading(),prev.getPitch(),prev.getRoll());
-        Vector angularVelocity = new Vector((input.getPitch()-prev.getPitch())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getHeading()-prev.getHeading())/(prev.getElapsedTime()-input.getElapsedTime()),(input.getRoll()-prev.getRoll())/(prev.getElapsedTime()-input.getElapsedTime()));
-        
-        //eerst draaien
-
-        double horizontalAngleError =  (horizontalError/((nbColumns/2))*config.getHorizontalAngleOfView()*(Math.PI/180));
-        float g = config.getGravity();
-        float roll = input.getRoll();
-        float U = -velocityDrone.getZ();
-        float W = velocityDrone.getY();
-        float enginePlace = config.getTailSize()*-config.getTailMass()/config.getEngineMass();
-        
-        double t = 0.05;
-        double rollRate=(input.getRoll()-prev.getRoll())/(input.getElapsedTime()-prev.getElapsedTime());
-        double Ix = config.getEngineMass()*Math.pow(enginePlace,2)+config.getTailMass()*Math.pow(config.getTailSize(),2);
-        double Iz = 2*config.getWingMass()*Math.pow(config.getWingX(), 2);
-        double Iy = Ix + Iz;
-        double s = velocityDrone.euclideanLength();
-        double s2 = Math.pow(s, 2);
-
-
-        double x = velocityDrone.getY();
-        double y = velocityDrone.getZ();
-        double z = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / (Math.pow(x, 2) + Math.pow(y, 2));
-        double incR = Math.atan2(y*z,x*z);
-        double incRImag = -Math.log(Math.sqrt(Math.pow(x*z,2) + Math.pow(y*z, 2))); // imaginary part, approximately 0 so we can ignore this
-
-        
-        if (Math.abs(horizontalError) > 1){
-            
-            
-
-//            double constant = horizontalAngleError*U/W;
-//            double tcoef = (-g*Math.sin(roll)/W-angularVelocity.getZ());
-//            double t2coef =  (2*config.getWingLiftSlope()*velocityDrone.dotProduct(velocityDrone)*
-//            				((-config.getMaxAOA()/2)/(config.getEngineMass()*Math.pow(enginePlace,2) + config.getTailMass()*Math.pow(config.getTailSize(),2) + 2*config.getWingMass()*Math.pow(config.getWingX(),2))
-//            						-(config.getMaxAOA()/2 -2)/(4*config.getWingMass()*Math.pow(config.getWingX(),2))));
-//
-//            float D = (float) (Math.pow(tcoef, 2)- 4*constant*t2coef);
-//            float x = (float) ((-tcoef+ Math.sqrt(D))/(2*t2coef));
-
-
-
-            double sig = config.getWingLiftSlope()*W*Iy*(2*W*rollRate*t*Math.pow(Iz,2) - U*horizontalAngleError*Iy*Iz - 2*U*horizontalAngleError*Math.pow(Iz,2) + 2*g*t*Math.pow(Iz,2)*Math.sin(roll) + config.getWingLiftSlope()*W*s2*Math.pow(t,2)*Iy + W*rollRate*t*Iy*Iz + g*t*Iy*Iz*Math.sin(roll));
-            double sig1 = Math.sqrt(sig);
-            double sig3 = config.getWingLiftSlope()*W*s*t*Iy;
-            double sig2 = sig3 + config.getWingLiftSlope()*W*s*t*Iz;
-            
-            double a1 = (sig1+sig3-input.getPitch()*config.getWingLiftSlope()*W*s*t*Iy-2*input.getPitch()*config.getWingLiftSlope()*W*s*t*Iz)/sig2;
-            double a2 = -(sig1-sig3+input.getPitch()*config.getWingLiftSlope()*W*s*t*Iy+2*input.getPitch()*config.getWingLiftSlope()*W*s*t*Iz)/sig2;
-            
-            leftWingInclination = (float) a2;
-            rightWingInclination = (float) -a2;
-            
-            
-//            System.out.println("x : " + x);
-//            System.out.println("D : " + D);
-//            System.out.println("constant : " + constant);
-//            System.out.println("tcoef : " + tcoef);
-//            System.out.println("t2coef : " + t2coef);
-//            System.out.println("a1 : " + a1);
-//            System.out.println("a2 : " + a2);
-        }
-//        //daarna omhoog/omlaag
-        if(true) {
-        	double verticalAngleError =  (verticalError/((nbRows/2))*config.getVerticalAngleOfView()*(Math.PI/180));
-        	thrust = config.getMaxThrust();
-            if(input.getPitch() > 0.05) {
-                horStabInclination = 0;
-//                thrust = config.getMaxThrust();
-                horStabInclination -= incR;
-            }else{
-
-                double sig = -config.getHorStabLiftSlope()*config.getTailSize()*U*Iy*(4*verticalAngleError*Math.pow(Iz, 2)+4*W*t*Math.pow(Iz, 2)+2*verticalAngleError*Iy*Iz + 2*W*t*Iy*Iz - 4*input.getPitch()*U*t*Math.pow(Iz, 2)-2*input.getPitch()*U*t*Iy*Iz - config.getHorStabLiftSlope()*config.getTailSize()*U*s2*Math.pow(t, 2)*Iy);
-                double sig1 = Math.sqrt(sig);
-                double sig3 = config.getHorStabLiftSlope()*config.getTailSize()*U*s*t*Iy;
-                double sig2 = sig3 + 2*config.getHorStabLiftSlope()*config.getTailSize()*U*s*t*Iz;
-
-                double a1 = (sig1 + sig3- input.getPitch()*config.getHorStabLiftSlope()*config.getTailSize()*U*s*t*Iy - 2*input.getPitch()*config.getTailSize()*config.getHorStabLiftSlope()*U*s*t*Iz)/sig2;
-                double a2 = -(sig1 - sig3+ input.getPitch()*config.getHorStabLiftSlope()*config.getTailSize()*U*s*t*Iy + 2*input.getPitch()*config.getTailSize()*config.getHorStabLiftSlope()*U*s*t*Iz)/sig2;
-
-                horStabInclination = (float) -a2;
-
-            }
-            //horStabInclination -= incR;
-        }
-       
-        return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
-    }
-
-
-}
+ package interfaces;
+ class InputToOutput {
+ 
+ 	static PIDcontroller PitchController = new PIDcontroller(3f, 0f, 4f);
+  	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
+  	static PIDcontroller RollController = new PIDcontroller(1f, 0f, 0f);
+  	static boolean ascending = false;
+//  	static boolean ascendFinished = false;
+ 	static float refHeight = 20;
+  	static boolean cruising = false;
+  	static boolean descending = false;
+  	
+     static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
+         PreviousInputs prev = autopilot.getPreviousInput();
+         float horizontalError = targetVector[0];
+         float verticalError = targetVector[1];
+         float leftWingInclination = 0;
+         float rightWingInclination = 0;
+         float horStabInclination = 0;
+         float verStabInclination = 0;
+         float thrust = 0;
+         float dt = prev.getElapsedTime()-input.getElapsedTime();
+         Vector velocityWorld;
+         Vector velocityDrone;
+         AutopilotConfig config = autopilot.getConfig();
+         
+         velocityWorld = new Vector((input.getX()-prev.getX())/dt,(input.getY()-prev.getY())/dt,(input.getZ()-prev.getZ())/dt);
+         velocityDrone = velocityWorld.inverseTransform(prev.getHeading(),prev.getPitch(),prev.getRoll());
+         Vector angularVelocity = (new Vector((input.getPitch()-prev.getPitch())/dt,(input.getHeading()-prev.getHeading())/dt,(input.getRoll()-prev.getRoll())/dt));
+         
+         if (input.getElapsedTime()<=20) {
+        	 refHeight = 20;
+         }
+         else {
+        	 refHeight = 0;
+         }
+         
+         if (input.getY()<(refHeight-2)) {
+        	 descending = false;
+        	 cruising = false;
+        	 ascending = true;
+         }
+         else if ((ascending)&&(input.getY()>=refHeight)) {
+        	 descending = false;
+        	 cruising = true;
+        	 ascending = false;
+         }
+         else if (input.getY()>(refHeight+5)) {
+        	 descending = true;
+        	 cruising = false;
+        	 ascending = false;
+         }
+         else if ((descending)&&(input.getY()<=(refHeight+3))) {
+        	 descending = false;
+        	 cruising = true;
+        	 ascending = false;
+         }
+         else {
+        	 descending = false;
+        	 cruising = true;
+        	 ascending = false;
+         }
+         
+         if (cruising) {
+        	thrust = 0;
+          	leftWingInclination = input.getPitch();
+            rightWingInclination = input.getPitch();
+           	horStabInclination = PitchController.getOutput(input.getPitch(), 0);
+           	
+             if (input.getPitch() + horStabInclination > Math.PI/9){
+             	horStabInclination = (float) (Math.PI/9);
+             }
+             else if(input.getPitch() + horStabInclination < -Math.PI/9){
+     	        horStabInclination = (float) (-Math.PI/9);
+      	    }
+              
+              if (input.getY()<refHeight) {
+ 	            thrust = 50;
+ 	            horStabInclination = (float) Math.PI/120 - input.getPitch();
+              }
+          }
+          
+         else if (ascending) {
+         	leftWingInclination = input.getPitch();
+             rightWingInclination = input.getPitch();
+             horStabInclination = 0;
+             verStabInclination = 0;
+             thrust = 100;
+             
+             horStabInclination = PitchController.getOutput(input.getPitch(), (float) Math.PI/18);
+ 	        if (input.getPitch() + horStabInclination > Math.PI/9){
+ 	        	horStabInclination = (float) (Math.PI/9);
+ 	        }
+ 	        else if(input.getPitch() + horStabInclination < -Math.PI/9){
+ 	        	horStabInclination = (float) (-Math.PI/9);
+ 	        }
+         }
+         else if (descending) {
+         	leftWingInclination = input.getPitch();
+             rightWingInclination = input.getPitch();
+             horStabInclination = 0;
+             verStabInclination = 0;
+             thrust = 0;
+             
+            horStabInclination = PitchController.getOutput(input.getPitch(), (float) -Math.PI/18);
+ 	        if (input.getPitch() + horStabInclination > Math.PI/9){
+ 	        	horStabInclination = (float) (Math.PI/9);
+ 	        }
+ 	        else if(input.getPitch() + horStabInclination < -Math.PI/9){
+ 	        	horStabInclination = (float) (-Math.PI/9);
+ 	        }
+         }
+         
+         else {
+            leftWingInclination = input.getPitch();
+            rightWingInclination = input.getPitch();
+         	horStabInclination = PitchController.getOutput(input.getPitch(), 0);
+ 	        if (input.getPitch() + horStabInclination > Math.PI/9){
+ 	        	horStabInclination = (float) (Math.PI/9);
+ 	        }
+ 	        else if(input.getPitch() + horStabInclination < -Math.PI/9){
+ 	        	horStabInclination = (float) (-Math.PI/9);
+ 	        }
+         }
+         
+         return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
+     }
+ 
+ }
