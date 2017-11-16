@@ -1,4 +1,4 @@
-package autopilot;/*
+package interfaces;/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -8,7 +8,7 @@ package autopilot;/*
  *
  * @author Stien
  */
-public class AutopilotOutputs implements p_en_o_cw_2017.AutopilotOutputs{
+public class AutopilotOutputsImplementation implements AutopilotOutputs {
     
     private float thrust;
     private float leftWingInclination;
@@ -16,7 +16,7 @@ public class AutopilotOutputs implements p_en_o_cw_2017.AutopilotOutputs{
     private float horStabInclination;
     private float verStabInclination;
     
-    AutopilotOutputs(float thrust, float leftIncl, float rightIncl, float horIncl, float verIncl) {
+    AutopilotOutputsImplementation(float thrust, float leftIncl, float rightIncl, float horIncl, float verIncl) {
     	this.thrust = thrust;
     	this.leftWingInclination = leftIncl;
     	this.rightWingInclination = rightIncl;
@@ -24,8 +24,8 @@ public class AutopilotOutputs implements p_en_o_cw_2017.AutopilotOutputs{
     	this.verStabInclination = verIncl;
     }
     
-    AutopilotOutputs() {
-    	new AutopilotOutputs(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+    AutopilotOutputsImplementation() {
+    	new AutopilotOutputsImplementation(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
     }
 
     @Override
