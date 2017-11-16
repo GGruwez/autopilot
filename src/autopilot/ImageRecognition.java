@@ -19,7 +19,7 @@ class ImageRecognition {
 				pixel.add(image[3*(row*nbColumns+column)+1] & 0xff);
 				pixel.add(image[3*(row*nbColumns+column)+2] & 0xff);
 //				System.out.println("pixel: "+ pixel.get(0) +", "+ pixel.get(1) + ", " + pixel.get(2));
-				ArrayList<Integer> HSVPixel = RBGToHSV(pixel);
+				ArrayList<Float> HSVPixel = RBGToHSV(pixel);
 				if (((HSVPixel.get(0) <= 8) || (HSVPixel.get(0)>= 172)) && (HSVPixel.get(1) >= 0.3) && (HSVPixel.get(2)>0.3)){
 					positions.add(row*nbColumns+column);
 					//System.out.println("position added: " + position/3);
@@ -53,33 +53,43 @@ class ImageRecognition {
 		
 	}
 	
-	static ArrayList<Integer> RBGToHSV(ArrayList<Integer> pixel){
-		float R = pixel.get(0)/255;
-		float G = pixel.get(1)/255;
-		float B = pixel.get(2)/255;
+	static ArrayList<Float> RBGToHSV(ArrayList<Integer> pixel){
+		float R = pixel.get(0)/255f;
+		float G = pixel.get(1)/255f;
+		float B = pixel.get(2)/255f;
 		float Cmax = Max(R,G,B);
+		
+//		if (Cmax != 0)
+//		System.out.println("Cmax: " + Cmax);
 		float Cmin = Min(R,G,B);
+//		if (Cmax != 0)
+//			System.out.println("Cmin: " + (Cmax == R));
 		float delta = Cmax- Cmin;
+		//if (pixel.get(0) != 0)
 		//System.out.println("pixel: "+ pixel.get(0) +", "+ pixel.get(1) + ", " + pixel.get(2));
 		//System.out.println("delta: "+ delta);
-		ArrayList<Integer> HSVPixel = new ArrayList<Integer>();
+		ArrayList<Float> HSVPixel = new ArrayList<Float>();
 		
 		if (delta == 0)
-			HSVPixel.add(0);
+			HSVPixel.add(0f);
 		else if (Cmax == R)
-			HSVPixel.add((int) Math.floor((30*((G-B)/delta)%6)));
+			HSVPixel.add((30*((G-B)/delta)%6));
 		else if (Cmax == G)
-			HSVPixel.add((int) Math.floor((30*((B-R)/delta)+2)));
+			HSVPixel.add((30*((B-R)/delta)+2));
 		else if (Cmax == B)
-			HSVPixel.add((int) Math.floor((30*((R-G)/delta)+4)));
+			HSVPixel.add((30*((R-G)/delta)+4));
+//		if (HSVPixel.get(0) != 0)
+//		System.out.println(HSVPixel.get(0));
+//		
+		if (Cmax == 0){
+			HSVPixel.add(0f);}
+		else{
+			HSVPixel.add(delta/Cmax);}		
 		
-		if (Cmax == 0)
-			HSVPixel.add(0);
-		else
-			HSVPixel.add((int) Math.floor(delta/Cmax));
+		HSVPixel.add(Cmax);
 		
-		HSVPixel.add((int) Math.floor(Cmax));
-//		System.out.println("pixel: "+ HSVPixel.get(0) +", "+ HSVPixel.get(1) + ", " + HSVPixel.get(2));
+		if (HSVPixel.get(2) != 0)
+		System.out.println("V: " + HSVPixel.get(2));
 		return HSVPixel;
 	}
 		
