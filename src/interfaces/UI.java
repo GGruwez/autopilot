@@ -1,4 +1,4 @@
-package autopilot;
+package interfaces;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +16,7 @@ class UI extends JFrame {
     private static String verStabText = "VerStabInclination:    ";
     private JLabel verstabJLabel = new JLabel();
 
-    private AutopilotOutputs autopilotOutput;
+    private AutopilotOutputsImplementation autopilotOutput;
 
     UI() {
         super("UI");
@@ -43,13 +43,13 @@ class UI extends JFrame {
     private JLabel getHorstabJLabel() {return horstabJLabel;}
     private String getVerStabText() {return verStabText;}
     private JLabel getVerstabJLabel() {return verstabJLabel;}
-    private AutopilotOutputs getAutopilotOutput(){
+    private AutopilotOutputsImplementation getAutopilotOutput(){
         return this.autopilotOutput;
     }
 
 
 
-    void updateData(AutopilotOutputs data) {
+    void updateData(AutopilotOutputsImplementation data) {
         this.autopilotOutput = data;
         this.simpleUpdate();
     }

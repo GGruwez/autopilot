@@ -1,7 +1,5 @@
-package autopilot;
+package interfaces;
 
-
-import p_en_o_cw_2017.AutopilotInputs;
 
 public class PreviousInputs {
 	byte[] image;
