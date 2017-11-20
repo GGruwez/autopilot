@@ -1,14 +1,25 @@
  package interfaces;
- class InputToOutput {
+
+
+class InputToOutput {
  
  	static PIDcontroller PitchController = new PIDcontroller(3f, 0f, 4f);
   	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
   	static PIDcontroller RollController = new PIDcontroller(1f, 0f, 0f);
+  	static PIDcontroller HeadingController = new PIDcontroller(1f, 0f, 0.01f);
+  	
   	static boolean ascending = false;
 //  	static boolean ascendFinished = false;
  	static float refHeight = 20;
   	static boolean cruising = false;
   	static boolean descending = false;
+	
+	//left-right
+	static boolean turnLeft = false;
+	static boolean turnRight = false;
+	static boolean bankTurnLeft = false;
+	static boolean bankTurnRight = false;
+	static float refHeading = 0f;
   	
      static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          PreviousInputs prev = autopilot.getPreviousInput();
@@ -121,6 +132,43 @@
  	        else if(input.getPitch() + horStabInclination < -Math.PI/9){
  	        	horStabInclination = (float) (-Math.PI/9);
  	        }
+         }
+         
+         
+         //-----------TURNING-----------//
+         //turnLeft --> error kleiner dan 30°
+         if((Math.abs(refHeading-input.getHeading())<=Math.PI/6) && (refHeading-input.getHeading() >= 0)){
+        	 float delta =  RollController.getOutput(input.getRoll(), 0);
+             leftWingInclination -= delta/2;
+             rightWingInclination += delta/2;
+            verStabInclination = HeadingController.getOutput(input.getHeading(), refHeading);
+             
+         }
+         //turnRight --> error kleiner dan 30°
+         else if (((Math.abs(refHeading-input.getHeading())<=Math.PI/6)) && (refHeading-input.getHeading() >= 0)){
+            verStabInclination = HeadingController.getOutput(input.getHeading(), refHeading);
+            float delta =  RollController.getOutput(input.getRoll(), 0);
+            leftWingInclination += delta/2;
+            rightWingInclination -= delta/2;
+         }
+         
+         //bankTurnLeft --> error groter dan 30°
+         else if((Math.abs(refHeading-input.getHeading())>Math.PI/6) && (refHeading-input.getHeading() >= 0)){
+         	bankTurnLeft = true;
+         	bankTurnRight = false;
+         	turnLeft = false;
+         	turnRight = false;
+         }
+         //bankTurnLeft --> error groter dan 30°
+         else if((Math.abs(refHeading-input.getHeading())>Math.PI/6) && (refHeading-input.getHeading() <= 0)){
+         	bankTurnLeft = false;
+         	bankTurnRight = true;
+         	turnLeft = false;
+         	turnRight = false;
+         }
+         //wingLeveller --> roll = 0 --> cruising
+         else{
+         	
          }
          
          return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
