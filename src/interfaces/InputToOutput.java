@@ -135,6 +135,45 @@ class InputToOutput {
  	        }
          }
          
+         //-----------TURNING-----------//
+         //turnLeft --> error kleiner dan 30°
+         if((Math.abs(refHeading-input.getHeading())<=Math.PI/6) && (refHeading-input.getHeading() >= 0)){
+         	System.out.print("turnLeft");
+         	System.out.print(input.getHeading());
+         	rightWingInclination =  RollController.getOutput(input.getRoll(), 0);
+             leftWingInclination = -rightWingInclination;
+             verStabInclination = HeadingController.getOutput(input.getHeading(), refHeading);
+             
+         }
+         //turnRight --> error kleiner dan 30°
+         else if (((Math.abs(refHeading-input.getHeading())<=Math.PI/6)) && (refHeading-input.getHeading() >= 0)){
+         	System.out.print("turnRight");
+         	leftWingInclination = 0;
+             rightWingInclination = 0;
+             verStabInclination = HeadingController.getOutput(input.getHeading(), refHeading);
+             rightWingInclination =  RollController.getOutput(input.getRoll(), 0);
+             leftWingInclination = -rightWingInclination;
+         }
+         
+         //bankTurnLeft --> error groter dan 30°
+         else if((Math.abs(refHeading-input.getHeading())>Math.PI/6) && (refHeading-input.getHeading() >= 0)){
+         	bankTurnLeft = true;
+         	bankTurnRight = false;
+         	turnLeft = false;
+         	turnRight = false;
+         }
+         //bankTurnLeft --> error groter dan 30°
+         else if((Math.abs(refHeading-input.getHeading())>Math.PI/6) && (refHeading-input.getHeading() <= 0)){
+         	bankTurnLeft = false;
+         	bankTurnRight = true;
+         	turnLeft = false;
+         	turnRight = false;
+         }
+         //wingLeveller --> roll = 0 --> cruising
+         else{
+         	
+         }
+         
          return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
      }
  
