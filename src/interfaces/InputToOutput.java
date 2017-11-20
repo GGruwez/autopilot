@@ -1,14 +1,26 @@
  package interfaces;
- class InputToOutput {
+
+import autopilot.PIDcontroller;
+
+class InputToOutput {
  
  	static PIDcontroller PitchController = new PIDcontroller(3f, 0f, 4f);
   	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
   	static PIDcontroller RollController = new PIDcontroller(1f, 0f, 0f);
+  	static PIDcontroller HeadingController = new PIDcontroller(1f, 0f, 0.01f);
+  	
   	static boolean ascending = false;
 //  	static boolean ascendFinished = false;
  	static float refHeight = 20;
   	static boolean cruising = false;
   	static boolean descending = false;
+	
+	//left-right
+	static boolean turnLeft = false;
+	static boolean turnRight = false;
+	static boolean bankTurnLeft = false;
+	static boolean bankTurnRight = false;
+	static float refHeading = 0.5f;
   	
      static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          PreviousInputs prev = autopilot.getPreviousInput();
