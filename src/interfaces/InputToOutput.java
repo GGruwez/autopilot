@@ -1,6 +1,5 @@
  package interfaces;
 
-import autopilot.PIDcontroller;
 
 class InputToOutput {
  
@@ -20,7 +19,7 @@ class InputToOutput {
 	static boolean turnRight = false;
 	static boolean bankTurnLeft = false;
 	static boolean bankTurnRight = false;
-	static float refHeading = 0.5f;
+	static float refHeading = 0f;
   	
      static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          PreviousInputs prev = autopilot.getPreviousInput();
@@ -135,24 +134,22 @@ class InputToOutput {
  	        }
          }
          
+         
          //-----------TURNING-----------//
          //turnLeft --> error kleiner dan 30°
          if((Math.abs(refHeading-input.getHeading())<=Math.PI/6) && (refHeading-input.getHeading() >= 0)){
-         	System.out.print("turnLeft");
-         	System.out.print(input.getHeading());
-         	rightWingInclination =  RollController.getOutput(input.getRoll(), 0);
-             leftWingInclination = -rightWingInclination;
-             verStabInclination = HeadingController.getOutput(input.getHeading(), refHeading);
+        	 float delta =  RollController.getOutput(input.getRoll(), 0);
+             leftWingInclination -= delta/2;
+             rightWingInclination += delta/2;
+            verStabInclination = HeadingController.getOutput(input.getHeading(), refHeading);
              
          }
          //turnRight --> error kleiner dan 30°
          else if (((Math.abs(refHeading-input.getHeading())<=Math.PI/6)) && (refHeading-input.getHeading() >= 0)){
-         	System.out.print("turnRight");
-         	leftWingInclination = 0;
-             rightWingInclination = 0;
-             verStabInclination = HeadingController.getOutput(input.getHeading(), refHeading);
-             rightWingInclination =  RollController.getOutput(input.getRoll(), 0);
-             leftWingInclination = -rightWingInclination;
+            verStabInclination = HeadingController.getOutput(input.getHeading(), refHeading);
+            float delta =  RollController.getOutput(input.getRoll(), 0);
+            leftWingInclination += delta/2;
+            rightWingInclination -= delta/2;
          }
          
          //bankTurnLeft --> error groter dan 30°
