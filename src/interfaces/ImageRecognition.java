@@ -45,7 +45,7 @@ class ImageRecognition {
 //			ArrayList<Float> HSVPixel = RBGToHSV(pixel);
 //			System.out.println("HSV: "+ HSVPixel.get(0) + " " + HSVPixel.get(1) + " " + HSVPixel.get(2));
 			//
-			System.out.println("currow: " + Math.floor(position/nbColumns));
+			//System.out.println("currow: " + Math.floor(position/nbColumns));
 			int currentRow = position/nbColumns;
 			int currentColumn = position%nbColumns;
 			
@@ -68,12 +68,13 @@ class ImageRecognition {
 //		distance = (distance > (float) (Math.PI/3 * (size)/(nbColumns/2)) ? distance : (float) (Math.PI/3 * (size)/(nbColumns/2)));
 //		//System.out.println("nb filtered: " + (positions.size()-filteredPositions.size()));
 		//System.out.println("distance: " + 286.06*Math.pow( filteredPositions.size(), -0.638));
-		System.out.println("distance: " + distance);
+		//System.out.println("distance: " + distance);
 		float xVector = minColumn + (maxColumn - minColumn)/2 - nbColumns/2;
 		float yVector = minRow + (maxRow - minRow)/2 - nbRows/2;
-		System.out.println( maxColumn-minColumn+1);
+//		System.out.println( maxColumn-minColumn+1);
 //		System.out.println(maxRow - minRow+1);
 		//System.out.println(xVector + "   "+ yVector);
+		System.out.println(size);
 		return new float[]{xVector,yVector};
 
 		
@@ -167,9 +168,6 @@ class ImageRecognition {
 			pos.add(side);
 		}
 		
-		
-		
-		
 		for (Integer position : positions){
 			ArrayList<Integer> pixel = new ArrayList<Integer>();
 			pixel.add(image[3*(position)+0] & 0xff) ;
@@ -177,10 +175,10 @@ class ImageRecognition {
 			pixel.add(image[3*(position)+2] & 0xff);
 			ArrayList<Float> HSVPixel = RBGToHSV(pixel);
 			float value= HSVPixel.get(2);
-			System.out.println("HSV: "+ HSVPixel.get(0) + " " + HSVPixel.get(1) + " " + HSVPixel.get(2));
+			//System.out.println("HSV: "+ HSVPixel.get(0) + " " + HSVPixel.get(1) + " " + HSVPixel.get(2));
 
 			if (value <=0.225f){
-				pos.get(0).add(position);   //nY
+				pos.get(0).add(position); //nY
 			}else if (value <= 0.375f){
 				pos.get(1).add(position); //nX
 			}else if (value <= 0.59f){
@@ -193,10 +191,11 @@ class ImageRecognition {
 				pos.get(5).add(position);//pY
 			}			
 		}
-		System.out.println("done");
+		
+		//System.out.println("done");
 		ArrayList<Integer> high = new ArrayList<Integer>();
 		for (ArrayList<Integer> side :pos){
-			System.out.println(side.size());
+			//System.out.println(side.size());
 			if (side.size() > high.size())
 				high = side;
 		}
