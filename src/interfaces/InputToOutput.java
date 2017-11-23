@@ -1,10 +1,14 @@
  package interfaces;
- class InputToOutput {
+
+
+class InputToOutput {
  
  	static PIDcontroller PitchController = new PIDcontroller(3f, 0f, 4f);
   	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
+
   	static PIDcontroller RollController = new PIDcontroller(1f, 0f, 25f);
   	static PIDcontroller HeadingController = new PIDcontroller(2f,0f,100f);
+
   	static boolean ascending = false;
 //  	static boolean ascendFinished = false;
  	static float refHeight = 20;
@@ -12,6 +16,13 @@
  	static float refHeading = (float)Math.PI/9;
   	static boolean cruising = false;
   	static boolean descending = false;
+	
+	//left-right
+	static boolean turnLeft = false;
+	static boolean turnRight = false;
+	static boolean bankTurnLeft = false;
+	static boolean bankTurnRight = false;
+
   	
      static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          PreviousInputs prev = autopilot.getPreviousInput();
@@ -127,6 +138,7 @@
          }
          
          
+
          
          float error = -HeadingController.getOutput(input.getHeading(), refHeading);
          System.out.println(error);
@@ -144,6 +156,7 @@
          
          
          
+
          
          return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
      }
