@@ -3,10 +3,13 @@
  
  	static PIDcontroller PitchController = new PIDcontroller(3f, 0f, 4f);
   	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
-  	static PIDcontroller RollController = new PIDcontroller(1f, 0f, 0f);
+  	static PIDcontroller RollController = new PIDcontroller(1f, 0f, 25f);
+  	static PIDcontroller HeadingController = new PIDcontroller(2f,0f,100f);
   	static boolean ascending = false;
 //  	static boolean ascendFinished = false;
  	static float refHeight = 20;
+ 	static float refRoll = 0;
+ 	static float refHeading = (float)Math.PI/9;
   	static boolean cruising = false;
   	static boolean descending = false;
   	
@@ -122,6 +125,25 @@
  	        	horStabInclination = (float) (-Math.PI/9);
  	        }
          }
+         
+         
+         
+         float error = -HeadingController.getOutput(input.getHeading(), refHeading);
+         System.out.println(error);
+         //verStabInclination = error;
+         
+         refRoll = 0.1f*error;
+         
+         float delta = RollController.getOutput(input.getRoll(), refRoll);
+         //System.out.println(delta/2);
+         leftWingInclination -= delta/2;
+         rightWingInclination += delta/2;
+         
+         //System.out.println("LW: " + leftWingInclination + "   RW: " + rightWingInclination);
+         
+         
+         
+         
          
          return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
      }
