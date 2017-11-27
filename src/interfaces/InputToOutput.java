@@ -8,12 +8,14 @@ class InputToOutput {
 
   	static PIDcontroller RollController = new PIDcontroller(1f, 0f, 25f);
   	static PIDcontroller HeadingController = new PIDcontroller(2f,0f,100f);
+  	
+  	static PIDcontroller SpeedController = new PIDcontroller(10f, 0, 0);
 
   	static boolean ascending = false;
 //  	static boolean ascendFinished = false;
  	static float refHeight = 20;
  	static float refRoll = 0;
- 	static float refHeading = (float)Math.PI/9;
+ 	static float refHeading = 0;
   	static boolean cruising = false;
   	static boolean descending = false;
 	
@@ -43,37 +45,39 @@ class InputToOutput {
          Vector angularVelocity = (new Vector((input.getPitch()-prev.getPitch())/dt,(input.getHeading()-prev.getHeading())/dt,(input.getRoll()-prev.getRoll())/dt));
          
          if (input.getElapsedTime()<=20) {
-        	 refHeight = 20;
+        	 refHeight = 0;
          }
          else {
         	 refHeight = 0;
          }
          
-         if (input.getY()<(refHeight-2)) {
-        	 descending = false;
-        	 cruising = false;
-        	 ascending = true;
-         }
-         else if ((ascending)&&(input.getY()>=refHeight)) {
-        	 descending = false;
-        	 cruising = true;
-        	 ascending = false;
-         }
-         else if (input.getY()>(refHeight+5)) {
-        	 descending = true;
-        	 cruising = false;
-        	 ascending = false;
-         }
-         else if ((descending)&&(input.getY()<=(refHeight+3))) {
-        	 descending = false;
-        	 cruising = true;
-        	 ascending = false;
-         }
-         else {
-        	 descending = false;
-        	 cruising = true;
-        	 ascending = false;
-         }
+         cruising = true;
+         
+//         if (input.getY()<(refHeight-2)) {
+//        	 descending = false;
+//        	 cruising = false;
+//        	 ascending = true;
+//         }
+//         else if ((ascending)&&(input.getY()>=refHeight)) {
+//        	 descending = false;
+//        	 cruising = true;
+//        	 ascending = false;
+//         }
+//         else if (input.getY()>(refHeight+5)) {
+//        	 descending = true;
+//        	 cruising = false;
+//        	 ascending = false;
+//         }
+//         else if ((descending)&&(input.getY()<=(refHeight+3))) {
+//        	 descending = false;
+//        	 cruising = true;
+//        	 ascending = false;
+//         }
+//         else {
+//        	 descending = false;
+//        	 cruising = true;
+//        	 ascending = false;
+//         }
          
          if (cruising) {
         	thrust = 0;
@@ -88,10 +92,20 @@ class InputToOutput {
      	        horStabInclination = (float) (-Math.PI/9);
       	    }
               
-              if (input.getY()<refHeight) {
- 	            thrust = 50;
- 	            horStabInclination = (float) Math.PI/120 - input.getPitch();
-              }
+//              if (input.getY()<refHeight) {
+// 	            thrust = 50;
+// 	            horStabInclination = (float) Math.PI/120 - input.getPitch();
+//              }
+             
+        	 thrust = -SpeedController.getOutput(-velocityDrone.getZ(), -10f);
+        	 System.out.println("thrust: " + thrust);
+        	 System.out.println("z: " + velocityDrone.getZ());
+        	 if (thrust<0) {
+        		 thrust = 0;
+        	 }
+        	 else if (thrust > 50) {
+        		 thrust = 50;
+        	 }
           }
           
          else if (ascending) {
@@ -137,27 +151,19 @@ class InputToOutput {
  	        }
          }
          
-         
-
-         
-         float error = -HeadingController.getOutput(input.getHeading(), refHeading);
-         System.out.println(error);
-         //verStabInclination = error;
-         
-         refRoll = 0.1f*error;
-         
-         float delta = RollController.getOutput(input.getRoll(), refRoll);
-         //System.out.println(delta/2);
-         leftWingInclination -= delta/2;
-         rightWingInclination += delta/2;
+//         float error = -HeadingController.getOutput(input.getHeading(), refHeading);
+//         System.out.println(error);
+//         //verStabInclination = error;
+//         
+//         refRoll = 0.1f*error;
+//         
+//         float delta = RollController.getOutput(input.getRoll(), refRoll);
+//         //System.out.println(delta/2);
+//         leftWingInclination -= delta/2;
+//         rightWingInclination += delta/2;
          
          //System.out.println("LW: " + leftWingInclination + "   RW: " + rightWingInclination);
-         
-         
-         
-         
 
-         
          return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
      }
  
