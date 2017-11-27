@@ -9,10 +9,10 @@ class InputToOutput {
   	static PIDcontroller RollController = new PIDcontroller(1f, 0f, 25f);
   	static PIDcontroller HeadingController = new PIDcontroller(2f,0f,100f);
   	
-  	static PIDcontroller SpeedController = new PIDcontroller(10f, 0, 0);
+  	static PIDcontroller SpeedController = new PIDcontroller(5f, 0, 7f);
 
   	static boolean ascending = false;
-//  	static boolean ascendFinished = false;
+//  static boolean ascendFinished = false;
  	static float refHeight = 20;
  	static float refRoll = 0;
  	static float refHeading = 0;
@@ -35,7 +35,7 @@ class InputToOutput {
          float horStabInclination = 0;
          float verStabInclination = 0;
          float thrust = 0;
-         float dt = prev.getElapsedTime()-input.getElapsedTime();
+         float dt = -prev.getElapsedTime()+input.getElapsedTime();
          Vector velocityWorld;
          Vector velocityDrone;
          AutopilotConfig config = autopilot.getConfig();
@@ -92,19 +92,20 @@ class InputToOutput {
      	        horStabInclination = (float) (-Math.PI/9);
       	    }
               
-//              if (input.getY()<refHeight) {
-// 	            thrust = 50;
-// 	            horStabInclination = (float) Math.PI/120 - input.getPitch();
-//              }
+              if (input.getY()<refHeight) {
+ 	            thrust = SpeedController.getOutput(velocityDrone.getY(), 0f);
+ 	            horStabInclination = (float) Math.PI/120 - input.getPitch();
+              }
              
-        	 thrust = -SpeedController.getOutput(-velocityDrone.getZ(), -10f);
-        	 System.out.println("thrust: " + thrust);
-        	 System.out.println("z: " + velocityDrone.getZ());
+        	 thrust += -SpeedController.getOutput(velocityDrone.getZ(), -40f);
+//        	 thrust = SpeedController.getOutput(velocityDrone.getY(), 0);
+//        	 System.out.println("thrust: " + thrust);
+//        	 System.out.println("y: " + velocityDrone.getY());
         	 if (thrust<0) {
         		 thrust = 0;
         	 }
-        	 else if (thrust > 50) {
-        		 thrust = 50;
+        	 else if (thrust > 80) {
+        		 thrust = 80;
         	 }
           }
           
