@@ -3,17 +3,17 @@
 
 class InputToOutput {
  
- 	static PIDcontroller PitchController = new PIDcontroller(3f, 0f, 4f);
+ 	static PIDcontroller PitchController = new PIDcontroller(3f, 0f, 15f); //3, 0, 4
   	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
 
   	static PIDcontroller RollController = new PIDcontroller(1f, 0f, 25f);
   	static PIDcontroller HeadingController = new PIDcontroller(2f,0f,100f);
   	
-  	static PIDcontroller SpeedController = new PIDcontroller(5f, 0, 7f);
+  	static PIDcontroller SpeedController = new PIDcontroller(5f, 0, 10f); //5, 0, 7
 
   	static boolean ascending = false;
 //  static boolean ascendFinished = false;
- 	static float refHeight = 20;
+ 	static float refHeight = 0;
  	static float refRoll = 0;
  	static float refHeading = 0;
   	static boolean cruising = false;
@@ -28,8 +28,6 @@ class InputToOutput {
   	
      static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          PreviousInputs prev = autopilot.getPreviousInput();
-         float horizontalError = targetVector[0];
-         float verticalError = targetVector[1];
          float leftWingInclination = 0;
          float rightWingInclination = 0;
          float horStabInclination = 0;
@@ -43,15 +41,6 @@ class InputToOutput {
          velocityWorld = new Vector((input.getX()-prev.getX())/dt,(input.getY()-prev.getY())/dt,(input.getZ()-prev.getZ())/dt);
          velocityDrone = velocityWorld.inverseTransform(prev.getHeading(),prev.getPitch(),prev.getRoll());
          Vector angularVelocity = (new Vector((input.getPitch()-prev.getPitch())/dt,(input.getHeading()-prev.getHeading())/dt,(input.getRoll()-prev.getRoll())/dt));
-         
-         if (input.getElapsedTime()<=20) {
-        	 refHeight = 0;
-         }
-         else {
-        	 refHeight = 0;
-         }
-         
-         cruising = true;
          
 //         if (input.getY()<(refHeight-2)) {
 //        	 descending = false;
@@ -79,7 +68,63 @@ class InputToOutput {
 //        	 ascending = false;
 //         }
          
+//         if (targetVector == null) {
+//        	 ascending = false;
+//        	 descending = false;
+//        	 cruising = true;
+//         }
+//         else if (targetVector[1]>=10) {
+//        	 if (descending) {
+//        		 ascending = false;
+//        		 descending = false;
+//        		 cruising = false;
+//        	 }
+//        	 else {
+//        		 ascending = true;
+//        		 descending = false;
+//        		 cruising = false;
+//        	 }
+//         }
+//         else if (targetVector[1]<=-10) {
+//        	 if (ascending) {
+//        		 ascending = false;
+//        		 descending = false;
+//        		 cruising = true;
+//        		 refHeight = input.getY();
+//        	 }
+//        	 else {
+//	        	 ascending = false;
+//	        	 descending = true;
+//	        	 cruising = false;
+//        	 }
+//         }
+//         else {
+//        	 if (ascending) {
+//        		 ascending = true;
+//        		 descending = false;
+//        		 cruising = false;
+//        	 }
+//        	 else if (descending) {
+//        		 ascending = false;
+//        		 descending = true;
+//        		 cruising = false;
+//        	 }
+//        	 else if (cruising) {
+//        		 ascending = false;
+//        		 descending = false;
+//        		 cruising = true;
+//        	 }
+//         }
+//         if ((targetVector!=null)&&(descending)&&(targetVector[1]<-5)) {
+//        	 ascending = false;
+//        	 descending = false;
+//        	 cruising = false;
+//         }
+         
+         cruising = true;
+         
          if (cruising) {
+        	 System.out.println("cruising: " + refHeight);
         	thrust = 0;
           	leftWingInclination = input.getPitch();
             rightWingInclination = input.getPitch();
@@ -92,15 +137,12 @@ class InputToOutput {
      	        horStabInclination = (float) (-Math.PI/9);
       	    }
               
-              if (input.getY()<refHeight) {
- 	            thrust = SpeedController.getOutput(velocityDrone.getY(), 0f);
+            if (input.getY()<refHeight) {
+ 	            thrust = 5*SpeedController.getOutput(input.getY(), 0);
  	            horStabInclination = (float) Math.PI/120 - input.getPitch();
-              }
+            }
              
         	 thrust += -SpeedController.getOutput(velocityDrone.getZ(), -40f);
-//        	 thrust = SpeedController.getOutput(velocityDrone.getY(), 0);
-//        	 System.out.println("thrust: " + thrust);
-//        	 System.out.println("y: " + velocityDrone.getY());
         	 if (thrust<0) {
         		 thrust = 0;
         	 }
@@ -110,13 +152,14 @@ class InputToOutput {
           }
           
          else if (ascending) {
+        	 System.out.println("ascending");
          	leftWingInclination = input.getPitch();
              rightWingInclination = input.getPitch();
              horStabInclination = 0;
              verStabInclination = 0;
              thrust = 100;
              
-             horStabInclination = PitchController.getOutput(input.getPitch(), (float) Math.PI/18);
+             horStabInclination = PitchController.getOutput(input.getPitch(), (float) Math.PI/15);
  	        if (input.getPitch() + horStabInclination > Math.PI/9){
  	        	horStabInclination = (float) (Math.PI/9);
  	        }
@@ -125,6 +168,7 @@ class InputToOutput {
  	        }
          }
          else if (descending) {
+        	 System.out.println("descending");
          	leftWingInclination = input.getPitch();
              rightWingInclination = input.getPitch();
              horStabInclination = 0;
@@ -139,7 +183,6 @@ class InputToOutput {
  	        	horStabInclination = (float) (-Math.PI/9);
  	        }
          }
-         
          else {
             leftWingInclination = input.getPitch();
             rightWingInclination = input.getPitch();
@@ -163,7 +206,7 @@ class InputToOutput {
 //         leftWingInclination -= delta/2;
 //         rightWingInclination += delta/2;
          
-         //System.out.println("LW: " + leftWingInclination + "   RW: " + rightWingInclination);
+//			System.out.println("LW: " + leftWingInclination + "   RW: " + rightWingInclination);
 
          return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
      }

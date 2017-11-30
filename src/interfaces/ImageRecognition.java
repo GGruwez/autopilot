@@ -27,6 +27,9 @@ class ImageRecognition {
 			}	
 		}	
 		
+		if (positions.size()==0) {
+			return null;
+		}
 		
 		ArrayList<Integer> filteredPositions = filterValues(positions,image);
 		
