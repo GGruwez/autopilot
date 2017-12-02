@@ -9,7 +9,7 @@ class InputToOutput {
   	static PIDcontroller RollController = new PIDcontroller(1f, 0f, 25f);
   	static PIDcontroller HeadingController = new PIDcontroller(2f,0f,100f);
   	
-  	static PIDcontroller SpeedController = new PIDcontroller(5f, 0, 10f); //5, 0, 7
+  	static PIDcontroller SpeedController = new PIDcontroller(5f, 0, 20f); //5, 0, 7
 
   	static boolean ascending = false;
 //  static boolean ascendFinished = false;
@@ -121,28 +121,66 @@ class InputToOutput {
 //        	 cruising = false;
 //         }
          
-         cruising = true;
+         if (targetVector == null) {
+        	 if ((ascending)||(descending)) {
+        		 refHeight = input.getY();
+        	 }
+        	 ascending = false;
+        	 descending = false;
+        	 cruising = true;
+         }
+         else if (cruising) {
+        	 if (targetVector[1]>=10) {
+        		 ascending = true;
+        		 descending = false;
+        		 cruising = false;
+        	 }
+        	 else if (targetVector[1]<=-15) {
+        		 ascending = false;
+        		 descending = true;
+        		 cruising = false;
+        	 }
+         }
+         else if (ascending) {
+        	 if (targetVector[1]<=-15) {
+        		 cruising = true;
+        		 ascending = false;
+        		 descending = false;
+        		 refHeight = input.getY();
+        	 }
+         }
+         else if (descending) {
+        	 if (targetVector[1]>=5) {
+        		 cruising = true;
+        		 ascending = false;
+        		 descending = false;
+        		 refHeight = input.getY();
+        	 }
+         }
          
          if (cruising) {
-        	 System.out.println("cruising: " + refHeight);
+        	System.out.println("cruising: " + refHeight);
         	thrust = 0;
           	leftWingInclination = input.getPitch();
             rightWingInclination = input.getPitch();
            	horStabInclination = PitchController.getOutput(input.getPitch(), 0);
            	
-             if (input.getPitch() + horStabInclination > Math.PI/9){
+            if (input.getPitch() + horStabInclination > Math.PI/9){
              	horStabInclination = (float) (Math.PI/9);
-             }
-             else if(input.getPitch() + horStabInclination < -Math.PI/9){
+            }
+            else if(input.getPitch() + horStabInclination < -Math.PI/9){
      	        horStabInclination = (float) (-Math.PI/9);
       	    }
               
             if (input.getY()<refHeight) {
- 	            thrust = 5*SpeedController.getOutput(input.getY(), 0);
+ 	            thrust = 10*SpeedController.getOutput(input.getY(), refHeight);
  	            horStabInclination = (float) Math.PI/120 - input.getPitch();
             }
+            
+            if (velocityDrone.getZ()>-20f) {
+            	thrust += SpeedController.getOutput(-velocityDrone.getZ(), -20f);
+            }
              
-        	 thrust += -SpeedController.getOutput(velocityDrone.getZ(), -40f);
         	 if (thrust<0) {
         		 thrust = 0;
         	 }
@@ -152,7 +190,7 @@ class InputToOutput {
           }
           
          else if (ascending) {
-        	 System.out.println("ascending");
+        	 System.out.println("ascending: " + input.getY());
          	leftWingInclination = input.getPitch();
              rightWingInclination = input.getPitch();
              horStabInclination = 0;
@@ -169,13 +207,13 @@ class InputToOutput {
          }
          else if (descending) {
         	 System.out.println("descending");
-         	leftWingInclination = input.getPitch();
+         	 leftWingInclination = input.getPitch();
              rightWingInclination = input.getPitch();
              horStabInclination = 0;
              verStabInclination = 0;
              thrust = 0;
              
-            horStabInclination = PitchController.getOutput(input.getPitch(), (float) -Math.PI/18);
+            horStabInclination = PitchController.getOutput(input.getPitch(), (float) -Math.PI/30);
  	        if (input.getPitch() + horStabInclination > Math.PI/9){
  	        	horStabInclination = (float) (Math.PI/9);
  	        }

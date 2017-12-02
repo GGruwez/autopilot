@@ -31,7 +31,8 @@ class ImageRecognition {
 			return null;
 		}
 		
-		ArrayList<Integer> filteredPositions = filterValues(positions,image);
+		//ArrayList<Integer> filteredPositions = filterValues(positions,image);
+		ArrayList<Integer> filteredPositions = positions;
 		
 		
 		int maxColumn = 0;
