@@ -3,17 +3,17 @@
 
 class InputToOutput {
  
- 	static PIDcontroller PitchController = new PIDcontroller(3f, 0f, 15f); //3, 0, 4
+ 	static PIDcontroller PitchController = new PIDcontroller(4.5f, 0f, 15f);//new PIDcontroller(3f, 0f, 15f); //3, 0, 4
   	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
 
-  	static PIDcontroller RollController = new PIDcontroller(1f, 0f, 25f);
-  	static PIDcontroller HorizontalController = new PIDcontroller(0.1f, 0f, 4f);
+  	static PIDcontroller RollController = new PIDcontroller(0.3f, 0f, 12f);//new PIDcontroller(1f, 0f, 25f);
+  	static PIDcontroller HorizontalController = new PIDcontroller(0.1f, 0f, 7f);
   	
   	static PIDcontroller SpeedController = new PIDcontroller(5f, 0, 20f); //5, 0, 7
   	
   	static PIDcontroller PitchControllerTurning = new PIDcontroller(4.5f, 0f, 15f);
-  	static PIDcontroller RollControllerTurning = new PIDcontroller(0.3f, 0f, 9f);
-  	static PIDcontroller HeadingController = new PIDcontroller(4f,0.1f,25f);//(4f,0.1f,25f)
+  	static PIDcontroller RollControllerTurning = new PIDcontroller(0.3f, 0f, 12f);
+  	static PIDcontroller HeadingController = new PIDcontroller(4f,0.1f,35f);//(4f,0.1f,25f)
 
   	static boolean ascending = false;
 //  static boolean ascendFinished = false;
@@ -257,7 +257,7 @@ class InputToOutput {
         	 
         	 
 
-         	refRoll = -(float) (Math.PI/9);
+         	refRoll = (float) (Math.PI/4);
          	
          	horStabInclination = PitchControllerTurning.getOutput(input.getPitch(), refPitch);
          	System.out.println("pitchError: " + horStabInclination);
@@ -274,10 +274,10 @@ class InputToOutput {
 
          	verStabInclination = error;
 
-         	//refRoll= (input.getElapsedTime() > 8? 0 : refRoll );
-//         	refRoll = HorizontalController.getOutput(input.getX(), 10);
-//         	refRoll = (float) (refRoll > Math.PI/4 ? Math.PI/4 : refRoll);
-//         	refRoll = (float) (refRoll < -Math.PI/4 ? -Math.PI/4 : refRoll);
+        	refRoll= (input.getElapsedTime() > 8? 0f : refRoll );
+         	//refRoll = -HorizontalController.getOutput(input.getX(), 10);
+        	refRoll = (float) (refRoll > Math.PI/4 ? Math.PI/4 : refRoll);
+         	refRoll = (float) (refRoll < -Math.PI/4 ? -Math.PI/4 : refRoll);
          	
          	
          	float deltaRoll = RollControllerTurning.getOutput(input.getRoll(), refRoll);
