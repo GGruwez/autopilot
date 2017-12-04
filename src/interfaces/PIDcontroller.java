@@ -36,7 +36,13 @@ public class PIDcontroller {
 	
 	public float getOutput(float y, float ref) {
 		float error = ref-y;
-		float delta = error-getPreviousError();
+		float delta;
+		if (getPreviousError() == 0){
+			 delta= 0;
+		}		
+		else {
+			delta = error-getPreviousError();
+		}
 		setErrorSum(getErrorSum()+error);
 		setPreviousError(error);
 		return Kp*(error) + Ki*getErrorSum() + Kd*(delta);
