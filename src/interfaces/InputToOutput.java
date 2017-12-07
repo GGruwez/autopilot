@@ -249,7 +249,7 @@ class InputToOutput {
         		 turnLeft = false;
         		 turnRight = false;
         	 }
-        	 else if (targetVector[0] > 5) {
+        	 else if (targetVector[0] > 10) {
         		 turnRight = true;
         		 turnLeft = false;
         	 }
@@ -282,7 +282,7 @@ class InputToOutput {
          if (turnLeft) {
         	 System.out.println("turnLeft");
         	 verStabInclination = -0.0f;
-        	 float deltaRoll = RollController.getOutput(input.getRoll(), 0.07f);
+        	 float deltaRoll = RollController.getOutput(input.getRoll(), 0.06f);
         	 float error = -HeadingController.getOutput(input.getHeading(), 0);
         	 verStabInclination = error;
              leftWingInclination -= deltaRoll/2;
@@ -291,7 +291,7 @@ class InputToOutput {
          else if (turnRight) {
         	 System.out.println("turnRight");
         	 verStabInclination = 0.0f;
-    	 float deltaRoll = RollController.getOutput(input.getRoll(), -0.07f);
+    	 float deltaRoll = RollController.getOutput(input.getRoll(), -0.06f);
         	 float error = -HeadingController.getOutput(input.getHeading(), 0);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
