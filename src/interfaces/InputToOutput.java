@@ -301,7 +301,7 @@ class InputToOutput {
         	 float deltaRoll = RollController.getOutput(input.getRoll(), 0.0f);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
-             float error = -HeadingController.getOutput(input.getHeading(), 0);
+             float error = -HeadingController.getOutput(input.getHeading(), refHeading);
              verStabInclination = error;
          }
          

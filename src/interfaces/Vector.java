@@ -155,4 +155,5 @@ public class Vector {
         return new Vector(this.getX(), this.getY(), this.getZ());
     }  
 }	
+	
 		
