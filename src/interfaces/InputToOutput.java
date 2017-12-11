@@ -226,48 +226,7 @@ class InputToOutput {
              float error = -HeadingController.getOutput(input.getHeading(), refHeading);
              verStabInclination = error;
          }
-         
-//         float error = -HeadingController.getOutput(input.getHeading(), refHeading);         
-//         refRoll = 0.1f*error;
-         
-         turn = false;
-         
-         if (turn){
-        	 
-        	
-        	 
-        	if (input.getHeading()<Math.PI/9){
-        		refPitch = 0.0f;
-        	}else{
-        		refPitch = 0.00f;
-        	}
-        	 
-        	 
 
-         	refRoll = (float) (Math.PI/4);
-         	
-         	horStabInclination = PitchControllerTurning.getOutput(input.getPitch(), refPitch);
-         	//System.out.println("pitchError: " + horStabInclination);
-
-         	
-         	float error = -HeadingController.getOutput(input.getHeading(), refHeading);
-         	//System.out.println("headingErro: " + error);
-
-         	verStabInclination = error;
-
-        	refRoll= (input.getElapsedTime() > 8? 0f : refRoll );
-         	//refRoll = -HorizontalController.getOutput(input.getX(), 10);
-        	refRoll = (float) (refRoll > Math.PI/4 ? Math.PI/4 : refRoll);
-         	refRoll = (float) (refRoll < -Math.PI/4 ? -Math.PI/4 : refRoll);
-         	
-         	
-         	float deltaRoll = RollControllerTurning.getOutput(input.getRoll(), refRoll);
-         	System.out.println("deltaroll: " + deltaRoll);
-;
-         	leftWingInclination -= deltaRoll/2;
-         	rightWingInclination += deltaRoll/2;
-         }
-         
 
          return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
      }
