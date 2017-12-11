@@ -1,28 +1,73 @@
 package interfaces;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 
 class ImageRecognition {
 
 
 	public static float[] FindTarget(byte[] image, int nbColumns, int nbRows ){
-		ArrayList<Integer> positions = new ArrayList<Integer>();
-//		System.out.println(image.length);
+		HashSet<Float> hues = findDifferentColors(image, nbColumns, nbRows);
+		if (hues.size() == 0){
+			System.out.println("null");
+			return null;
+		}
+		
+		float[] bestCube = new float[] {0,0,0};
+		Iterator<Float> iterator = hues.iterator();
+		while (iterator.hasNext()){
+			float hue = iterator.next();
+			int hueMaxDifference = 1;
+			float hueA = Math.max(hue - hueMaxDifference, 180 - Math.abs(hue-hueMaxDifference));
+			float hueB = (hue + hueMaxDifference) % 180;
+			float[] currentCube = findCubeInCertainColor(image, nbColumns, nbRows, hueA, hueB);
+			if (currentCube != null && currentCube[2] > bestCube[2])
+				bestCube = currentCube;
+		}
+//		for(float i = 0; i < hues.size(); i++){
+//			float hue = hues.
+//			cubes.add(findCubeInCertainColor(image, nbColumns, nbRows, 172, 8));
+//		}
+		System.out.println("[" + bestCube[0] + "," + bestCube[1] + "," + bestCube[2] + "]");
+		return new float[]{-bestCube[0],- bestCube[1]};
+	}
+
+	static HashSet<Float> findDifferentColors(byte[] image, int nbColumns, int nbRows){
+		HashSet<Float> hues = new HashSet<Float>();
 		for (int row=0; row<nbRows; row+=1) {
 			for (int column =0; column<nbColumns ; column +=1){
 				ArrayList<Integer> pixel = new ArrayList<Integer>();
 
-//				System.out.println((image[3*(row*nbColumns+column)+0] & 0xff) + "   "+ (3*(row*nbColumns+column)+0));
-//				System.out.println((image[3*(row*nbColumns+column)+1] & 0xff) + "   " + (3*(row*nbColumns+column)+1));
-//				System.out.println((image[3*(row*nbColumns+column)+2] & 0xff)+ "   " + (3*(row*nbColumns+column)+2));
 				pixel.add(image[3*(row*nbColumns+column)+0] & 0xff) ;
 				pixel.add(image[3*(row*nbColumns+column)+1] & 0xff);
 				pixel.add(image[3*(row*nbColumns+column)+2] & 0xff);
-//				System.out.println("pixel: "+ pixel.get(0) +", "+ pixel.get(1) + ", " + pixel.get(2));
+
 				ArrayList<Float> HSVPixel = RBGToHSV(pixel);
-				if (((HSVPixel.get(0) <= 8) || (HSVPixel.get(0)>= 172)) && (HSVPixel.get(1) >= 0.01) && (HSVPixel.get(2)>0.01)){
-					positions.add(row*nbColumns+column);
-					//System.out.println("position added: " + position/3);
+				if((HSVPixel.get(1) >= 0.3) && (HSVPixel.get(2)>0.3)){ // Don't add black cubes
+					hues.add(HSVPixel.get(0));
+				}
+			}
+		}
+		return hues;
+	
+	}
+	
+	
+	
+	static float[] findCubeInCertainColor(byte[] image, int nbColumns, int nbRows, float hueA, float hueB ){
+		ArrayList<Float> positions = new ArrayList<Float>();
+		for (int row=0; row<nbRows; row+=1) {
+			for (int column =0; column<nbColumns ; column +=1){
+				ArrayList<Integer> pixel = new ArrayList<Integer>();
+
+				pixel.add(image[3*(row*nbColumns+column)+0] & 0xff) ;
+				pixel.add(image[3*(row*nbColumns+column)+1] & 0xff);
+				pixel.add(image[3*(row*nbColumns+column)+2] & 0xff);
+				ArrayList<Float> HSVPixel = RBGToHSV(pixel);
+				if (((hueA > hueB) ? ((HSVPixel.get(0) <= hueB) || (HSVPixel.get(0) >= hueA)) :	((HSVPixel.get(0) >= hueA && HSVPixel.get(0) <= hueB))) &&
+						(HSVPixel.get(1) >= 0.3) && (HSVPixel.get(2)>0.3)){
+					positions.add((float) (row*nbColumns+column));
 				}
 			}	
 		}	
@@ -32,28 +77,18 @@ class ImageRecognition {
 		}
 		
 		//ArrayList<Integer> filteredPositions = filterValues(positions,image);
-		ArrayList<Integer> filteredPositions = positions;
+		ArrayList<Float> filteredPositions = positions;
 		
 		
 		int maxColumn = 0;
 		int minColumn = nbColumns;
 		int maxRow = 0;
 		int minRow = nbRows;
-		for (int position :filteredPositions){
+		for (Float position :filteredPositions){
 			
-			//
-//			ArrayList<Integer> pixel = new ArrayList<Integer>();
-//			pixel.add(image[3*(position)+0] & 0xff) ;
-//			pixel.add(image[3*(position)+1] & 0xff);
-//			pixel.add(image[3*(position)+2] & 0xff);
-//			ArrayList<Float> HSVPixel = RBGToHSV(pixel);
-//			System.out.println("HSV: "+ HSVPixel.get(0) + " " + HSVPixel.get(1) + " " + HSVPixel.get(2));
-			//
 
-//			System.out.println("currow: " + Math.floor(position/nbColumns));
-
-			int currentRow = position/nbColumns;
-			int currentColumn = position%nbColumns;
+			int currentRow = (int) (position/nbColumns);
+			int currentColumn = (int) (position%nbColumns);
 			
 			if (currentRow > maxRow)
 				maxRow = currentRow;
@@ -68,22 +103,11 @@ class ImageRecognition {
 		
 		int size = ((maxRow - minRow) == 0 ? 1 : (maxRow - minRow+1));
 		float distance = (float) (0.7*200/size);
-//		float theta = (float) (Math.PI/3 * (size)/(nbRows/2));
-//		float distance = (float) (1/Math.tan(theta));
-//		size = ((maxColumn - minColumn) == 0 ? 1 : (maxColumn - minColumn+1));
-//		distance = (distance > (float) (Math.PI/3 * (size)/(nbColumns/2)) ? distance : (float) (Math.PI/3 * (size)/(nbColumns/2)));
-//		//System.out.println("nb filtered: " + (positions.size()-filteredPositions.size()));
-		//System.out.println("distance: " + 286.06*Math.pow( filteredPositions.size(), -0.638));
-
-//		System.out.println("distance: " + distance);
 
 		float xVector = minColumn + (maxColumn - minColumn)/2 - nbColumns/2;
 		float yVector = minRow + (maxRow - minRow)/2 - nbRows/2;
-//		System.out.println( maxColumn-minColumn+1);
-//		System.out.println(maxRow - minRow+1);
-		//System.out.println(xVector + "   "+ yVector);
-		//System.out.println(size);
-		return new float[]{xVector,yVector};
+
+		return new float[]{xVector,yVector, positions.size()};
 
 		
 	}
@@ -93,16 +117,9 @@ class ImageRecognition {
 		float G = pixel.get(1)/255f;
 		float B = pixel.get(2)/255f;
 		float Cmax = Max(R,G,B);
-		
-//		if (Cmax != 0)
-//		System.out.println("Cmax: " + Cmax);
 		float Cmin = Min(R,G,B);
-//		if (Cmax != 0)
-//			System.out.println("Cmin: " + (Cmax == R));
 		float delta = Cmax- Cmin;
-		//if (pixel.get(0) != 0)
-		//System.out.println("pixel: "+ pixel.get(0) +", "+ pixel.get(1) + ", " + pixel.get(2));
-		//System.out.println("delta: "+ delta);
+
 		ArrayList<Float> HSVPixel = new ArrayList<Float>();
 		
 		if (delta == 0)
@@ -113,21 +130,18 @@ class ImageRecognition {
 			HSVPixel.add((30*((B-R)/delta)+2));
 		else if (Cmax == B)
 			HSVPixel.add((30*((R-G)/delta)+4));
-//		if (HSVPixel.get(0) != 0)
-//		System.out.println(HSVPixel.get(0));
-//		
+
 		if (Cmax == 0){
 			HSVPixel.add(0f);}
 		else{
 			HSVPixel.add(delta/Cmax);}		
 		
 		HSVPixel.add(Cmax);
-		
-//		if (HSVPixel.get(2) != 0)
-//		System.out.println("V: " + HSVPixel.get(2));
+
 		return HSVPixel;
 	}
 		
+	
 	static float Max(float R, float B, float G){
 		if (R>B){
 			if (R>G)
@@ -163,12 +177,7 @@ class ImageRecognition {
 			
 	
 	static ArrayList<Integer> filterValues(ArrayList<Integer> positions, byte[] image){
-//		ArrayList<Integer> pX = new ArrayList<Integer>();
-//		ArrayList<Integer> nX = new ArrayList<Integer>();
-//		ArrayList<Integer> pY = new ArrayList<Integer>();
-//		ArrayList<Integer> nY = new ArrayList<Integer>();
-//		ArrayList<Integer> pZ = new ArrayList<Integer>();
-//		ArrayList<Integer> nZ = new ArrayList<Integer>();
+
 		
 		ArrayList<ArrayList<Integer>> pos = new ArrayList<ArrayList<Integer>>();
 		for (int i=0; i<6 ;i++){
@@ -183,8 +192,6 @@ class ImageRecognition {
 			pixel.add(image[3*(position)+2] & 0xff);
 			ArrayList<Float> HSVPixel = RBGToHSV(pixel);
 			float value= HSVPixel.get(2);
-
-//			System.out.println("HSV: "+ HSVPixel.get(0) + " " + HSVPixel.get(1) + " " + HSVPixel.get(2));
 
 			if (value <=0.225f){
 				pos.get(0).add(position); //nY
@@ -201,35 +208,13 @@ class ImageRecognition {
 			}			
 		}
 
-//		System.out.println("done");
 		ArrayList<Integer> high = new ArrayList<Integer>();
 		for (ArrayList<Integer> side :pos){
-//			System.out.println(side.size());
 
 			if (side.size() > high.size())
 				high = side;
 		}
-		
-		
-//		for (Integer position : positions){
-//			float value= (image[3*(position)+2] & 0xff)/255f;
-//			
-//			if (value <=0.225f){
-//				nY.add(position);
-//			}else if (value <= 0.375f){
-//				nX.add(position);
-//			}else if (value <= 0.575f){
-//				nZ.add(position);
-//			}else if (value <= 0.775f){
-//				pZ.add(position);
-//			}else if (value <= 0.925f){
-//				pX.add(position);
-//			}else{
-//				pY.add(position);
-//			}			
-//		}
-		
-		
+	
 		return pos.get(3);
 	}
 }
