@@ -11,7 +11,7 @@ class InputToOutput {
 //  	static PIDcontroller SpeedController = new PIDcontroller(5f, 0, 20f); //5, 0, 7
 //  	static PIDcontroller HeadingController = new PIDcontroller(1f,0f,10f);
 
-  	static PIDcontroller RollController = new PIDcontroller(0.3f, 0f, 12f);//new PIDcontroller(1f, 0f, 25f);
+  	static PIDcontroller RollController = new PIDcontroller(0.3f, 0f, 12f);//0.3, 0, 12
   	static PIDcontroller HorizontalController = new PIDcontroller(0.1f, 0f, 7f);
   	
   	static PIDcontroller SpeedController = new PIDcontroller(5f, 0, 20f); //5, 0, 7
@@ -249,11 +249,11 @@ class InputToOutput {
         		 turnLeft = false;
         		 turnRight = false;
         	 }
-        	 else if (targetVector[0] > 10) {
+        	 else if (targetVector[0] > 20) {
         		 turnRight = true;
         		 turnLeft = false;
         	 }
-        	 else if (targetVector[0] < -10) {
+        	 else if (targetVector[0] < -15) {
         		 turnRight = false;
         		 turnLeft = true;
         	 }
@@ -267,24 +267,28 @@ class InputToOutput {
         	 turnRight = false;
          }
          if (turnLeft) {
-        	 if (targetVector[0] > 20) {
+        	 if (targetVector[0] > 25) {
         		 turnLeft = false;
         		 turnRight = false;
+        		 refHeading = input.getHeading();
         	 }
          }
          else if (turnRight) {
         	 if (targetVector[0] < -20) {
         		 turnLeft = false;
         		 turnRight = false;
+        		 refHeading = input.getHeading();
         	 }
          }
          
+         turnLeft = (input.getElapsedTime()>1);
+         
          if (turnLeft) {
         	 System.out.println("turnLeft");
-        	 verStabInclination = -0.0f;
-        	 float deltaRoll = RollController.getOutput(input.getRoll(), 0.06f);
-        	 float error = -HeadingController.getOutput(input.getHeading(), 0);
-        	 verStabInclination = error;
+        	 verStabInclination = -0.08f;
+        	 float deltaRoll = RollController.getOutput(input.getRoll(), 0.1f);
+        	 //float error = -HeadingController.getOutput(input.getHeading(), 0);
+        	 //verStabInclination = error;
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
          }
