@@ -3,31 +3,26 @@
 
 class InputToOutput {
  
- 	static PIDcontroller PitchController = new PIDcontroller(4.5f, 0f, 15f);//new PIDcontroller(3f, 0f, 15f); //3, 0, 4
+ 	static PIDcontroller PitchController = new PIDcontroller(4.5f, 0f, 15f);
   	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
 
-//  	static PIDcontroller RollController = new PIDcontroller(1f, 0f, 25f);
-//  	
-//  	static PIDcontroller SpeedController = new PIDcontroller(5f, 0, 20f); //5, 0, 7
-//  	static PIDcontroller HeadingController = new PIDcontroller(1f,0f,10f);
 
-  	static PIDcontroller RollController = new PIDcontroller(0.3f, 0f, 12f);//0.3, 0, 12
+  	static PIDcontroller RollController = new PIDcontroller(0.3f, 0f, 12f);
   	static PIDcontroller HorizontalController = new PIDcontroller(0.1f, 0f, 7f);
   	
-  	static PIDcontroller SpeedController = new PIDcontroller(5f, 0, 20f); //5, 0, 7
+  	static PIDcontroller SpeedController = new PIDcontroller(5f, 0, 20f); 
   	
   	static PIDcontroller PitchControllerTurning = new PIDcontroller(4.5f, 0f, 15f);
   	static PIDcontroller RollControllerTurning = new PIDcontroller(0.3f, 0f, 12f);
-  	static PIDcontroller HeadingController = new PIDcontroller(4f,0.1f,35f);//(4f,0.1f,25f)
+  	static PIDcontroller HeadingController = new PIDcontroller(4f,0.1f,35f);
 
 
   	static boolean ascending = false;
-//  static boolean ascendFinished = false;
  	static float refHeight = 0;
  	static float refRoll = 0;
  	static float refHeading = 0;
  	static float refPitch = 0;
-  	static boolean cruising = false;
+  	static boolean cruising = true;
   	static boolean descending = false;
   	static boolean turn = false;
   	static boolean turnLeft = false;
@@ -263,6 +258,7 @@ class InputToOutput {
     	 else {
     		 refRoll = roll;
     	 }
+
      }
  
  }
