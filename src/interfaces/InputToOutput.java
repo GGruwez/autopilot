@@ -3,26 +3,21 @@
 
 class InputToOutput {
  
- 	static PIDcontroller PitchController = new PIDcontroller(4.5f, 0f, 15f);//new PIDcontroller(3f, 0f, 15f); //3, 0, 4
+ 	static PIDcontroller PitchController = new PIDcontroller(4.5f, 0f, 15f);
   	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
 
-//  	static PIDcontroller RollController = new PIDcontroller(1f, 0f, 25f);
-//  	
-//  	static PIDcontroller SpeedController = new PIDcontroller(5f, 0, 20f); //5, 0, 7
-//  	static PIDcontroller HeadingController = new PIDcontroller(1f,0f,10f);
 
-  	static PIDcontroller RollController = new PIDcontroller(0.3f, 0f, 12f);//0.3, 0, 12
+  	static PIDcontroller RollController = new PIDcontroller(0.3f, 0f, 12f);
   	static PIDcontroller HorizontalController = new PIDcontroller(0.1f, 0f, 7f);
   	
-  	static PIDcontroller SpeedController = new PIDcontroller(5f, 0, 20f); //5, 0, 7
+  	static PIDcontroller SpeedController = new PIDcontroller(5f, 0, 20f); 
   	
   	static PIDcontroller PitchControllerTurning = new PIDcontroller(4.5f, 0f, 15f);
   	static PIDcontroller RollControllerTurning = new PIDcontroller(0.3f, 0f, 12f);
-  	static PIDcontroller HeadingController = new PIDcontroller(4f,0.1f,35f);//(4f,0.1f,25f)
+  	static PIDcontroller HeadingController = new PIDcontroller(4f,0.1f,35f);
 
 
   	static boolean ascending = false;
-//  static boolean ascendFinished = false;
  	static float refHeight = 0;
  	static float refRoll = 0;
  	static float refHeading = 0;
@@ -50,84 +45,7 @@ class InputToOutput {
          velocityDrone = velocityWorld.inverseTransform(prev.getHeading(),prev.getPitch(),prev.getRoll());
          Vector angularVelocity = (new Vector((input.getPitch()-prev.getPitch())/dt,(input.getHeading()-prev.getHeading())/dt,(input.getRoll()-prev.getRoll())/dt));
          
-//         if (input.getY()<(refHeight-2)) {
-//        	 descending = false;
-//        	 cruising = false;
-//        	 ascending = true;
-//         }
-//         else if ((ascending)&&(input.getY()>=refHeight)) {
-//        	 descending = false;
-//        	 cruising = true;
-//        	 ascending = false;
-//         }
-//         else if (input.getY()>(refHeight+5)) {
-//        	 descending = true;
-//        	 cruising = false;
-//        	 ascending = false;
-//         }
-//         else if ((descending)&&(input.getY()<=(refHeight+3))) {
-//        	 descending = false;
-//        	 cruising = true;
-//        	 ascending = false;
-//         }
-//         else {
-//        	 descending = false;
-//        	 cruising = true;
-//        	 ascending = false;
-//         }
-         
-//         if (targetVector == null) {
-//        	 ascending = false;
-//        	 descending = false;
-//        	 cruising = true;
-//         }
-//         else if (targetVector[1]>=10) {
-//        	 if (descending) {
-//        		 ascending = false;
-//        		 descending = false;
-//        		 cruising = false;
-//        	 }
-//        	 else {
-//        		 ascending = true;
-//        		 descending = false;
-//        		 cruising = false;
-//        	 }
-//         }
-//         else if (targetVector[1]<=-10) {
-//        	 if (ascending) {
-//        		 ascending = false;
-//        		 descending = false;
-//        		 cruising = true;
-//        		 refHeight = input.getY();
-//        	 }
-//        	 else {
-//	        	 ascending = false;
-//	        	 descending = true;
-//	        	 cruising = false;
-//        	 }
-//         }
-//         else {
-//        	 if (ascending) {
-//        		 ascending = true;
-//        		 descending = false;
-//        		 cruising = false;
-//        	 }
-//        	 else if (descending) {
-//        		 ascending = false;
-//        		 descending = true;
-//        		 cruising = false;
-//        	 }
-//        	 else if (cruising) {
-//        		 ascending = false;
-//        		 descending = false;
-//        		 cruising = true;
-//        	 }
-//         }
-//         if ((targetVector!=null)&&(descending)&&(targetVector[1]<-5)) {
-//        	 ascending = false;
-//        	 descending = false;
-//        	 cruising = false;
-//         }
+
          
          if (targetVector == null) {
         	 if ((ascending)||(descending)) {
@@ -309,10 +227,7 @@ class InputToOutput {
              verStabInclination = error;
          }
          
-//         float error = -HeadingController.getOutput(input.getHeading(), refHeading);
-//         System.out.println(error);
-//         //verStabInclination = error;
-//         
+//         float error = -HeadingController.getOutput(input.getHeading(), refHeading);         
 //         refRoll = 0.1f*error;
          
          turn = false;
@@ -332,17 +247,11 @@ class InputToOutput {
          	refRoll = (float) (Math.PI/4);
          	
          	horStabInclination = PitchControllerTurning.getOutput(input.getPitch(), refPitch);
-         	System.out.println("pitchError: " + horStabInclination);
-// 	        if (input.getPitch() + horStabInclination > Math.PI/9){
-// 	        	horStabInclination = (float) (Math.PI/9);
-// 	        }
-// 	        else if(input.getPitch() + horStabInclination < -Math.PI/9){
-// 	        	horStabInclination = (float) (-Math.PI/9);
-// 	        }
-//         
+         	//System.out.println("pitchError: " + horStabInclination);
+
          	
          	float error = -HeadingController.getOutput(input.getHeading(), refHeading);
-         	System.out.println("headingErro: " + error);
+         	//System.out.println("headingErro: " + error);
 
          	verStabInclination = error;
 
