@@ -32,8 +32,8 @@ class InputToOutput {
   	static boolean turn = false;
   	static boolean turnLeft = false;
   	static boolean turnRight = false;
+  	static float maxRoll = 0.1f;
 
-  	
      static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          PreviousInputs prev = autopilot.getPreviousInput();
          float leftWingInclination = 0;
@@ -49,85 +49,6 @@ class InputToOutput {
          velocityWorld = new Vector((input.getX()-prev.getX())/dt,(input.getY()-prev.getY())/dt,(input.getZ()-prev.getZ())/dt);
          velocityDrone = velocityWorld.inverseTransform(prev.getHeading(),prev.getPitch(),prev.getRoll());
          Vector angularVelocity = (new Vector((input.getPitch()-prev.getPitch())/dt,(input.getHeading()-prev.getHeading())/dt,(input.getRoll()-prev.getRoll())/dt));
-         
-//         if (input.getY()<(refHeight-2)) {
-//        	 descending = false;
-//        	 cruising = false;
-//        	 ascending = true;
-//         }
-//         else if ((ascending)&&(input.getY()>=refHeight)) {
-//        	 descending = false;
-//        	 cruising = true;
-//        	 ascending = false;
-//         }
-//         else if (input.getY()>(refHeight+5)) {
-//        	 descending = true;
-//        	 cruising = false;
-//        	 ascending = false;
-//         }
-//         else if ((descending)&&(input.getY()<=(refHeight+3))) {
-//        	 descending = false;
-//        	 cruising = true;
-//        	 ascending = false;
-//         }
-//         else {
-//        	 descending = false;
-//        	 cruising = true;
-//        	 ascending = false;
-//         }
-         
-//         if (targetVector == null) {
-//        	 ascending = false;
-//        	 descending = false;
-//        	 cruising = true;
-//         }
-//         else if (targetVector[1]>=10) {
-//        	 if (descending) {
-//        		 ascending = false;
-//        		 descending = false;
-//        		 cruising = false;
-//        	 }
-//        	 else {
-//        		 ascending = true;
-//        		 descending = false;
-//        		 cruising = false;
-//        	 }
-//         }
-//         else if (targetVector[1]<=-10) {
-//        	 if (ascending) {
-//        		 ascending = false;
-//        		 descending = false;
-//        		 cruising = true;
-//        		 refHeight = input.getY();
-//        	 }
-//        	 else {
-//	        	 ascending = false;
-//	        	 descending = true;
-//	        	 cruising = false;
-//        	 }
-//         }
-//         else {
-//        	 if (ascending) {
-//        		 ascending = true;
-//        		 descending = false;
-//        		 cruising = false;
-//        	 }
-//        	 else if (descending) {
-//        		 ascending = false;
-//        		 descending = true;
-//        		 cruising = false;
-//        	 }
-//        	 else if (cruising) {
-//        		 ascending = false;
-//        		 descending = false;
-//        		 cruising = true;
-//        	 }
-//         }
-//         if ((targetVector!=null)&&(descending)&&(targetVector[1]<-5)) {
-//        	 ascending = false;
-//        	 descending = false;
-//        	 cruising = false;
-//         }
          
          if (targetVector == null) {
         	 if ((ascending)||(descending)) {
@@ -213,6 +134,7 @@ class InputToOutput {
  	        	horStabInclination = (float) (-Math.PI/9);
  	        }
          }
+         
          else if (descending) {
         	 System.out.println("descending");
          	 leftWingInclination = input.getPitch();
@@ -229,6 +151,7 @@ class InputToOutput {
  	        	horStabInclination = (float) (-Math.PI/9);
  	        }
          }
+         
          else {
             leftWingInclination = input.getPitch();
             rightWingInclination = input.getPitch();
@@ -240,32 +163,41 @@ class InputToOutput {
  	        	horStabInclination = (float) (-Math.PI/9);
  	        }
  	        
- 	   
          }
-         
+        
          
          if (cruising) {
         	 if (targetVector == null) {
         		 turnLeft = false;
         		 turnRight = false;
+        		 if (refRoll>0) {
+        			 setRoll(refRoll-0.01f);
+        		 }
+        		 else if (refRoll<0) {
+        			 setRoll(refRoll+0.01f);
+        		 }
         	 }
-        	 else if (targetVector[0] > 20) {
+        	 else if (targetVector[0] > 7) {
         		 turnRight = true;
+        		 setRoll(refRoll-0.01f);
         		 turnLeft = false;
         	 }
-        	 else if (targetVector[0] < -15) {
+        	 else if (targetVector[0] < -7) {
         		 turnRight = false;
         		 turnLeft = true;
+        		 setRoll(refRoll+0.01f);
         	 }
         	 else {
         		 turnRight = false;
         		 turnLeft = false;
         	 }
          }
+         
          else if (! cruising) {
         	 turnLeft = false;
         	 turnRight = false;
          }
+         
          if (turnLeft) {
         	 if (targetVector[0] > 25) {
         		 turnLeft = false;
@@ -274,93 +206,63 @@ class InputToOutput {
         	 }
          }
          else if (turnRight) {
-        	 if (targetVector[0] < -20) {
+        	 if (targetVector[0] < -25) {
         		 turnLeft = false;
         		 turnRight = false;
         		 refHeading = input.getHeading();
         	 }
          }
          
-         turnLeft = (input.getElapsedTime()>1);
+         if ((targetVector!=null)&&(targetVector[2] >= 700)) {
+        	 System.out.println("te groot 500");
+        	 turnLeft = false;
+        	 turnRight = false;
+        	 if (refRoll>0) {
+    			 setRoll(refRoll-0.01f);
+    		 }
+    		 else if (refRoll<0) {
+    			 setRoll(refRoll+0.01f); 
+    		 }
+         }
          
          if (turnLeft) {
-        	 System.out.println("turnLeft");
-        	 verStabInclination = -0.08f;
-        	 float deltaRoll = RollController.getOutput(input.getRoll(), 0.1f);
-        	 //float error = -HeadingController.getOutput(input.getHeading(), 0);
-        	 //verStabInclination = error;
+        	 System.out.println("turnLeft: " + refRoll);
+        	 verStabInclination = 0.02f;
+        	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
          }
+         
          else if (turnRight) {
         	 System.out.println("turnRight");
-        	 verStabInclination = 0.0f;
-    	 float deltaRoll = RollController.getOutput(input.getRoll(), -0.06f);
-        	 float error = -HeadingController.getOutput(input.getHeading(), 0);
+        	 verStabInclination = -0.02f;
+        	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
          }
+         
          else {
         	 verStabInclination = 0.0f;
-        	 float deltaRoll = RollController.getOutput(input.getRoll(), 0.0f);
+        	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
              float error = -HeadingController.getOutput(input.getHeading(), refHeading);
              verStabInclination = error;
          }
-         
-//         float error = -HeadingController.getOutput(input.getHeading(), refHeading);
-//         System.out.println(error);
-//         //verStabInclination = error;
-//         
-//         refRoll = 0.1f*error;
-         
-         turn = false;
-         
-         if (turn){
-        	 
-        	
-        	 
-        	if (input.getHeading()<Math.PI/9){
-        		refPitch = 0.0f;
-        	}else{
-        		refPitch = 0.00f;
-        	}
-        	 
-        	 
 
-         	refRoll = (float) (Math.PI/4);
-         	
-         	horStabInclination = PitchControllerTurning.getOutput(input.getPitch(), refPitch);
-         	System.out.println("pitchError: " + horStabInclination);
-// 	        if (input.getPitch() + horStabInclination > Math.PI/9){
-// 	        	horStabInclination = (float) (Math.PI/9);
-// 	        }
-// 	        else if(input.getPitch() + horStabInclination < -Math.PI/9){
-// 	        	horStabInclination = (float) (-Math.PI/9);
-// 	        }
-//         
-         	
-         	float error = -HeadingController.getOutput(input.getHeading(), refHeading);
-         	System.out.println("headingErro: " + error);
-
-         	verStabInclination = error;
-
-        	refRoll= (input.getElapsedTime() > 8? 0f : refRoll );
-         	//refRoll = -HorizontalController.getOutput(input.getX(), 10);
-        	refRoll = (float) (refRoll > Math.PI/4 ? Math.PI/4 : refRoll);
-         	refRoll = (float) (refRoll < -Math.PI/4 ? -Math.PI/4 : refRoll);
-         	
-         	
-         	float deltaRoll = RollControllerTurning.getOutput(input.getRoll(), refRoll);
-         	System.out.println("deltaroll: " + deltaRoll);
-;
-         	leftWingInclination -= deltaRoll/2;
-         	rightWingInclination += deltaRoll/2;
-         }
-         
-
-         return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, horStabInclination, verStabInclination);
+         return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, verStabInclination);
+     }
+     
+     public static void setRoll(float roll) {
+    	 if (roll >= maxRoll) {
+    		 refRoll = maxRoll;
+    	 }
+    	 else if (roll <= -maxRoll) {
+    		 refRoll = -maxRoll;
+    	 }
+    	 else {
+    		 refRoll = roll;
+    	 }
      }
  
  }

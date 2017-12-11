@@ -83,7 +83,7 @@ class ImageRecognition {
 //		System.out.println(maxRow - minRow+1);
 		//System.out.println(xVector + "   "+ yVector);
 		//System.out.println(size);
-		return new float[]{xVector,yVector};
+		return new float[]{xVector,yVector, positions.size()};
 
 		
 	}
