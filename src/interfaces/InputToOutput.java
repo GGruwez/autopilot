@@ -172,19 +172,22 @@ class InputToOutput {
         			 setRoll(refRoll+0.01f);
         		 }
         	 }
-        	 else if (targetVector[0] > 7) {
+        	 else if (targetVector[0] > 3) {
         		 turnRight = true;
         		 setRoll(refRoll-0.01f);
         		 turnLeft = false;
+
         	 }
-        	 else if (targetVector[0] < -7) {
+        	 else if (targetVector[0] < -3) {
         		 turnRight = false;
         		 turnLeft = true;
         		 setRoll(refRoll+0.01f);
+
         	 }
         	 else {
         		 turnRight = false;
         		 turnLeft = false;
+
         	 }
          }
          

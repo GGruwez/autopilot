@@ -30,7 +30,7 @@ class ImageRecognition {
 //			cubes.add(findCubeInCertainColor(image, nbColumns, nbRows, 172, 8));
 //		}
 		System.out.println("[" + bestCube[0] + "," + bestCube[1] + "," + bestCube[2] + "]");
-		return new float[]{-bestCube[0],- bestCube[1], bestCube[2]};
+		return new float[]{bestCube[0],bestCube[1], bestCube[2]};
 	}
 
 	static HashSet<Float> findDifferentColors(byte[] image, int nbColumns, int nbRows){
@@ -107,7 +107,7 @@ class ImageRecognition {
 		float xVector = minColumn + (maxColumn - minColumn)/2 - nbColumns/2;
 		float yVector = minRow + (maxRow - minRow)/2 - nbRows/2;
 
-		return new float[]{xVector,yVector, positions.size()};
+		return new float[]{xVector,-yVector, positions.size()};
 
 		
 	}
