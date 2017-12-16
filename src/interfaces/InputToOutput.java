@@ -14,7 +14,7 @@ class InputToOutput {
   	
   	static PIDcontroller PitchControllerTurning = new PIDcontroller(4.5f, 0f, 15f);
   	static PIDcontroller RollControllerTurning = new PIDcontroller(0.3f, 0f, 12f);
-  	static PIDcontroller HeadingController = new PIDcontroller(4f,0.1f,35f);
+  	static PIDcontroller HeadingController = new PIDcontroller(0.01f, 0f,0.05f);
 
 
   	static boolean ascending = false;
@@ -28,6 +28,7 @@ class InputToOutput {
   	static boolean turnLeft = false;
   	static boolean turnRight = false;
   	static float maxRoll = 0.1f;
+  	static boolean noTurn = true;
 
      static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          PreviousInputs prev = autopilot.getPreviousInput();
@@ -83,7 +84,6 @@ class InputToOutput {
          }
          
          if (cruising) {
-        	System.out.println("cruising: " + refHeight);
         	thrust = 0;
           	leftWingInclination = input.getPitch();
             rightWingInclination = input.getPitch();
@@ -102,7 +102,7 @@ class InputToOutput {
             }
             
             if (velocityDrone.getZ()>-20f) {
-            	thrust += SpeedController.getOutput(-velocityDrone.getZ(), -15f);
+            	thrust += SpeedController.getOutput(-velocityDrone.getZ(), -20f);
             }
              
         	 if (thrust<0) {
@@ -159,91 +159,90 @@ class InputToOutput {
  	        }
  	        
          }
-        
          
          if (cruising) {
         	 if (targetVector == null) {
         		 turnLeft = false;
         		 turnRight = false;
-        		 if (refRoll>0) {
-        			 setRoll(refRoll-0.01f);
+        		 noTurn = true;
+        	 }
+        	 else if (noTurn) {
+        		 if (targetVector[0] > 3) {
+	        		 turnRight = true;
+	        		 turnLeft = false;
+	        		 noTurn = false;
         		 }
-        		 else if (refRoll<0) {
-        			 setRoll(refRoll+0.01f);
-        		 }
+        		 else if (targetVector[0] < -3) {
+            		 turnRight = false;
+            		 turnLeft = true;
+            		 noTurn = false;
+            	 }
         	 }
-        	 else if (targetVector[0] > 3) {
-        		 turnRight = true;
-        		 setRoll(refRoll-0.01f);
-        		 turnLeft = false;
-
+        	 else if (turnLeft) {
+        		 if (targetVector[0] > 25) {
+            		 turnLeft = false;
+            		 turnRight = false;
+            		 noTurn = true;
+            		 refHeading = input.getHeading();
+            	 }
         	 }
-        	 else if (targetVector[0] < -3) {
-        		 turnRight = false;
-        		 turnLeft = true;
-        		 setRoll(refRoll+0.01f);
-
-        	 }
-        	 else {
-        		 turnRight = false;
-        		 turnLeft = false;
-
-        	 }
-         }
-         
-         else if (! cruising) {
-        	 turnLeft = false;
-        	 turnRight = false;
-         }
-         
-         if (turnLeft) {
-        	 if (targetVector[0] > 25) {
-        		 turnLeft = false;
-        		 turnRight = false;
+        	 else if (turnRight) {
+        		 if (targetVector[0] < -25) {
+            		 turnLeft = false;
+            		 turnRight = false;
+            		 noTurn = true;
+            		 refHeading = input.getHeading();
+            	 }
         	 }
          }
-         else if (turnRight) {
-        	 if (targetVector[0] < -25) {
-        		 turnLeft = false;
-        		 turnRight = false;
-        	 }
-         }
-         
          if ((targetVector!=null)&&(targetVector[2] >= 500)) {
         	 System.out.println("te groot 500");
         	 turnLeft = false;
         	 turnRight = false;
-        	 if (refRoll>0) {
-    			 setRoll(refRoll-0.01f);
-    		 }
-    		 else if (refRoll<0) {
-    			 setRoll(refRoll+0.01f); 
-    		 }
+        	 noTurn = true;
+        	 if ((turnLeft)||(turnRight)) {
+        		 refHeading = input.getHeading();
+        	 }
          }
-         
          if (turnLeft) {
+        	 setRoll(refRoll+0.01f);
         	 System.out.println("turnLeft: " + refRoll);
         	 verStabInclination = 0.0f;
         	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
          }
-         
          else if (turnRight) {
+        	 setRoll(refRoll-0.01f);
         	 System.out.println("turnRight");
         	 verStabInclination = -0.0f;
         	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
          }
-         
-         else {
-        	 verStabInclination = 0.0f;
+         else if (noTurn) {
+        	 System.out.println("noTurn: " + refRoll);
+        	 if (refRoll>0) {
+    			 setRoll(refRoll-0.01f);
+    		 }
+    		 else if (refRoll<0) {
+    			 setRoll(refRoll+0.01f);
+    		 }
         	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
-             float error = -HeadingController.getOutput(input.getHeading(), 0);
-             verStabInclination = error;
+//            	 if (velocityDrone.getX() > 0) {
+//            		 refRoll = 0.02f;
+//            		 deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
+//                     leftWingInclination -= deltaRoll/2;
+//                     rightWingInclination += deltaRoll/2;
+//            	 }
+//            	 else if (velocityDrone.getX() < 0) {
+//            		 refRoll = -0.02f;
+//            		 deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
+//                     leftWingInclination -= deltaRoll/2;
+//                     rightWingInclination += deltaRoll/2;
+//             }
          }
 
          return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, verStabInclination);
@@ -255,6 +254,9 @@ class InputToOutput {
     	 }
     	 else if (roll <= -maxRoll) {
     		 refRoll = -maxRoll;
+    	 }
+    	 else if (Math.abs(roll) <= 0.005) {
+    		 refRoll = 0;
     	 }
     	 else {
     		 refRoll = roll;

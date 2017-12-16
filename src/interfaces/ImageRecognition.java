@@ -10,7 +10,6 @@ class ImageRecognition {
 	public static float[] FindTarget(byte[] image, int nbColumns, int nbRows ){
 		HashSet<Float> hues = findDifferentColors(image, nbColumns, nbRows);
 		if (hues.size() == 0){
-			System.out.println("null");
 			return null;
 		}
 		
@@ -29,7 +28,6 @@ class ImageRecognition {
 //			float hue = hues.
 //			cubes.add(findCubeInCertainColor(image, nbColumns, nbRows, 172, 8));
 //		}
-		System.out.println("[" + bestCube[0] + "," + bestCube[1] + "," + bestCube[2] + "]");
 		return new float[]{bestCube[0], bestCube[1], bestCube[2]};
 	}
 
