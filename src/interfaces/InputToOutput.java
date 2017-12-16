@@ -102,7 +102,7 @@ class InputToOutput {
             }
             
             if (velocityDrone.getZ()>-20f) {
-            	thrust += SpeedController.getOutput(-velocityDrone.getZ(), -20f);
+            	thrust += SpeedController.getOutput(-velocityDrone.getZ(), -15f);
             }
              
         	 if (thrust<0) {
@@ -119,7 +119,7 @@ class InputToOutput {
              rightWingInclination = input.getPitch();
              horStabInclination = 0;
              verStabInclination = 0;
-             thrust = 100;
+             thrust = 10;
              
              horStabInclination = PitchController.getOutput(input.getPitch(), (float) Math.PI/15);
  	        if (input.getPitch() + horStabInclination > Math.PI/9){
@@ -197,18 +197,16 @@ class InputToOutput {
         	 if (targetVector[0] > 25) {
         		 turnLeft = false;
         		 turnRight = false;
-        		 refHeading = input.getHeading();
         	 }
          }
          else if (turnRight) {
         	 if (targetVector[0] < -25) {
         		 turnLeft = false;
         		 turnRight = false;
-        		 refHeading = input.getHeading();
         	 }
          }
          
-         if ((targetVector!=null)&&(targetVector[2] >= 700)) {
+         if ((targetVector!=null)&&(targetVector[2] >= 500)) {
         	 System.out.println("te groot 500");
         	 turnLeft = false;
         	 turnRight = false;
@@ -222,7 +220,7 @@ class InputToOutput {
          
          if (turnLeft) {
         	 System.out.println("turnLeft: " + refRoll);
-        	 verStabInclination = 0.02f;
+        	 verStabInclination = 0.0f;
         	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
@@ -230,7 +228,7 @@ class InputToOutput {
          
          else if (turnRight) {
         	 System.out.println("turnRight");
-        	 verStabInclination = -0.02f;
+        	 verStabInclination = -0.0f;
         	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
@@ -241,7 +239,7 @@ class InputToOutput {
         	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
-             float error = -HeadingController.getOutput(input.getHeading(), refHeading);
+             float error = -HeadingController.getOutput(input.getHeading(), 0);
              verStabInclination = error;
          }
 
