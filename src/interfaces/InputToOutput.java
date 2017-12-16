@@ -14,7 +14,7 @@ class InputToOutput {
   	
   	static PIDcontroller PitchControllerTurning = new PIDcontroller(4.5f, 0f, 15f);
   	static PIDcontroller RollControllerTurning = new PIDcontroller(0.3f, 0f, 12f);
-  	static PIDcontroller HeadingController = new PIDcontroller(0.01f, 0f,0.05f);
+  	static PIDcontroller HeadingController = new PIDcontroller(0.01f, 0f,0.1f); // 0.01, 0, 0.1
 
 
   	static boolean ascending = false;
@@ -119,7 +119,7 @@ class InputToOutput {
              rightWingInclination = input.getPitch();
              horStabInclination = 0;
              verStabInclination = 0;
-             thrust = 10;
+             thrust = 5;
              
              horStabInclination = PitchController.getOutput(input.getPitch(), (float) Math.PI/15);
  	        if (input.getPitch() + horStabInclination > Math.PI/9){
@@ -211,6 +211,12 @@ class InputToOutput {
         	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
+             if (verStabInclination > 0.03f) {
+            	 verStabInclination = 0.03f;
+             }
+             else if (verStabInclination < -0.03f) {
+            	 verStabInclination = -0.03f;
+             }
          }
          else if (turnRight) {
         	 setRoll(refRoll-0.01f);
@@ -219,6 +225,12 @@ class InputToOutput {
         	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
+             if (verStabInclination > 0.03f) {
+            	 verStabInclination = 0.03f;
+             }
+             else if (verStabInclination < -0.03f) {
+            	 verStabInclination = -0.03f;
+             }
          }
          else if (noTurn) {
         	 System.out.println("noTurn: " + refRoll);
@@ -231,18 +243,13 @@ class InputToOutput {
         	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
-//            	 if (velocityDrone.getX() > 0) {
-//            		 refRoll = 0.02f;
-//            		 deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
-//                     leftWingInclination -= deltaRoll/2;
-//                     rightWingInclination += deltaRoll/2;
-//            	 }
-//            	 else if (velocityDrone.getX() < 0) {
-//            		 refRoll = -0.02f;
-//            		 deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
-//                     leftWingInclination -= deltaRoll/2;
-//                     rightWingInclination += deltaRoll/2;
-//             }
+             verStabInclination = -HeadingController.getOutput(input.getHeading(), refHeading);
+             if (verStabInclination > 0.03f) {
+            	 verStabInclination = 0.03f;
+             }
+             else if (verStabInclination < -0.03f) {
+            	 verStabInclination = -0.03f;
+             }
          }
 
          return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, verStabInclination);
