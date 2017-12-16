@@ -107,7 +107,7 @@ class ImageRecognition {
 		float xVector = minColumn + (maxColumn - minColumn)/2 - nbColumns/2;
 		float yVector = minRow + (maxRow - minRow)/2 - nbRows/2;
 
-		return new float[]{xVector,yVector, positions.size()};
+		return new float[]{xVector,-yVector, positions.size()};
 
 		
 	}
