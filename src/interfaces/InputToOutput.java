@@ -27,7 +27,7 @@ class InputToOutput {
   	static boolean turn = false;
   	static boolean turnLeft = false;
   	static boolean turnRight = false;
-  	static float maxRoll = 0.1f;
+  	static float maxRoll = 0.07f;
   	static boolean noTurn = true;
 
      static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
@@ -204,7 +204,9 @@ class InputToOutput {
         		 refHeading = input.getHeading();
         	 }
          }
+         
          if (turnLeft) {
+        	 thrust = 2;
         	 setRoll(refRoll+0.01f);
         	 System.out.println("turnLeft: " + refRoll);
         	 verStabInclination = 0.0f;
@@ -219,6 +221,7 @@ class InputToOutput {
              }
          }
          else if (turnRight) {
+        	 thrust = 2;
         	 setRoll(refRoll-0.01f);
         	 System.out.println("turnRight");
         	 verStabInclination = -0.0f;
