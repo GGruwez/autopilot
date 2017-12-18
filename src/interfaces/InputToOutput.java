@@ -243,6 +243,11 @@ class InputToOutput {
     		 else if (refRoll<0) {
     			 setRoll(refRoll+0.01f);
     		 }
+        	 if (velocityDrone.getX() > 0.5f){
+        		 setRoll(-0.1f);
+        	 }else if (velocityDrone.getX() < -0.5f){
+        		 setRoll(0.1f);
+        	 }
         	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
              rightWingInclination += deltaRoll/2;
