@@ -15,6 +15,8 @@ class InputToOutput {
   	static PIDcontroller PitchControllerTurning = new PIDcontroller(4.5f, 0f, 15f);
   	static PIDcontroller RollControllerTurning = new PIDcontroller(0.3f, 0f, 12f);
   	static PIDcontroller HeadingController = new PIDcontroller(0.01f, 0f,0.1f); // 0.01, 0, 0.1
+  	
+  	private static double SIMULATION_PERIOD = 0.01;
 
 
   	static boolean ascending = false;
@@ -83,38 +85,32 @@ class InputToOutput {
         	 }
          }
          
+         cruising = true;
+		 ascending = false;
+		 descending = false;
+         
          if (cruising) {
-        	thrust = 0;
-          	leftWingInclination = input.getPitch();
-            rightWingInclination = input.getPitch();
-           	horStabInclination = PitchController.getOutput(input.getPitch(), 0);
-           	
-            if (input.getPitch() + horStabInclination > Math.PI/9){
-             	horStabInclination = (float) (Math.PI/9);
-            }
-            else if(input.getPitch() + horStabInclination < -Math.PI/9){
-     	        horStabInclination = (float) (-Math.PI/9);
-      	    }
-              
-            if (input.getY()<refHeight) {
- 	            thrust = 10*SpeedController.getOutput(input.getY(), refHeight);
- 	            horStabInclination = (float) Math.PI/120 - input.getPitch();
-            }
-            
-            if (velocityDrone.getZ()>-20f) {
-            	thrust += SpeedController.getOutput(-velocityDrone.getZ(), -20f);
-            }
-             
-        	 if (thrust<0) {
-        		 thrust = 0;
-        	 }
-        	 else if (thrust > 80) {
-        		 thrust = 80;
-        	 }
-          }
+        	 
+        	float currentProjAirspeed = (float) Math.atan(velocityDrone.getY()/-velocityDrone.getZ());
+          	rightWingInclination = (float) (currentProjAirspeed-0.9*config.getMaxAOA());
+          	leftWingInclination = rightWingInclination;
+        	 
+        	Vector gravity = (new Vector(0, 
+         			-(config.getEngineMass()+config.getTailMass()+2*config.getWingMass()*config.getGravity()), 0)).transform
+         			(input.getHeading(), input.getPitch(), input.getRoll());
+         	float gravityToCompensate = gravity.getY();
+         	float minSpeed = (float) Math.sqrt(gravityToCompensate/config.getWingLiftSlope()/(0.9*config.getMaxAOA())/Math.cos(rightWingInclination)); 
+         	
+         	if (-velocityDrone.getZ() < minSpeed) {
+         		double acceleration = (minSpeed - Math.abs(velocityDrone.getZ()))/SIMULATION_PERIOD;
+         		thrust = (float) (acceleration*(config.getEngineMass()+config.getTailMass()+2*config.getWingMass()));
+         	}
+         	
+         }
           
          else if (ascending) {
-        	 System.out.println("ascending: " + input.getY());
+        	System.out.println("ascending: " + input.getY());
+        	
          	leftWingInclination = input.getPitch();
              rightWingInclination = input.getPitch();
              horStabInclination = 0;
@@ -236,7 +232,7 @@ class InputToOutput {
              }
          }
          else if (noTurn) {
-        	 System.out.println("noTurn: " + refRoll);
+        	 System.out.println("xxnoTurn: " + refRoll);
         	 if (refRoll>0) {
     			 setRoll(refRoll-0.01f);
     		 }
