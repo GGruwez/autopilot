@@ -3,7 +3,7 @@
 
 class InputToOutput {
  
- 	static PIDcontroller PitchController = new PIDcontroller(4.5f, 0f, 15f);
+ 	static PIDcontroller PitchControllerxx = new PIDcontroller(4.5f, 0f, 15f);
   	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
 
 
@@ -41,7 +41,7 @@ class InputToOutput {
          float thrust = 0;
          float dt = -prev.getElapsedTime()+input.getElapsedTime();
          Vector velocityWorld;
-         Vector velocityDrone;
+         Vector velocityDrone = new Vector(0, 0, -32);
          AutopilotConfig config = autopilot.getConfig();
          
          velocityWorld = new Vector((input.getX()-prev.getX())/dt,(input.getY()-prev.getY())/dt,(input.getZ()-prev.getZ())/dt);
@@ -91,20 +91,27 @@ class InputToOutput {
          
          if (cruising) {
         	 
-        	float currentProjAirspeed = (float) Math.atan(velocityDrone.getY()/-velocityDrone.getZ());
-          	rightWingInclination = (float) (currentProjAirspeed-0.9*config.getMaxAOA());
+        	float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
+        	System.out.println("hoek1: "+ currentProjAirspeed);
+          	rightWingInclination = (float) (-currentProjAirspeed+0.9*config.getMaxAOA());
+          	System.out.println("inclination: "+ rightWingInclination);
           	leftWingInclination = rightWingInclination;
         	 
-        	Vector gravity = (new Vector(0, 
-         			-(config.getEngineMass()+config.getTailMass()+2*config.getWingMass()*config.getGravity()), 0)).transform
-         			(input.getHeading(), input.getPitch(), input.getRoll());
-         	float gravityToCompensate = gravity.getY();
-         	float minSpeed = (float) Math.sqrt(gravityToCompensate/config.getWingLiftSlope()/(0.9*config.getMaxAOA())/Math.cos(rightWingInclination)); 
+         	float gravityToCompensate = (config.getEngineMass()+config.getTailMass()+2*config.getWingMass())*config.getGravity();
+         	Vector lift = (new Vector(0, (float) (2*config.getWingLiftSlope()*config.getMaxAOA()*0.9), 0)).inverseTransform(
+         			input.getHeading(), input.getPitch(), input.getRoll());
+         	float cancelY = (float) (-velocityDrone.getY()/SIMULATION_PERIOD);
+         	float minSpeed = (float) Math.sqrt((gravityToCompensate+cancelY)/lift.getY());
+         	System.out.println("gravity: " + gravityToCompensate);
+         	System.out.println("minSpeed: " + minSpeed);
+         	System.out.println("-------------------------------------------------");
          	
-         	if (-velocityDrone.getZ() < minSpeed) {
-         		double acceleration = (minSpeed - Math.abs(velocityDrone.getZ()))/SIMULATION_PERIOD;
+         	if (-velocityDrone.getZ() < 1.02*minSpeed) {
+         		double acceleration = (1.02*minSpeed - Math.abs(velocityDrone.getZ()))/SIMULATION_PERIOD;
          		thrust = (float) (acceleration*(config.getEngineMass()+config.getTailMass()+2*config.getWingMass()));
+         		System.out.println("thrust: " + thrust);
          	}
+         	horStabInclination = 0;
          	
          }
           
@@ -117,7 +124,7 @@ class InputToOutput {
              verStabInclination = 0;
              thrust = 5;
              
-             horStabInclination = PitchController.getOutput(input.getPitch(), (float) Math.PI/15);
+             horStabInclination = PitchControllerxx.getOutput(input.getPitch(), (float) Math.PI/15);
  	        if (input.getPitch() + horStabInclination > Math.PI/9){
  	        	horStabInclination = (float) (Math.PI/9);
  	        }
@@ -134,7 +141,7 @@ class InputToOutput {
              verStabInclination = 0;
              thrust = 0;
              
-            horStabInclination = PitchController.getOutput(input.getPitch(), (float) -Math.PI/35);
+            horStabInclination = PitchControllerxx.getOutput(input.getPitch(), (float) -Math.PI/35);
  	        if (input.getPitch() + horStabInclination > Math.PI/9){
  	        	horStabInclination = (float) (Math.PI/9);
  	        }
@@ -146,7 +153,7 @@ class InputToOutput {
          else {
             leftWingInclination = input.getPitch();
             rightWingInclination = input.getPitch();
-         	horStabInclination = PitchController.getOutput(input.getPitch(), 0);
+         	horStabInclination = PitchControllerxx.getOutput(input.getPitch(), 0);
  	        if (input.getPitch() + horStabInclination > Math.PI/9){
  	        	horStabInclination = (float) (Math.PI/9);
  	        }
@@ -232,7 +239,7 @@ class InputToOutput {
              }
          }
          else if (noTurn) {
-        	 System.out.println("xxnoTurn: " + refRoll);
+        	 //System.out.println("xxnoTurn: " + refRoll);
         	 if (refRoll>0) {
     			 setRoll(refRoll-0.01f);
     		 }
