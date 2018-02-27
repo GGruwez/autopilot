@@ -42,7 +42,7 @@ class ImageRecognition {
 				pixel.add(image[3*(row*nbColumns+column)+2] & 0xff);
 
 				ArrayList<Float> HSVPixel = RBGToHSV(pixel);
-				if((HSVPixel.get(1) >= 0.3) && (HSVPixel.get(2)>0.3)){ // Don't add black cubes
+				if((HSVPixel.get(1) >= 0.3) && (HSVPixel.get(2)>0.3 && HSVPixel.get(2)<=0.5)){ // Don't add black cubes, don't add values with a V > 50%
 					hues.add(HSVPixel.get(0));
 				}
 			}
