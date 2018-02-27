@@ -3,7 +3,7 @@
 
 class InputToOutput {
  
- 	static PIDcontroller PitchController = new PIDcontroller(4.5f, 0f, 15f);
+ 	static PIDcontroller PitchController = new PIDcontroller(50f, 0f, 15f);
   	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
 
 
@@ -83,6 +83,11 @@ class InputToOutput {
         	 }
          }
          
+         cruising = true;
+		 ascending = false;
+		 descending = false;
+		 refHeight = 0;
+         
          if (cruising) {
         	thrust = 0;
           	leftWingInclination = input.getPitch();
@@ -97,19 +102,19 @@ class InputToOutput {
       	    }
               
             if (input.getY()<refHeight) {
- 	            thrust = 10*SpeedController.getOutput(input.getY(), refHeight);
+ 	            thrust = SpeedController.getOutput(input.getY(), refHeight);
  	            horStabInclination = (float) Math.PI/120 - input.getPitch();
             }
             
-            if (velocityDrone.getZ()>-20f) {
-            	thrust += SpeedController.getOutput(-velocityDrone.getZ(), -20f);
+            if (velocityDrone.getZ()>-32f) {
+            	thrust += SpeedController.getOutput(-velocityDrone.getZ(), -32f);
             }
              
         	 if (thrust<0) {
         		 thrust = 0;
         	 }
-        	 else if (thrust > 80) {
-        		 thrust = 80;
+        	 else if (thrust > 2000) {
+        		 thrust = 2000;
         	 }
           }
           
