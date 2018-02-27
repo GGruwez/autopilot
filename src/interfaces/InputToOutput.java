@@ -32,7 +32,7 @@ class InputToOutput {
   	static float maxRoll = 0.1f;
   	static boolean noTurn = true;
 
-     static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
+    static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          PreviousInputs prev = autopilot.getPreviousInput();
          float leftWingInclination = 0;
          float rightWingInclination = 0;
@@ -91,27 +91,51 @@ class InputToOutput {
          
          if (cruising) {
         	 
+          	horStabInclination = 0;
+         	
+          	if (input.getPitch() > 0.01f) {
+          		horStabInclination = -input.getPitch() - config.getMaxAOA()/2;
+          	}
+          	else if (input.getPitch() < -0.01f) {
+          		horStabInclination = -input.getPitch() + config.getMaxAOA()/2;
+          	}
+        	 
         	float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
-        	System.out.println("hoek1: "+ currentProjAirspeed);
           	rightWingInclination = (float) (-currentProjAirspeed+0.9*config.getMaxAOA());
           	System.out.println("inclination: "+ rightWingInclination);
           	leftWingInclination = rightWingInclination;
         	 
          	float gravityToCompensate = (config.getEngineMass()+config.getTailMass()+2*config.getWingMass())*config.getGravity();
-         	Vector lift = (new Vector(0, (float) (2*config.getWingLiftSlope()*config.getMaxAOA()*0.9), 0)).inverseTransform(
+         	float horLift = (float) (config.getHorStabLiftSlope()*velocityDrone.dotProduct(velocityDrone)*(currentProjAirspeed+horStabInclination)*Math.cos(horStabInclination));
+         	float cancelY = (float) (-velocityDrone.getY()/10/SIMULATION_PERIOD)*(config.getEngineMass()+2*config.getWingMass()+config.getTailMass());
+         	float forceToCompensate = gravityToCompensate - horLift + cancelY;
+         	Vector lift = (new Vector(0, (float) ((2*config.getWingLiftSlope()*config.getMaxAOA()*0.9)*Math.cos(rightWingInclination)), 0)).inverseTransform(
          			input.getHeading(), input.getPitch(), input.getRoll());
-         	float cancelY = (float) (-velocityDrone.getY()/SIMULATION_PERIOD);
-         	float minSpeed = (float) Math.sqrt((gravityToCompensate+cancelY)/lift.getY());
-         	System.out.println("gravity: " + gravityToCompensate);
-         	System.out.println("minSpeed: " + minSpeed);
-         	System.out.println("-------------------------------------------------");
+         	float minSpeed = (float) Math.sqrt((forceToCompensate)/lift.getY());
+         	System.out.println("minSpeed: "+ minSpeed);
+     
          	
-         	if (-velocityDrone.getZ() < 1.02*minSpeed) {
-         		double acceleration = (1.02*minSpeed - Math.abs(velocityDrone.getZ()))/SIMULATION_PERIOD;
+         	if (-velocityDrone.getZ() < minSpeed) {
+         		double acceleration = (minSpeed - Math.abs(velocityDrone.getZ()))/SIMULATION_PERIOD/10;
          		thrust = (float) (acceleration*(config.getEngineMass()+config.getTailMass()+2*config.getWingMass()));
-         		System.out.println("thrust: " + thrust);
          	}
-         	horStabInclination = 0;
+         	
+         	if (input.getY() > refHeight) {
+         		thrust = thrust/2;
+         	}
+         	
+//         	System.out.println("NUL PUNT NUL 1");
+//         	horStabInclination = (float) (angularVelocity.getX()*Vector.getInertiaTensor(config).getX()/(config.getTailSize()*config.getHorStabLiftSlope()*
+//         			velocityDrone.dotProduct(velocityDrone)));
+//         	
+//         	if ((input.getPitch()>0.01)&&(horStabInclination>0)) {
+//         		horStabInclination = (float) (1.5*horStabInclination);
+//         	}
+         	
+         
+         	System.out.println("horStabInclination: " + horStabInclination);
+         	
+         	System.out.println("-------------------------------------------------");
          	
          }
           
@@ -279,7 +303,9 @@ class InputToOutput {
     	 else {
     		 refRoll = roll;
     	 }
-
      }
- 
- }
+    
+
+
+}
+

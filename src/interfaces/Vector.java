@@ -154,6 +154,30 @@ public class Vector {
     public Vector clone(){
         return new Vector(this.getX(), this.getY(), this.getZ());
     }  
+	
+    public static Vector getInertiaTensor(AutopilotConfig config){
+	    //elementen vd matrix berekenen - alles behalve elementen op de diagonaal zijn 0
+
+		    double Ixx1 = Math.pow(config.getTailSize()
+		            ,2)*config.getTailMass() + Math.pow(getEnginePlace(config),2)*config.getEngineMass();
+		    float Ixx = (float)Ixx1;
+		
+		
+		    double Iyy1 = 2*Math.pow(config.getWingX()
+		            , 2)*config.getWingMass() + Math.pow(config.getTailSize(),2)*config.getTailMass() + Math.pow(getEnginePlace(config),2)*config.getEngineMass();
+		
+		    float Iyy = (float)Iyy1;
+		
+		    double Izz1 = 2*Math.pow(config.getWingX(), 2)*config.getWingMass();
+		    float Izz = (float)Izz1;
+		
+		    return new Vector(Ixx,Iyy,Izz);
+    }
+	 
+    public static float getEnginePlace(AutopilotConfig config){
+	    return config.getTailSize()*(-config.getTailMass()/config.getEngineMass());
+	}
+    
 }	
 	
 		
