@@ -2,7 +2,7 @@
 
 
 class InputToOutput {
- 
+	
  	static PIDcontroller PitchController = new PIDcontroller(50f, 0f, 15f);
   	static PIDcontroller HeightController = new PIDcontroller(0.1f, 0f, 0.02f);
 
@@ -31,6 +31,7 @@ class InputToOutput {
   	static boolean noTurn = true;
 
      static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
+    	 
          PreviousInputs prev = autopilot.getPreviousInput();
          float leftWingInclination = 0;
          float rightWingInclination = 0;
@@ -281,7 +282,10 @@ class InputToOutput {
     	 else {
     		 refRoll = roll;
     	 }
-
+    	 
+    	 
+    	 System.out.println("testtest");
      }
+	
  
  }
