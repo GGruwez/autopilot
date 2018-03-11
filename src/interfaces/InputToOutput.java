@@ -35,6 +35,7 @@ class InputToOutput {
   	static float maxRoll = 0.1f;
   	static boolean noTurn = true;
   	static boolean takeoff = false;
+  	static boolean prevtakeoff = false;
 
     static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          PreviousInputs prev = autopilot.getPreviousInput();
@@ -48,6 +49,7 @@ class InputToOutput {
          Vector velocityDrone = new Vector(0, 0, -32);
          AutopilotConfig config = autopilot.getConfig();
          boolean prevDescending = descending;
+         
          
          velocityWorld = new Vector((input.getX()-prev.getX())/dt,(input.getY()-prev.getY())/dt,(input.getZ()-prev.getZ())/dt);
          velocityDrone = velocityWorld.inverseTransform(prev.getHeading(),prev.getPitch(),prev.getRoll());
@@ -94,14 +96,14 @@ class InputToOutput {
 		 ascending = false;
 		 descending = false;
 		 
-		 if (input.getElapsedTime() > 10 && input.getHeading() > -0.3f) {
-			 ascending = false;
-			 cruising = true;
+		 if (input.getElapsedTime() > 30 && input.getHeading() > -0.3f) {
+			 ascending = true;
+			 cruising = false;
 			 descending = false;
-			 turnRight = true;
+			 turnRight = false;
 		 }
 		 
-		 if (input.getElapsedTime() > 60 ) {
+		 if (input.getY() > 60 ) {
 			 ascending = false;
 			 cruising = true;
 			 descending = false;
@@ -120,8 +122,13 @@ class InputToOutput {
          
          if (cruising) {
         	 
+        	if (prevtakeoff && input.getPitch() > 0.02) {
+        		horStabInclination = -config.getMaxAOA();
+        	}
+        	else {
           	horStabInclination = -config.getMaxAOA()/4;
-         
+        	prevtakeoff = false;
+        	}
 //          	if (upperbound >= 0.01f)
 //        		upperbound -= 0.01;
 //        	if (lowerbound >= -0.01f)
@@ -152,6 +159,8 @@ class InputToOutput {
         	 
         	float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
           	rightWingInclination = (float) (-currentProjAirspeed+0.9*config.getMaxAOA());
+          	if (prevtakeoff)
+          		rightWingInclination /=2;
           	System.out.println("inclination: "+ rightWingInclination);
           	leftWingInclination = rightWingInclination;
         	 
@@ -204,8 +213,10 @@ class InputToOutput {
          		horStabInclination = -input.getPitch();
          	}
          	
-         	rightWingInclination = config.getMaxAOA()/2;
+         	float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
+          	rightWingInclination = (float) (-currentProjAirspeed+0.9*config.getMaxAOA());
          	leftWingInclination = rightWingInclination;
+         	prevtakeoff = true;
          }
          else if (ascending) {
         	 
