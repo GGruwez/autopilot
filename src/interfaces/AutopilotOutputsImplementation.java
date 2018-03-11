@@ -15,17 +15,23 @@ public class AutopilotOutputsImplementation implements AutopilotOutputs {
     private float rightWingInclination;
     private float horStabInclination;
     private float verStabInclination;
+    private float frontBrake;
+    private float leftBrake;
+    private float rightBrake;
     
-    AutopilotOutputsImplementation(float thrust, float leftIncl, float rightIncl, float horIncl, float verIncl) {
+    AutopilotOutputsImplementation(float thrust, float leftIncl, float rightIncl, float horIncl, float verIncl, float frontBrake, float leftBrake, float rightBrake) {
     	this.thrust = thrust;
     	this.leftWingInclination = leftIncl;
     	this.rightWingInclination = rightIncl;
     	this.horStabInclination = horIncl;
     	this.verStabInclination = verIncl;
+    	this.frontBrake = frontBrake;
+    	this.leftBrake = leftBrake;
+    	this.rightBrake = rightBrake;
     }
     
     AutopilotOutputsImplementation() {
-    	new AutopilotOutputsImplementation(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+    	new AutopilotOutputsImplementation(0.0f, 0.0f, 0.0f, 0.0f, 0.0f ,0f,0f,0f);
     }
 
     @Override
@@ -55,20 +61,17 @@ public class AutopilotOutputsImplementation implements AutopilotOutputs {
 
 	@Override
 	public float getFrontBrakeForce() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.frontBrake;
 	}
 
 	@Override
 	public float getLeftBrakeForce() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.leftBrake;
 	}
 
 	@Override
 	public float getRightBrakeForce() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.rightBrake;
 	}
     
 }
