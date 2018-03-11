@@ -36,6 +36,8 @@ class InputToOutput {
   	static boolean noTurn = true;
   	static boolean takeoff = false;
   	static boolean prevtakeoff = false;
+  	static boolean landing = false;
+
 
     static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          PreviousInputs prev = autopilot.getPreviousInput();
@@ -96,6 +98,7 @@ class InputToOutput {
 		 ascending = false;
 		 descending = false;
 		 
+
 		 if (input.getElapsedTime() > 30 && input.getHeading() > -0.3f) {
 			 ascending = true;
 			 cruising = false;
@@ -111,7 +114,9 @@ class InputToOutput {
 			 turnLeft = false;
 			
 		 }
-		 if (input.getY() < 20){
+
+		 
+		 if (input.getY() < 20 && input.getElapsedTime() < 30){
 			 takeoff = true;
 		 	ascending = false;
 		 	descending = false;
@@ -119,6 +124,15 @@ class InputToOutput {
 		 }
 		 else
 			 takeoff = false;
+		 
+		 if (input.getElapsedTime() > 60){
+			 landing = true;
+			 ascending = false;
+			 descending = false;
+			 cruising = false;
+		 }
+		 else 
+			 landing = false;
          
          if (cruising) {
         	 
@@ -217,6 +231,19 @@ class InputToOutput {
           	rightWingInclination = (float) (-currentProjAirspeed+0.9*config.getMaxAOA());
          	leftWingInclination = rightWingInclination;
          	prevtakeoff = true;
+         }
+         
+         else if (landing){
+         	horStabInclination = 0;
+         	
+        	if (input.getPitch() < -0.02f) {
+        		horStabInclination = -input.getPitch()*2;
+        	}
+       	
+         	
+         	rightWingInclination = 0.01f;
+         	leftWingInclination = rightWingInclination;
+         	
          }
          else if (ascending) {
         	 
