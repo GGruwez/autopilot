@@ -100,24 +100,30 @@ class InputToOutput {
          cruising = true;
 		 ascending = false;
 		 descending = false;
-		 
+		 turnLeft = false;
 
-		 if (input.getElapsedTime() > 20 && input.getHeading() > -0.3f) {
-			 ascending = true;
-			 cruising = false;
-			 descending = false;
-			 turnRight = false;
-		 }
-		 
-		 if (input.getY() > 30 || input.getElapsedTime()<40) {
+		 if (input.getElapsedTime() > 20 && Math.abs(input.getHeading())< Math.PI*.9) {
+			 System.out.println(input.getHeading());
 			 ascending = false;
 			 cruising = true;
 			 descending = false;
 			 refHeight = 0;
-			 turnLeft = false;
-			
+			 turnLeft = true;
 		 }
+		 
+		 if (input.getElapsedTime() > 35) {
+			 ascending = false;
+			 cruising = true;
+			 descending = false;
 
+		 }
+		 
+		 
+		 if (input.getElapsedTime() > 43) {
+			 ascending = false;
+			 cruising = true;
+			 descending = false;
+		 }
 		 
 		 if (input.getY() < 20 && input.getElapsedTime() < 20){
 			 takeoff = true;
@@ -128,7 +134,7 @@ class InputToOutput {
 		 else
 			 takeoff = false;
 		 
-		 if (input.getElapsedTime() > 40){
+		 if (input.getElapsedTime() > 80){
 			 landing = true;
 			 ascending = false;
 			 descending = false;
@@ -146,17 +152,7 @@ class InputToOutput {
           	horStabInclination = -config.getMaxAOA()/4;
         	prevtakeoff = false;
         	}
-//          	if (upperbound >= 0.01f)
-//        		upperbound -= 0.01;
-//        	if (lowerbound >= -0.01f)
-//        		lowerbound -= 0.01;
-//        	 
-//        	
-//        	if (upperbound <= 0.01f)
-//        		upperbound += 0.01;
-//        	if (lowerbound <= -0.01f)
-//        		lowerbound += 0.01;
-        	
+
         	
            	if (input.getPitch() > 0.01f) {
            		horStabInclination = -input.getPitch();
@@ -168,12 +164,8 @@ class InputToOutput {
            		horStabInclination *= -2;
            		
            	}
-           
-          	
-//        	System.out.println("upper: " + upperbound);
-//        	System.out.println("lower : " + lowerbound);
-//        	System.out.println("cruising: ");
-        	 
+
+        	
         	float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
           	rightWingInclination = (float) (-currentProjAirspeed+0.9*config.getMaxAOA());
           	if (prevtakeoff)
@@ -196,6 +188,12 @@ class InputToOutput {
          		double acceleration = (minSpeed - Math.abs(velocityDrone.getZ()))/SIMULATION_PERIOD;
          		thrust = (float) (acceleration*(config.getEngineMass()+config.getTailMass()+2*config.getWingMass()));
          	}
+         	if (prevDescending && velocityDrone.getY() < 0) {
+         		thrust = 0;
+         		rightWingInclination = (float) (-currentProjAirspeed+0.6*config.getMaxAOA());
+         		leftWingInclination = rightWingInclination;
+           	 
+         	}
          	
          	if (input.getY() < refHeight - 1) {
          		thrust *= 2;
@@ -204,17 +202,18 @@ class InputToOutput {
          		thrust /= 2;
          	}
          	
+ 
          	
-//         	System.out.println("NUL PUNT NUL 1");
-//         	horStabInclination = (float) (angularVelocity.getX()*Vector.getInertiaTensor(config).getX()/(config.getTailSize()*config.getHorStabLiftSlope()*
-//         			velocityDrone.dotProduct(velocityDrone)));
-//         	
-//         	if ((input.getPitch()>0.01)&&(horStabInclination>0)) {
-//         		horStabInclination = (float) (1.5*horStabInclination);
-//         	}
-         	
-         
-//         	System.out.println("horStabInclination: " + horStabInclination);
+         	if  (!(turnLeft || turnRight)) {
+         		float deltaroll = 0.01f;//0.001f
+         		if (input.getRoll() > 0.0005f){//0.01f
+         			rightWingInclination -= deltaroll;
+         			leftWingInclination += deltaroll;
+           	 } else if (input.getRoll() < -0.0005f) {
+           		rightWingInclination += deltaroll;
+     			leftWingInclination -= deltaroll;
+           	 }
+         	}
          	
          	System.out.println("-------------------------------------------------");
          	
@@ -237,26 +236,13 @@ class InputToOutput {
          }
          
          else if (landing){
-//        	 float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
-//
-//            horStabInclination = 0.02f;
-//   
-//            if (input.getPitch() < -0.02f) {
-//            	horStabInclination = -input.getPitch()*2;
-//            }
-//            
-//         	rightWingInclination = (float) (-currentProjAirspeed+0.8*config.getMaxAOA());
-//         	if (input.getY() < 30) {
-//         		rightWingInclination =(float) (-currentProjAirspeed+0.9*config.getMaxAOA());
-//         		leftWingInclination = rightWingInclination;
-//         		horStabInclination = (float) (-currentProjAirspeed+0.5*config.getMaxAOA());
-//         	}		
+	
            	horStabInclination = -config.getMaxAOA()/4;	
             	if (input.getPitch() > 0.03f) {
             		horStabInclination = -input.getPitch();
             	}
             	else if (input.getPitch() < -0.01f) {
-            		horStabInclination = config.getMaxAOA()*0.75f;
+            		horStabInclination = config.getMaxAOA()*0.6f;
             	}
             	
             
@@ -285,21 +271,6 @@ class InputToOutput {
         		horStabInclination = -input.getPitch();
         	}
 
-//        	if (upperbound < 0.13f)
-//        		upperbound += 0.004;
-//        	if (lowerbound < 0.11f)
-//        		lowerbound += 0.004;
-        	 
-//        	System.out.println("upper: " + upperbound);
-//        	System.out.println("lower : " + lowerbound);
-//        	System.out.println("ascending: ");
-        	
-//           	if (input.getPitch() > upperbound) {
-//           		horStabInclination = -input.getPitch() - config.getMaxAOA()/2;
-//           	}
-//           	else if (input.getPitch() < lowerbound) {
-//           		horStabInclination = -input.getPitch() + config.getMaxAOA()/2;
-//           	}
         	
         	float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
            	rightWingInclination = (float) (-currentProjAirspeed+0.9*config.getMaxAOA());
@@ -332,32 +303,36 @@ class InputToOutput {
         		horStabInclination = -input.getPitch()*2;
         	}
 
+        	float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
+           	rightWingInclination = (float) (-currentProjAirspeed+0.5*config.getMaxAOA());
+
+           	leftWingInclination = rightWingInclination;
      	 
-     	float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
-       	rightWingInclination = 0;
-       	System.out.println("inclination: "+ rightWingInclination);
-       	leftWingInclination = rightWingInclination;
-     	 
-      	float gravityToCompensate = (config.getEngineMass()+config.getTailMass()+2*config.getWingMass())*config.getGravity();
-      	float horLift = (float) (config.getHorStabLiftSlope()*velocityDrone.dotProduct(velocityDrone)*(currentProjAirspeed+horStabInclination)*Math.cos(horStabInclination));
-    	float forceToCompensate = gravityToCompensate - horLift;
-      	Vector lift = (new Vector(0, (float) ((2*config.getWingLiftSlope()*config.getMaxAOA()*0.9)*Math.cos(rightWingInclination)), 0)).inverseTransform(
-      			input.getHeading(), input.getPitch(), input.getRoll());
-      	float minSpeed = (float) Math.sqrt((forceToCompensate)/lift.getY());
-      	System.out.println("minSpeed: "+ minSpeed);
+//     	float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
+//       	rightWingInclination = 0;
+//       	System.out.println("inclination: "+ rightWingInclination);
+//       	leftWingInclination = rightWingInclination;
+//     	 
+//      	float gravityToCompensate = (config.getEngineMass()+config.getTailMass()+2*config.getWingMass())*config.getGravity();
+//      	float horLift = (float) (config.getHorStabLiftSlope()*velocityDrone.dotProduct(velocityDrone)*(currentProjAirspeed+horStabInclination)*Math.cos(horStabInclination));
+//    	float forceToCompensate = gravityToCompensate - horLift;
+//      	Vector lift = (new Vector(0, (float) ((2*config.getWingLiftSlope()*config.getMaxAOA()*0.9)*Math.cos(rightWingInclination)), 0)).inverseTransform(
+//      			input.getHeading(), input.getPitch(), input.getRoll());
+//      	float minSpeed = (float) Math.sqrt((forceToCompensate)/lift.getY());
+//      	System.out.println("minSpeed: "+ minSpeed);
       	
       	
-      	if (-velocityDrone.getZ() < minSpeed) {
-      		double acceleration = (minSpeed - Math.abs(velocityDrone.getZ()))/SIMULATION_PERIOD;
-      		thrust = (float) (acceleration*(config.getEngineMass()+config.getTailMass()+2*config.getWingMass()));
-      	}
+//      	if (-velocityDrone.getZ() < minSpeed) {
+//      		double acceleration = (minSpeed - Math.abs(velocityDrone.getZ()))/SIMULATION_PERIOD;
+//      		thrust = (float) (acceleration*(config.getEngineMass()+config.getTailMass()+2*config.getWingMass()));
+//      	}
       	
-      	if (input.getY() < refHeight - 1) {
-      		thrust *= 2;
-      	}
-      	if (input.getY() > refHeight + 1) {
-      		thrust /= 2;
-      	}
+//      	if (input.getY() < refHeight - 1) {
+//      		thrust *= 2;
+//      	}
+//      	if (input.getY() > refHeight + 1) {
+//      		thrust /= 2;
+//      	}
       	
         }
          
@@ -407,24 +382,22 @@ class InputToOutput {
          }
          
          if (turnLeft) {
-        	 float deltaroll = 0.005f;
+        	 float deltaroll = 0.01f;//0.001f
         	 rightWingInclination += deltaroll;
         	 leftWingInclination -= deltaroll;
-        	 if (input.getRoll() > 0.01f){
-        		 rightWingInclination -= deltaroll;
-        		 leftWingInclination += deltaroll;
+        	 if (input.getRoll() > 0.3f){//0.01f
+        		 rightWingInclination -= 2*deltaroll;
+        		 leftWingInclination += 2*deltaroll;
         	 }
-        	 thrust = 1000;
+        	 thrust =1250;
         	System.out.print("turnleft");
         	 
         	 
-        	 horStabInclination = 0.01f;
-        	 if (input.getPitch() > 0.05f)
+        	 horStabInclination = 0.05f;
+        	 if (input.getPitch() > 0.1f)
         		 horStabInclination = -input.getPitch(); 
         	 
-        	 if (input.getHeading() > 0.3f)
-        		 turnLeft = false;
-        	 
+        
         	 
          }
          else if (turnRight) {
@@ -447,28 +420,28 @@ class InputToOutput {
         		 turnRight = false;
          }
          else if (noTurn) {
-        	 //System.out.println("xxnoTurn: " + refRoll);
-        	 if (refRoll>0) {
-    			 setRoll(refRoll-0.01f);
-    		 }
-    		 else if (refRoll<0) {
-    			 setRoll(refRoll+0.01f);
-    		 }
-//        	 if (velocityDrone.getX() > 0.5f){
-//        		 setRoll(-0.1f);
-//        	 }else if (velocityDrone.getX() < -0.5f){
-//        		 setRoll(0.1f);
-//        	 }
-        	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
-             leftWingInclination -= deltaRoll/2;
-             rightWingInclination += deltaRoll/2;
-             verStabInclination = -HeadingController.getOutput(input.getHeading(), refHeading);
-             if (verStabInclination > 0.03f) {
-            	 verStabInclination = 0.03f;
-             }
-             else if (verStabInclination < -0.03f) {
-            	 verStabInclination = -0.03f;
-             }
+//        	 //System.out.println("xxnoTurn: " + refRoll);
+//        	 if (refRoll>0) {
+//    			 setRoll(refRoll-0.01f);
+//    		 }
+//    		 else if (refRoll<0) {
+//    			 setRoll(refRoll+0.01f);
+//    		 }
+////        	 if (velocityDrone.getX() > 0.5f){
+////        		 setRoll(-0.1f);
+////        	 }else if (velocityDrone.getX() < -0.5f){
+////        		 setRoll(0.1f);
+////        	 }
+//        	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
+//             leftWingInclination -= deltaRoll/2;
+//             rightWingInclination += deltaRoll/2;
+//             verStabInclination = -HeadingController.getOutput(input.getHeading(), refHeading);
+//             if (verStabInclination > 0.03f) {
+//            	 verStabInclination = 0.03f;
+//             }
+//             else if (verStabInclination < -0.03f) {
+//            	 verStabInclination = -0.03f;
+//             }
          }
          
          if (thrust > 2000) {
