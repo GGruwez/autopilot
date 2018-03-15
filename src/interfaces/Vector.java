@@ -178,6 +178,9 @@ public class Vector {
 	    return config.getTailSize()*(-config.getTailMass()/config.getEngineMass());
 	}
     
+    public boolean equals(Vector other){
+    	return (this.getX() == other.getX() && this.getY() == other.getY() && this.getZ() == other.getZ());
+    }
 }	
 	
 		
