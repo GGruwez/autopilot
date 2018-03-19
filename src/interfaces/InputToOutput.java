@@ -69,10 +69,10 @@ class InputToOutput {
          	 }
          	 
          	 
-         }else if ((ref > 0.06f && ref +0.06f < Math.PI) || (ref < -0.06f && ref + 0.06f < -Math.PI)) {
+         }else if ((ref > 0.f && ref  < Math.PI) || (ref < -0.1f && ref < -Math.PI)) {
      		//turnright
      		//System.out.println("right");
-     		if (Math.abs(ref) > 0.06f && Math.PI-ref > 0.06f) {
+     		if (Math.abs(ref) > 0.1f && Math.PI-ref > 0.1f) {
      			setTurnRight();
      		
          	}else{
@@ -80,10 +80,10 @@ class InputToOutput {
          	}
      		
      	}
-     	else if ((ref > 0.06f && ref+0.06f > Math.PI) || (ref < -0.06f && ref +0.06f > -Math.PI)) {
+     	else if ((ref > 0.f && ref > Math.PI) || (ref < -0.1f && ref > -Math.PI)) {
      		//turnleft
      		//System.out.println("left");
-     		if (Math.abs(ref) > 0.06f&& Math.PI+ref > 0.06f) {
+     		if (Math.abs(ref) > 0.1f&& Math.PI+ref > 0.1f) {
      			setTurnLeft();
      		
          	}else{
@@ -464,7 +464,7 @@ class InputToOutput {
    	 
    	 
    	 	horStabInclination = 0.05f;
-   	 	if (input.getPitch() > 0.1f)
+   	 	if (input.getPitch() > 0.15f)
    	 		horStabInclination = -input.getPitch(); 
    	 	
    	 	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, 0, 0);
@@ -494,7 +494,7 @@ class InputToOutput {
    	 
    	 
    	 	horStabInclination = 0.05f;
-   	 	if (input.getPitch() > 0.1f)
+   	 	if (input.getPitch() > 0.15f)
    	 		horStabInclination = -input.getPitch();
    	 	
    	 	
