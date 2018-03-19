@@ -56,43 +56,56 @@ class InputToOutput {
          System.out.println("distance to Target: " + nextTarget.calculateDistance(new Vector(input.getX(),input.getY(), input.getZ())) );
          if (input.getY() < 20 && reachedTargets == 0 && input.getElapsedTime() <15){
         	 setTakeoff();
-         } else if (nextTarget.equals(new Vector(0,0,0))){
+         }
+         //// START FINAL APROACH
+         else if (nextTarget.equals(new Vector(0,0,0))){
 
          	 
-         	 if (Math.abs(ref) < 0.04 || Math.abs(ref) > Math.PI*2 + 0.04 || landing){
-         		 setLanding();
-         	 }
+         	 
          	 if (input.getY() < 1.5 && velocityDrone.getZ() > -15){
          		 setTaxi();
          	 }
-         	else if ((ref > 0.f && ref  < Math.PI) || (ref < -0f && ref < -Math.PI)) {
+         	 else if (Math.abs(ref) < 0.1 || Math.abs(ref) > Math.PI*2 + 0.1 || landing){
+         		 setLanding();
+         	 }
+         	 else if ((ref > 0.f && ref  < Math.PI) || (ref < -0f && ref < -Math.PI)) {
          		//turnright
          		//System.out.println("right");
-         		if (Math.abs(ref) > 0.2f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f && 
+         		if (Math.abs(ref) > 0.1f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f && 
          			setTurnRight();
          			
          		}else{
-         			setCruising(nextTarget.getY());
+         			setCruising(20);
          		}
       		
          	}
          	else if ((ref > 0.f && ref > Math.PI) || (ref < 0f && ref > -Math.PI)) {
          		//turnleft
          		//System.out.println("left");
-         		if ( Math.abs(ref) > 0.2f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f&&
+         		if ( Math.abs(ref) > 0.1f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f&&
          			setTurnLeft();
       		
          		}else{
-         			setCruising(nextTarget.getY());
+         			setCruising(20);
          		}
          	}
          	 
-         }else if ((ref > 0.f && ref  < Math.PI) || (ref < -0f && ref < -Math.PI)) {
+         }
+         //// END FINAL APROACH
+         
+         else if ((ref > 0.f && ref  < Math.PI) || (ref < -0f && ref < -Math.PI)) {
      		//turnright
      		//System.out.println("right");
      		if (Math.abs(ref) > 0.1f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f && 
      			setTurnRight();
      		
+         	}else if (input.getY() - nextTarget.getY() > 10 && Math.abs(input.getRoll()) < 0.1 ){
+         		
+         			setDescending();
+         		
+         	}else if (input.getY() - nextTarget.getY() < -10 && Math.abs(input.getRoll()) < 0.1 ){
+         			setAscending();
+         		
          	}else{
          		setCruising(nextTarget.getY());
          	}
@@ -104,19 +117,26 @@ class InputToOutput {
      		if ( Math.abs(ref) > 0.1f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f&&
      			setTurnLeft();
      		
+         	}else if (input.getY() - nextTarget.getY() > 10 && Math.abs(input.getRoll()) < 0.1  ){
+         			setDescending();
+         		
+         	}else if (input.getY() - nextTarget.getY() < -10 && Math.abs(input.getRoll()) < 0.1 ){
+         			setAscending();
+         	
          	}else{
          		setCruising(nextTarget.getY());
          	}
-     		
-     	}else if (input.getY() - nextTarget.getY() > 5 || descending){
-     		if (!(descending && input.getY() - nextTarget.getY() < 2)){
-     			setDescending();
-     		}
-     	}else if (input.getY() - nextTarget.getY() < -5 || ascending){
-     		if (!(ascending && input.getY() - nextTarget.getY() > -2)){
-     			setAscending();
-     		}
-     	}else{
+     	}
+//     	}else if (input.getY() - nextTarget.getY() > 5 || descending){
+//     		if (!(descending && input.getY() - nextTarget.getY() < 2)){
+//     			setDescending();
+//     		}
+//     	}else if (input.getY() - nextTarget.getY() < -5 || ascending){
+//     		if (!(ascending && input.getY() - nextTarget.getY() > -2)){
+//     			setAscending();
+//     		}
+//     	}
+     	else{
      		setCruising(nextTarget.getY());
      	}
          
@@ -166,7 +186,7 @@ class InputToOutput {
 		 // cap outputs
 		 float curThrust = output.getThrust();
 		 if (nextTarget.equals(new Vector(0,0,0)) && input.getY() > 20)
-			 curThrust /= 1.5;
+			 curThrust /= 1.75;
 		 
 		 output = new AutopilotOutputsImplementation(curThrust,
 				 									capInclination(velocityDrone, config, output.getLeftWingInclination()),
@@ -480,15 +500,16 @@ class InputToOutput {
     	thrust =1250;
     	if (velocityWorld.getY() > 0.1f)
     		thrust = 750;
-    	if (velocityWorld.getY() < 0.1f)
+    	if (velocityWorld.getY() < 0.1f && input.getPitch() > 0)
     		thrust = 1500;
     	//System.out.print("turnleft");
    	 
    	 
-   	 	horStabInclination = 0.05f;
+  	 	horStabInclination = 0.05f;
    	 	if (input.getPitch() > 0.15f)
-   	 		horStabInclination = -input.getPitch(); 
-   	 	
+   	 		horStabInclination = -input.getPitch();
+   	 	if (input.getPitch() < 0.05)
+   	 		horStabInclination *= 4;
    	 	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, 0, 0);
     	}
 
@@ -510,7 +531,7 @@ class InputToOutput {
    	 	thrust =1250;
    	 	if (velocityWorld.getY() > 0.1f)
    	 		thrust = 750;
-   	 	if (velocityWorld.getY() < 0.1f)
+   	 	if (velocityWorld.getY() < 0.1f && input.getPitch() > 0)
    	 		thrust = 1500;
    	 	//System.out.print("turnleft");
    	 
@@ -518,9 +539,10 @@ class InputToOutput {
    	 	horStabInclination = 0.05f;
    	 	if (input.getPitch() > 0.15f)
    	 		horStabInclination = -input.getPitch();
+   	 	if (input.getPitch() < 0.05)
+   	 		horStabInclination *= 4;
    	 	
-   	 	
-   	 	
+
    	 	
    	 	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, 0, 0);
     	}
