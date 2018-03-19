@@ -1,5 +1,4 @@
- package interfaces;
-
+package interfaces;
 
 class InputToOutput {
 
@@ -48,12 +47,11 @@ class InputToOutput {
         	 reachedTargets += 1;
          }
          
-    	 float targetHeading = (float) Math.atan2((nextTarget.getX() - input.getX()),(nextTarget.getZ()-input.getZ()));
-     	 if (!nextTarget.equals(new Vector(0,0,0)))
-     		 targetHeading += Math.PI;
-     	 float currentHeading = (float) (input.getHeading() + Math.PI);
-     	 float ref = targetHeading - currentHeading;
+    	 float targetHeading = (float) Math.atan2(-(nextTarget.getX() - input.getX()),-(nextTarget.getZ()-input.getZ()));
+     	 float currentHeading = (float) (input.getHeading());
+     	 float ref = -(targetHeading - currentHeading);
          System.out.println("ref: " + ref);
+         System.out.println("checkref: " + (Math.PI - ref));
          nextTarget.printVector("next Target");
          System.out.println("distance to Target: " + nextTarget.calculateDistance(new Vector(input.getX(),input.getY(), input.getZ())) );
          if (input.getY() < 20 && reachedTargets == 0 && input.getElapsedTime() <15){
@@ -69,10 +67,10 @@ class InputToOutput {
          	 }
          	 
          	 
-         }else if ((ref > 0.f && ref  < Math.PI) || (ref < -0.1f && ref < -Math.PI)) {
+         }else if ((ref > 0.f && ref  < Math.PI) || (ref < -0f && ref < -Math.PI)) {
      		//turnright
      		//System.out.println("right");
-     		if (Math.abs(ref) > 0.1f && Math.PI-ref > 0.1f) {
+     		if (Math.abs(Math.PI-ref) > 0.1f) {//Math.abs(ref) > 0.1f && 
      			setTurnRight();
      		
          	}else{
@@ -80,10 +78,10 @@ class InputToOutput {
          	}
      		
      	}
-     	else if ((ref > 0.f && ref > Math.PI) || (ref < -0.1f && ref > -Math.PI)) {
+     	else if ((ref > 0.f && ref > Math.PI) || (ref < 0f && ref > -Math.PI)) {
      		//turnleft
      		//System.out.println("left");
-     		if (Math.abs(ref) > 0.1f&& Math.PI+ref > 0.1f) {
+     		if ( Math.abs(Math.PI+ref) > 0.1f) {//Math.abs(ref) > 0.1f&&
      			setTurnLeft();
      		
          	}else{
