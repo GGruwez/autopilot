@@ -65,12 +65,32 @@ class InputToOutput {
          	 if (input.getY() < 1.5 && velocityDrone.getZ() > -15){
          		 setTaxi();
          	 }
-         	 
+         	else if ((ref > 0.f && ref  < Math.PI) || (ref < -0f && ref < -Math.PI)) {
+         		//turnright
+         		//System.out.println("right");
+         		if (Math.abs(ref) > 0.2f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f && 
+         			setTurnRight();
+         			
+         		}else{
+         			setCruising(nextTarget.getY());
+         		}
+      		
+         	}
+         	else if ((ref > 0.f && ref > Math.PI) || (ref < 0f && ref > -Math.PI)) {
+         		//turnleft
+         		//System.out.println("left");
+         		if ( Math.abs(ref) > 0.2f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f&&
+         			setTurnLeft();
+      		
+         		}else{
+         			setCruising(nextTarget.getY());
+         		}
+         	}
          	 
          }else if ((ref > 0.f && ref  < Math.PI) || (ref < -0f && ref < -Math.PI)) {
      		//turnright
      		//System.out.println("right");
-     		if (Math.abs(Math.PI-ref) > 0.1f) {//Math.abs(ref) > 0.1f && 
+     		if (Math.abs(ref) > 0.1f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f && 
      			setTurnRight();
      		
          	}else{
@@ -81,7 +101,7 @@ class InputToOutput {
      	else if ((ref > 0.f && ref > Math.PI) || (ref < 0f && ref > -Math.PI)) {
      		//turnleft
      		//System.out.println("left");
-     		if ( Math.abs(Math.PI+ref) > 0.1f) {//Math.abs(ref) > 0.1f&&
+     		if ( Math.abs(ref) > 0.1f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f&&
      			setTurnLeft();
      		
          	}else{
@@ -144,7 +164,11 @@ class InputToOutput {
 		 }
 		 
 		 // cap outputs
-		 output = new AutopilotOutputsImplementation(output.getThrust(),
+		 float curThrust = output.getThrust();
+		 if (nextTarget.equals(new Vector(0,0,0)) && input.getY() > 20)
+			 curThrust /= 1.5;
+		 
+		 output = new AutopilotOutputsImplementation(curThrust,
 				 									capInclination(velocityDrone, config, output.getLeftWingInclination()),
 				 									capInclination(velocityDrone, config, output.getRightWingInclination()),
 				 									output.getHorStabInclination(),				
@@ -153,7 +177,7 @@ class InputToOutput {
 				 									output.getLeftBrakeForce(),
 				 									output.getRightBrakeForce());
 		 
-
+		 
 		//
 		 
 		 
@@ -632,6 +656,7 @@ class InputToOutput {
     }
 	
 	public static float capInclination(Vector velocityDrone, AutopilotConfig config,float startincl) {
+
 		float incl = startincl;
 		//System.out.println("starting incl: " + incl);
     	Vector axisVector = new Vector(1,0,0);
@@ -679,6 +704,15 @@ class InputToOutput {
     	}else {
     		return (float) (incl +0.01);
     	}
+	}
+
+	public static boolean checkIfReachable(AutopilotInputs input, Vector nextTarget) {
+		Vector center1 = new Vector((float)(input.getX() + 480*Math.cos(input.getHeading())),0,(float)(input.getZ() - 480*Math.sin(input.getHeading())));
+		Vector center2 = new Vector((float)(input.getX() - 480*Math.cos(input.getHeading())),0,(float)(input.getZ() + 480*Math.sin(input.getHeading())));
+		float dist1 = (float) Math.sqrt(Math.pow(nextTarget.getX() - center1.getX(),2) + Math.pow(nextTarget.getZ() - center1.getZ(),2) );
+		float dist2 = (float) Math.sqrt(Math.pow(nextTarget.getX() - center2.getX(),2) + Math.pow(nextTarget.getZ() - center2.getZ(),2) );
+		System.out.println("dist1: " + dist1 + " dist2: " + dist2);
+		return (dist1 > 460 && dist2 > 460);
 	}
 }
 
