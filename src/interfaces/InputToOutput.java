@@ -16,6 +16,7 @@ class InputToOutput {
   	static boolean prevtakeoff = false;
   	static boolean landing = false;
   	static boolean taxi = false;
+  	static boolean homing = false;
   	static int reachedTargets = 0;
   	static Path path = new PathImplementation();
 
@@ -43,13 +44,14 @@ class InputToOutput {
          nextTarget = new Vector(path.getX()[reachedTargets],path.getY()[reachedTargets],path.getZ()[reachedTargets]);
          }
          
-         if (nextTarget.calculateDistance(new Vector(input.getX(),input.getY(), input.getZ())) < 15){ //SET TO 5
+         if (nextTarget.calculateDistance(new Vector(input.getX(),input.getY(), input.getZ())) < 5){ //SET TO 5
         	 reachedTargets += 1;
          }
          
     	 float targetHeading = (float) Math.atan2(-(nextTarget.getX() - input.getX()),-(nextTarget.getZ()-input.getZ()));
      	 float currentHeading = (float) (input.getHeading());
      	 float ref = -(targetHeading - currentHeading);
+     	 float changeThrust = -1;
          System.out.println("ref: " + ref);
          System.out.println("checkref: " + (Math.PI - ref));
          nextTarget.printVector("next Target");
@@ -93,6 +95,11 @@ class InputToOutput {
          }
          //// END FINAL APROACH
          
+         //// START HOMING at 150m
+         else if (targetVector != null && nextTarget.calculateDistance(new Vector(input.getX(),input.getY(), input.getZ())) < 200 && Math.abs(ref) < 0.1) {
+        	setHoming();
+         }
+         //// END HOMING
          else if ((ref > 0.f && ref  < Math.PI) || (ref < -0f && ref < -Math.PI)) {
      		//turnright
      		//System.out.println("right");
@@ -127,15 +134,7 @@ class InputToOutput {
          		setCruising(nextTarget.getY());
          	}
      	}
-//     	}else if (input.getY() - nextTarget.getY() > 5 || descending){
-//     		if (!(descending && input.getY() - nextTarget.getY() < 2)){
-//     			setDescending();
-//     		}
-//     	}else if (input.getY() - nextTarget.getY() < -5 || ascending){
-//     		if (!(ascending && input.getY() - nextTarget.getY() > -2)){
-//     			setAscending();
-//     		}
-//     	}
+
      	else{
      		setCruising(nextTarget.getY());
      	}
@@ -154,6 +153,10 @@ class InputToOutput {
 		 if (cruising) {
 			 System.out.println("cruising");
 			 output = cruising(input, velocityDrone, velocityWorld, config);
+		 }
+		 else if (homing) {
+			 System.out.println("homing");
+			 output = homing(input, velocityDrone,velocityWorld, config, targetVector, nextTarget);
 		 }
 		 else if (landing) {
 			 System.out.println("landing");
@@ -187,6 +190,7 @@ class InputToOutput {
 		 float curThrust = output.getThrust();
 		 if (nextTarget.equals(new Vector(0,0,0)) && input.getY() > 20)
 			 curThrust /= 1.75;
+
 		 
 		 output = new AutopilotOutputsImplementation(curThrust,
 				 									capInclination(velocityDrone, config, output.getLeftWingInclination()),
@@ -508,8 +512,8 @@ class InputToOutput {
   	 	horStabInclination = 0.05f;
    	 	if (input.getPitch() > 0.15f)
    	 		horStabInclination = -input.getPitch();
-   	 	if (input.getPitch() < 0.05)
-   	 		horStabInclination *= 4;
+   	 	if (input.getPitch() < 0.04)
+   	 		horStabInclination *= 3;
    	 	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, 0, 0);
     	}
 
@@ -539,13 +543,89 @@ class InputToOutput {
    	 	horStabInclination = 0.05f;
    	 	if (input.getPitch() > 0.15f)
    	 		horStabInclination = -input.getPitch();
-   	 	if (input.getPitch() < 0.05)
-   	 		horStabInclination *= 4;
+   	 	if (input.getPitch() < 0.04)
+   	 		horStabInclination *= 3;
    	 	
 
    	 	
    	 	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, 0, 0);
     	}
+    
+    
+    public static AutopilotOutputsImplementation homing(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config, float[] targetVector, Vector nextTarget) {
+    	float horStabInclination = 0;
+    	float rightWingInclination = 0;
+    	float leftWingInclination = 0;
+    	float thrust = 0;
+    	float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
+       	rightWingInclination = (float) (-currentProjAirspeed+0.9*config.getMaxAOA());
+       	leftWingInclination = rightWingInclination;
+    	
+       	if (velocityWorld.getY() < -0.1f) {
+       		thrust = config.getMaxThrust();
+       	}else if (velocityWorld.getY() > 0.1f) {
+       		thrust = 0;
+       	}
+       	
+       	
+     	if (input.getPitch() > 0.01f) {
+       		horStabInclination = -input.getPitch()*1.5f;
+       	}
+       	else if (input.getPitch() < -0.01f) {
+       		horStabInclination = -input.getPitch()*4f;
+       	}
+       	
+    	float xError = (float) (targetVector[0] * Math.cos(input.getRoll()) + targetVector[1] * Math.sin(input.getRoll()));
+    	float yError = (float) (targetVector[0] * Math.sin(input.getRoll()) + targetVector[1] * Math.cos(input.getRoll()));
+    	System.out.println("xError: " + xError);
+    	System.out.println("yError: " + yError);
+    	
+    	if (Math.abs(yError) > Math.abs(xError)) {
+    		
+    		if (yError < -5) {
+    			
+    			rightWingInclination = (float) (-currentProjAirspeed+0.3*config.getMaxAOA());
+    	       	leftWingInclination = rightWingInclination;
+    	       	thrust = config.getMaxThrust()/4;
+    		}else if (yError > 10 ) {
+    			rightWingInclination = (float) (-currentProjAirspeed+0.8*config.getMaxAOA());
+    	       	leftWingInclination = rightWingInclination;
+    	       	thrust = config.getMaxThrust()*.75f;
+    		}
+    	}else {
+    		if (xError > 10) {
+    			float deltaroll = 0.01f;
+    			if (input.getRoll() > 0.15f){
+    	   	 		rightWingInclination += deltaroll;
+    	   	 		leftWingInclination -= 6*deltaroll;
+    	   	 	} else {
+    	   	 		rightWingInclination  -= deltaroll*6;
+    	   	 		leftWingInclination += deltaroll; 
+    	   	 	}
+    		
+    		}else if (xError < -10){
+    			float deltaroll = 0.01f;
+    			if (input.getRoll() < -0.15f){
+    	   	 		rightWingInclination += deltaroll;
+    	   	 		leftWingInclination -= 6*deltaroll;
+    	   	 	} else {
+    	   	 		rightWingInclination  -= deltaroll*6;
+    	   	 		leftWingInclination += deltaroll; 
+    	   	 	}
+    		}else {
+    			float deltaroll = 0.02f;//(float) 0.02*config.getMaxAOA();
+         		if (input.getRoll() > 0.005f){//0.01f
+         			rightWingInclination -= deltaroll*6;
+         			leftWingInclination += deltaroll;
+         		} else if (input.getRoll() < -0.005f) {
+         			rightWingInclination += deltaroll;
+         			leftWingInclination -= deltaroll*6;
+         		}
+    		}
+    	}
+    	
+   	 	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, 0, 0);
+    }
     
     public static void setCruising(float height) {
     	cruising = true;
@@ -557,6 +637,7 @@ class InputToOutput {
     	turnLeft = false;
     	turnRight = false;
     	refHeight = height;
+    	homing= false;
     }
     
     public static void setLanding() {
@@ -568,7 +649,8 @@ class InputToOutput {
     	taxi = false;
     	turnLeft = false;
     	turnRight = false;
-    }
+    	homing= false;
+  }
     
     public static void setTakeoff() {
     	cruising = false;
@@ -579,7 +661,8 @@ class InputToOutput {
     	taxi = false;
     	turnLeft = false;
     	turnRight = false;
-    }
+    	homing= false;
+   }
     
     public static void setAscending() {
     	cruising = false;
@@ -590,7 +673,8 @@ class InputToOutput {
     	taxi = false;
     	turnLeft = false;
     	turnRight = false;
-    }
+    	homing= false;
+  }
     
     public static void setDescending() {
     	cruising = false;
@@ -601,7 +685,8 @@ class InputToOutput {
     	taxi = false;
     	turnLeft = false;
     	turnRight = false;
-    }
+    	homing= false;
+   }
     
     public static void setTaxi() {
     	cruising = false;
@@ -612,7 +697,8 @@ class InputToOutput {
     	taxi = true;
     	turnLeft = false;
     	turnRight = false;
-    }
+    	homing= false;
+  }
     
     public static void setTurnLeft() {
     	cruising = true;
@@ -623,7 +709,8 @@ class InputToOutput {
     	taxi = false;
     	turnLeft = true;
     	turnRight = false;
-    }
+    	homing= false;
+   }
     
     public static void setTurnRight() {
     	cruising = true;
@@ -634,7 +721,23 @@ class InputToOutput {
     	taxi = false;
     	turnLeft = false;
     	turnRight = true;
+    	homing= false;
     }
+    public static void setHoming() {
+    	cruising = false;
+    	landing = false;
+    	takeoff = false;
+    	ascending = false;
+    	descending = false;
+    	taxi = false;
+    	turnLeft = false;
+    	turnRight = false;
+    	homing = true;
+    }
+    
+    
+    
+    
     public static float getMaxinclination(Vector velocityDrone, AutopilotConfig config, float startincl) {
     	float incl = startincl;
     	Vector axisVector = new Vector(1,0,0);
