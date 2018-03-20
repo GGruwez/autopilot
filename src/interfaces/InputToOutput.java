@@ -51,8 +51,7 @@ class InputToOutput {
     	 float targetHeading = (float) Math.atan2(-(nextTarget.getX() - input.getX()),-(nextTarget.getZ()-input.getZ()));
      	 float currentHeading = (float) (input.getHeading());
      	 float ref = -(targetHeading - currentHeading);
-     	 float changeThrust = -1;
-         System.out.println("ref: " + ref);
+     	 System.out.println("ref: " + ref);
          System.out.println("checkref: " + (Math.PI - ref));
          nextTarget.printVector("next Target");
          System.out.println("distance to Target: " + nextTarget.calculateDistance(new Vector(input.getX(),input.getY(), input.getZ())) );
@@ -359,7 +358,6 @@ class InputToOutput {
     		horStabInclination = -input.getPitch();
     	}
 
-    	
     	float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
        	rightWingInclination = (float) (-currentProjAirspeed+0.9*config.getMaxAOA());
        	leftWingInclination = rightWingInclination;
@@ -723,6 +721,7 @@ class InputToOutput {
     	turnRight = true;
     	homing= false;
     }
+
     public static void setHoming() {
     	cruising = false;
     	landing = false;
@@ -735,9 +734,7 @@ class InputToOutput {
     	homing = true;
     }
     
-    
-    
-    
+
     public static float getMaxinclination(Vector velocityDrone, AutopilotConfig config, float startincl) {
     	float incl = startincl;
     	Vector axisVector = new Vector(1,0,0);
