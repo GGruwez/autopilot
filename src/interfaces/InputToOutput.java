@@ -306,9 +306,9 @@ class InputToOutput {
     		thrust = 1000;
    	
     	if (input.getY() < 2) {
-    		frontBrake = config.getRMax()/2;
-    		leftBrake = config.getRMax()/2;
-    		rightBrake = config.getRMax()/2;
+    		frontBrake = config.getRMax()/1.5f;
+    		leftBrake = config.getRMax()/1.5f;
+    		rightBrake = config.getRMax()/1.5f;
     	}
     	
     	float deltaroll = 0.02f;//(float) 0.02*config.getMaxAOA();
@@ -421,7 +421,7 @@ class InputToOutput {
     		//turnright
     		//System.out.println("right");
     		if (Math.abs(ref) > 0.01f) {
-    			rightBrake = config.getRMax()/3;
+    			rightBrake = config.getRMax()/2;
     		}
     		
     	}
@@ -429,7 +429,7 @@ class InputToOutput {
     		//turnleft
     		//System.out.println("left");
     		if (Math.abs(ref) > 0.01f) {
-    			leftBrake = config.getRMax()/3;
+    			leftBrake = config.getRMax()/2;
     		}	
     	}
     	if (velocityDrone.getZ() > -10) {
