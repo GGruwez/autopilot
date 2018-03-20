@@ -120,7 +120,7 @@ class InputToOutput {
           }
           
          else if (ascending) {
-        	 System.out.println("ascending: " + input.getY());
+        	//System.out.println("ascending: " + input.getY());
          	leftWingInclination = input.getPitch();
              rightWingInclination = input.getPitch();
              horStabInclination = 0;
@@ -137,7 +137,7 @@ class InputToOutput {
          }
          
          else if (descending) {
-        	 System.out.println("descending");
+        	 //System.out.println("descending");
          	 leftWingInclination = input.getPitch();
              rightWingInclination = input.getPitch();
              horStabInclination = 0;
@@ -202,7 +202,7 @@ class InputToOutput {
         	 }
          }
          if ((targetVector!=null)&&(targetVector[2] >= 500)) {
-        	 System.out.println("te groot 500");
+        	 //System.out.println("te groot 500");
         	 turnLeft = false;
         	 turnRight = false;
         	 noTurn = true;
@@ -214,7 +214,7 @@ class InputToOutput {
          if (turnLeft) {
         	 thrust = 2;
         	 setRoll(refRoll+0.01f);
-        	 System.out.println("turnLeft: " + refRoll);
+        	 //System.out.println("turnLeft: " + refRoll);
         	 verStabInclination = 0.0f;
         	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
@@ -229,7 +229,7 @@ class InputToOutput {
          else if (turnRight) {
         	 thrust = 2;
         	 setRoll(refRoll-0.01f);
-        	 System.out.println("turnRight");
+        	 //System.out.println("turnRight");
         	 verStabInclination = -0.0f;
         	 float deltaRoll = RollController.getOutput(input.getRoll(), refRoll);
              leftWingInclination -= deltaRoll/2;
@@ -242,7 +242,7 @@ class InputToOutput {
              }
          }
          else if (noTurn) {
-        	 System.out.println("noTurn: " + refRoll);
+        	 //System.out.println("noTurn: " + refRoll);
         	 if (refRoll>0) {
     			 setRoll(refRoll-0.01f);
     		 }
@@ -284,7 +284,7 @@ class InputToOutput {
     	 }
     	 
     	 
-    	 System.out.println("testtest");
+    	 
      }
 	
  
