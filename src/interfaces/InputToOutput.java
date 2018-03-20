@@ -313,7 +313,6 @@ class InputToOutput {
     		horStabInclination = -input.getPitch();
     	}
 
-    	
     	float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
        	rightWingInclination = (float) (-currentProjAirspeed+0.9*config.getMaxAOA());
        	leftWingInclination = rightWingInclination;
@@ -591,6 +590,7 @@ class InputToOutput {
     	turnLeft = false;
     	turnRight = true;
     }
+    
     public static float getMaxinclination(Vector velocityDrone, AutopilotConfig config, float startincl) {
     	float incl = startincl;
     	Vector axisVector = new Vector(1,0,0);
