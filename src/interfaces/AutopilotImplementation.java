@@ -8,9 +8,12 @@ public class AutopilotImplementation implements Autopilot {
     private AutopilotOutputsImplementation previousOutput;
     private Drone drone;
     UI userInterface = new UI();
+    private AutopilotOutputs move;
+    private Job job;
 
-    public AutopilotImplementation() {
-    	drone = new Drone();
+    public AutopilotImplementation(Airport airport, int gate, int pointingToRunway, AutopilotConfig config) {
+    	this.drone = new Drone(airport, gate, pointingToRunway);
+    	this.config = config;
     }
     
     PreviousInputs getPreviousInput() {
@@ -40,17 +43,19 @@ public class AutopilotImplementation implements Autopilot {
 
     @Override
     public AutopilotOutputs timePassed(AutopilotInputs inputs) {
-        AutopilotOutputsImplementation output;
-
-        if (!isSimulating) {
-            output = new AutopilotOutputsImplementation();
-            this.isSimulating = true;
-        } else {
-            output = drone.calculate(inputs,null, config.getNbRows(), config.getNbColumns(), this);
-            this.userInterface.updateData(output);
+        AutopilotOutputsImplementation output = new AutopilotOutputsImplementation(0,0,0,0,0,0,0,0);
+        
+        if (this.hasJob()) {
+	        if (!isSimulating) {
+	            output = new AutopilotOutputsImplementation();
+	            this.isSimulating = true;
+	        } else {
+	            output = drone.calculate(inputs,null, config.getNbRows(), config.getNbColumns(), this);
+	            this.userInterface.updateData(output);
+	        }
+	        this.previousInput = new PreviousInputs(inputs);
+	        this.previousOutput = output;
         }
-        this.previousInput = new PreviousInputs(inputs);
-        this.previousOutput = output;
 
         return output;
     }
@@ -58,5 +63,27 @@ public class AutopilotImplementation implements Autopilot {
     @Override
     public void simulationEnded() {
         this.isSimulating = false;
+    }
+    
+    public void setMove(AutopilotInputs inputs) {
+    	this.move = this.timePassed(inputs);
+    }
+    
+    public AutopilotOutputs getMove() {
+    	return this.move;
+    }
+    
+    public Job getJob() {
+    	return this.job;
+    }
+    
+    public void setJob(Job job) {
+    	if (! this.hasJob()) {
+    		this.job = job;
+    	}
+    }
+    
+    public boolean hasJob() {
+    	return (! (this.getJob() == null));
     }
 }

@@ -22,12 +22,27 @@ class Drone {
   	private Vector finalTarget = new Vector(0,0,0);
   	private float turningDistance = 450;
   	private Path path = new PathImplementation();
+  	private Airport airport = null;
+  	private int gate = 0;
+  	private int pointingToRunway = 0;
 
-  	public Drone() {
-  		
+  	public Drone(Airport airport, int gate, int pointingToRunway) {
+  		this.airport = airport;
+  		this.gate = gate;
+  		this.pointingToRunway = pointingToRunway;
   	}
   	
+  	public Airport getAirport() {
+  		return this.airport;
+  	}
   	
+  	public int getGate() {
+  		return this.gate;
+  	}
+  	
+  	public int getPointingToRunway() {
+  		return this.pointingToRunway;
+  	}
   	
     public AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          PreviousInputs prev = autopilot.getPreviousInput();
