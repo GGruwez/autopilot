@@ -1,32 +1,41 @@
 package interfaces;
 
-class InputToOutput {
+
+class Drone {
 
   	
-  	private static double SIMULATION_PERIOD = 0.01;
+  	private double SIMULATION_PERIOD = 0.01;
 
 
-  	static boolean ascending = false;
- 	static float refHeight = 0;
-  	static boolean cruising = true;
-  	static boolean descending = false;
-  	static boolean turnLeft = false;
-  	static boolean turnRight = false;
-  	static boolean takeoff = false;
-  	static boolean prevtakeoff = false;
-  	static boolean landing = false;
-  	static boolean taxi = false;
-  	static boolean homing = false;
-  	static int reachedTargets = 0;
-  	static Path path = new PathImplementation();
+  	private boolean ascending = false;
+ 	private float refHeight = 0;
+  	private boolean cruising = true;
+  	private boolean descending = false;
+  	private boolean turnLeft = false;
+  	private boolean turnRight = false;
+  	private boolean takeoff = false;
+  	private boolean prevtakeoff = false;
+  	private boolean landing = false;
+  	private boolean taxi = false;
+  	private boolean homing = false;
+  	private int reachedTargets = 0;
+  	private Vector finalTarget = new Vector(0,0,0);
+  	private float turningDistance = 450;
+  	private Path path = new PathImplementation();
 
-
-    static AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
+  	public Drone() {
+  		
+  	}
+  	
+  	
+  	
+    public AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          PreviousInputs prev = autopilot.getPreviousInput();
          float dt = -prev.getElapsedTime()+input.getElapsedTime();
          Vector velocityWorld;
          Vector velocityDrone = new Vector(0, 0, -32);
          AutopilotConfig config = autopilot.getConfig();
+         Vector positionDrone = new Vector(input.getX(), input.getY(), input.getZ());
          
          velocityWorld = new Vector((input.getX()-prev.getX())/dt,(input.getY()-prev.getY())/dt,(input.getZ()-prev.getZ())/dt);
          velocityDrone = velocityWorld.inverseTransform(prev.getHeading(),prev.getPitch(),prev.getRoll());
@@ -38,13 +47,13 @@ class InputToOutput {
          
          
          if (reachedTargets >= path.getX().length){
-        	 nextTarget = new Vector(0,0,0);
+        	 nextTarget = finalTarget;
          }
          else{
          nextTarget = new Vector(path.getX()[reachedTargets],path.getY()[reachedTargets],path.getZ()[reachedTargets]);
          }
          
-         if (nextTarget.calculateDistance(new Vector(input.getX(),input.getY(), input.getZ())) < 5){ //SET TO 5
+         if (nextTarget.calculateDistance(new Vector(input.getX(),input.getY(), input.getZ())) < 20){ //SET TO 5
         	 reachedTargets += 1;
          }
          
@@ -59,8 +68,20 @@ class InputToOutput {
         	 setTakeoff();
          }
          //// START FINAL APROACH
-         else if (nextTarget.equals(new Vector(0,0,0))){
+         else if (nextTarget.equals(finalTarget)){
 
+        	 Vector toTarget = finalTarget.subtract(positionDrone);
+        	 if (Math.abs(toTarget.getX()) > turningDistance) {
+        		 float Ycentercircle = finalTarget.getY()- toTarget.getY()/2;
+        		 float Xcentercircle = finalTarget.getX()- toTarget.getX()/2;
+        		 for (float i = 0; i < toTarget.getX(); i+= toTarget.getX()/30) {
+        			 float x = i;
+        		 }
+        	 }
+        		 
+        	 
+        	 
+        	 
          	 
          	 
          	 if (input.getY() < 1.5 && velocityDrone.getZ() > -15){
@@ -80,7 +101,7 @@ class InputToOutput {
          		}
       		
          	}
-         	else if ((ref > 0.f && ref > Math.PI) || (ref < 0f && ref > -Math.PI)) {
+         	else if ((ref >= 0.f && ref >= Math.PI) || (ref <= 0f && ref >= -Math.PI)) {
          		//turnleft
          		//System.out.println("left");
          		if ( Math.abs(ref) > 0.1f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f&&
@@ -102,7 +123,7 @@ class InputToOutput {
          else if ((ref > 0.f && ref  < Math.PI) || (ref < -0f && ref < -Math.PI)) {
      		//turnright
      		//System.out.println("right");
-     		if (Math.abs(ref) > 0.1f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f && 
+     		if (Math.abs(ref) > 0.1f) { //&& checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f && 
      			setTurnRight();
      		
          	}else if (input.getY() - nextTarget.getY() > 10 && Math.abs(input.getRoll()) < 0.1 ){
@@ -120,7 +141,7 @@ class InputToOutput {
      	else if ((ref > 0.f && ref > Math.PI) || (ref < 0f && ref > -Math.PI)) {
      		//turnleft
      		//System.out.println("left");
-     		if ( Math.abs(ref) > 0.1f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f&&
+     		if ( Math.abs(ref) > 0.1f ) {//&& checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f&&
      			setTurnLeft();
      		
          	}else if (input.getY() - nextTarget.getY() > 10 && Math.abs(input.getRoll()) < 0.1  ){
@@ -140,10 +161,12 @@ class InputToOutput {
          
         
          
-         
-         
-         
-         
+         //TESTING
+//         if (!takeoff && input.getElapsedTime() <25)
+//         setCruising(nextTarget.getY());
+//         else if (input.getElapsedTime() >25)
+//         setLanding();
+         //
    
          
          
@@ -203,12 +226,11 @@ class InputToOutput {
 		 
 		//
 		 
-		 
 		 return output;
     }
     		
  
-    public static AutopilotOutputsImplementation cruising(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config) {
+    public  AutopilotOutputsImplementation cruising(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config) {
     	float horStabInclination;
     	float rightWingInclination;
     	float leftWingInclination;
@@ -280,7 +302,7 @@ class InputToOutput {
      	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, 0, 0);
      }
    
-    public static AutopilotOutputsImplementation landing(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config) {
+    public  AutopilotOutputsImplementation landing(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config) {
     	float horStabInclination;
     	float rightWingInclination;
     	float leftWingInclination;
@@ -325,7 +347,7 @@ class InputToOutput {
     	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, frontBrake, leftBrake, rightBrake);
     	}
     	
-    public static AutopilotOutputsImplementation takeoff(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config) {
+    public  AutopilotOutputsImplementation takeoff(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config) {
     	float horStabInclination;
     	float rightWingInclination;
     	float leftWingInclination;
@@ -346,7 +368,7 @@ class InputToOutput {
     	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, 0, 0);
     }
 
-    public static AutopilotOutputsImplementation ascending(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config) {
+    public  AutopilotOutputsImplementation ascending(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config) {
     	float horStabInclination;
     	float rightWingInclination;
     	float leftWingInclination;
@@ -376,7 +398,7 @@ class InputToOutput {
     	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, 0, 0);
     }
 
-    public static AutopilotOutputsImplementation descending(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config) {
+    public  AutopilotOutputsImplementation descending(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config) {
     	float horStabInclination;
     	float rightWingInclination;
     	float leftWingInclination;
@@ -401,7 +423,7 @@ class InputToOutput {
     	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, 0, 0);
     }
 
-    public static AutopilotOutputsImplementation taxi(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config) {
+    public  AutopilotOutputsImplementation taxi(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config) {
     	float horStabInclination = 0;
     	float rightWingInclination = 0;
     	float leftWingInclination = 0;
@@ -483,7 +505,7 @@ class InputToOutput {
     	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, frontBrake, leftBrake, rightBrake);
     }
 
-    public static AutopilotOutputsImplementation turnLeft(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config, AutopilotOutputsImplementation output) {
+    public  AutopilotOutputsImplementation turnLeft(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config, AutopilotOutputsImplementation output) {
     	float horStabInclination = output.getHorStabInclination();
     	float rightWingInclination = output.getRightWingInclination();
     	float leftWingInclination = output.getLeftWingInclination();
@@ -500,9 +522,9 @@ class InputToOutput {
     	}
    	 
     	thrust =1250;
-    	if (velocityWorld.getY() > 0.1f)
+    	if (velocityWorld.getY() > 0.01f)
     		thrust = 750;
-    	if (velocityWorld.getY() < 0.1f && input.getPitch() > 0)
+    	if (velocityWorld.getY() < 0.01f && input.getPitch() > 0)
     		thrust = 1500;
     	//System.out.print("turnleft");
    	 
@@ -515,7 +537,7 @@ class InputToOutput {
    	 	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, 0, 0);
     	}
 
-    public static AutopilotOutputsImplementation turnRight(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config, AutopilotOutputsImplementation output) {
+    public  AutopilotOutputsImplementation turnRight(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config, AutopilotOutputsImplementation output) {
     	float horStabInclination = output.getHorStabInclination();
     	float rightWingInclination = output.getRightWingInclination();
     	float leftWingInclination = output.getLeftWingInclination();
@@ -531,9 +553,9 @@ class InputToOutput {
    	 		leftWingInclination += deltaroll; //getMaxinclination(velocityDrone, config, leftWingInclination)/4;//
    	 	}
    	 	thrust =1250;
-   	 	if (velocityWorld.getY() > 0.1f)
+   	 	if (velocityWorld.getY() > 0.01f)
    	 		thrust = 750;
-   	 	if (velocityWorld.getY() < 0.1f && input.getPitch() > 0)
+   	 	if (velocityWorld.getY() < 0.01f && input.getPitch() > 0)
    	 		thrust = 1500;
    	 	//System.out.print("turnleft");
    	 
@@ -550,7 +572,7 @@ class InputToOutput {
     	}
     
     
-    public static AutopilotOutputsImplementation homing(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config, float[] targetVector, Vector nextTarget) {
+    public  AutopilotOutputsImplementation homing(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config, float[] targetVector, Vector nextTarget) {
     	float horStabInclination = 0;
     	float rightWingInclination = 0;
     	float leftWingInclination = 0;
@@ -573,8 +595,8 @@ class InputToOutput {
        		horStabInclination = -input.getPitch()*4f;
        	}
        	
-    	float xError = (float) (targetVector[0] * Math.cos(input.getRoll()) + targetVector[1] * Math.sin(input.getRoll()));
-    	float yError = (float) (targetVector[0] * Math.sin(input.getRoll()) + targetVector[1] * Math.cos(input.getRoll()));
+    	float xError = (float)(-targetVector[0] * Math.cos(input.getRoll()) - targetVector[1] * Math.sin(input.getRoll()));
+    	float yError = (float)(-targetVector[0] * Math.sin(input.getRoll()) - targetVector[1] * Math.cos(input.getRoll()));
     	System.out.println("xError: " + xError);
     	System.out.println("yError: " + yError);
     	
@@ -586,9 +608,9 @@ class InputToOutput {
     	       	leftWingInclination = rightWingInclination;
     	       	thrust = config.getMaxThrust()/4;
     		}else if (yError > 10 ) {
-    			rightWingInclination = (float) (-currentProjAirspeed+0.8*config.getMaxAOA());
+    			rightWingInclination = (float) (-currentProjAirspeed+0.8*config.getMaxAOA());//0.8
     	       	leftWingInclination = rightWingInclination;
-    	       	thrust = config.getMaxThrust()*.75f;
+    	       	thrust = config.getMaxThrust()*.75f;//*.75f;
     		}
     	}else {
     		if (xError > 10) {
@@ -625,7 +647,7 @@ class InputToOutput {
    	 	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, 0, 0);
     }
     
-    public static void setCruising(float height) {
+    public   void setCruising(float height) {
     	cruising = true;
     	landing = false;
     	takeoff = false;
@@ -638,7 +660,7 @@ class InputToOutput {
     	homing= false;
     }
     
-    public static void setLanding() {
+    public   void setLanding() {
     	cruising = false;
     	landing = true;
     	takeoff = false;
@@ -650,7 +672,7 @@ class InputToOutput {
     	homing= false;
   }
     
-    public static void setTakeoff() {
+    public   void setTakeoff() {
     	cruising = false;
     	landing = false;
     	takeoff = true;
@@ -662,7 +684,7 @@ class InputToOutput {
     	homing= false;
    }
     
-    public static void setAscending() {
+    public   void setAscending() {
     	cruising = false;
     	landing = false;
     	takeoff = false;
@@ -674,7 +696,7 @@ class InputToOutput {
     	homing= false;
   }
     
-    public static void setDescending() {
+    public   void setDescending() {
     	cruising = false;
     	landing = false;
     	takeoff = false;
@@ -686,7 +708,7 @@ class InputToOutput {
     	homing= false;
    }
     
-    public static void setTaxi() {
+    public   void setTaxi() {
     	cruising = false;
     	landing = false;
     	takeoff = false;
@@ -698,7 +720,7 @@ class InputToOutput {
     	homing= false;
   }
     
-    public static void setTurnLeft() {
+    public   void setTurnLeft() {
     	cruising = true;
     	landing = false;
     	takeoff = false;
@@ -710,7 +732,7 @@ class InputToOutput {
     	homing= false;
    }
     
-    public static void setTurnRight() {
+    public   void setTurnRight() {
     	cruising = true;
     	landing = false;
     	takeoff = false;
@@ -722,7 +744,7 @@ class InputToOutput {
     	homing= false;
     }
 
-    public static void setHoming() {
+    public   void setHoming() {
     	cruising = false;
     	landing = false;
     	takeoff = false;
@@ -735,7 +757,7 @@ class InputToOutput {
     }
     
 
-    public static float getMaxinclination(Vector velocityDrone, AutopilotConfig config, float startincl) {
+    public   float getMaxinclination(Vector velocityDrone, AutopilotConfig config, float startincl) {
     	float incl = startincl;
     	Vector axisVector = new Vector(1,0,0);
     	Vector projectedAirspeed = new Vector(0,velocityDrone.getY(), velocityDrone.getZ());
@@ -756,7 +778,7 @@ class InputToOutput {
     	}
     }
     
-    public static float getMininclination(Vector velocityDrone, AutopilotConfig config,float startincl) {
+    public   float getMininclination(Vector velocityDrone, AutopilotConfig config,float startincl) {
     	float incl = startincl;
     	Vector axisVector = new Vector(1,0,0);
     	Vector projectedAirspeed = new Vector(0,velocityDrone.getY(), velocityDrone.getZ());
@@ -777,7 +799,7 @@ class InputToOutput {
     	}
     }
 	
-	public static float capInclination(Vector velocityDrone, AutopilotConfig config,float startincl) {
+	public   float capInclination(Vector velocityDrone, AutopilotConfig config,float startincl) {
 
 		float incl = startincl;
 		//System.out.println("starting incl: " + incl);
@@ -828,7 +850,7 @@ class InputToOutput {
     	}
 	}
 
-	public static boolean checkIfReachable(AutopilotInputs input, Vector nextTarget) {
+	public   boolean checkIfReachable(AutopilotInputs input, Vector nextTarget) {
 		Vector center1 = new Vector((float)(input.getX() + 480*Math.cos(input.getHeading())),0,(float)(input.getZ() - 480*Math.sin(input.getHeading())));
 		Vector center2 = new Vector((float)(input.getX() - 480*Math.cos(input.getHeading())),0,(float)(input.getZ() + 480*Math.sin(input.getHeading())));
 		float dist1 = (float) Math.sqrt(Math.pow(nextTarget.getX() - center1.getX(),2) + Math.pow(nextTarget.getZ() - center1.getZ(),2) );

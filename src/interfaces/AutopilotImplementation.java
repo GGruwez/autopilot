@@ -6,8 +6,13 @@ public class AutopilotImplementation implements Autopilot {
     private AutopilotConfig config;
     private PreviousInputs previousInput;
     private AutopilotOutputsImplementation previousOutput;
+    private Drone drone;
     UI userInterface = new UI();
 
+    public AutopilotImplementation() {
+    	drone = new Drone();
+    }
+    
     PreviousInputs getPreviousInput() {
         return this.previousInput;
     }
@@ -41,7 +46,7 @@ public class AutopilotImplementation implements Autopilot {
             output = new AutopilotOutputsImplementation();
             this.isSimulating = true;
         } else {
-            output = InputToOutput.calculate(inputs, ImageRecognition.FindTarget(inputs.getImage(), config.getNbColumns(), config.getNbRows()), config.getNbRows(), config.getNbColumns(), this);
+            output = drone.calculate(inputs,null, config.getNbRows(), config.getNbColumns(), this);
             this.userInterface.updateData(output);
         }
         this.previousInput = new PreviousInputs(inputs);
