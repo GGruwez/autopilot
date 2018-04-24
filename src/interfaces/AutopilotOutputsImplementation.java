@@ -4,10 +4,6 @@ package interfaces;/*
  * and open the template in the editor.
  */
 
-/**
- *
- * @author Stien
- */
 public class AutopilotOutputsImplementation implements AutopilotOutputs {
     
     private float thrust;

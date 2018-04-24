@@ -45,7 +45,11 @@ class Drone {
   	}
   	
     public AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
-         PreviousInputs prev = autopilot.getPreviousInput();
+         
+    	//TODO: aanpassen aan jobs
+    	//TODO: landen op landingsbaan
+    	
+    	 PreviousInputs prev = autopilot.getPreviousInput();
          float dt = -prev.getElapsedTime()+input.getElapsedTime();
          Vector velocityWorld;
          Vector velocityDrone = new Vector(0, 0, -32);
@@ -57,9 +61,6 @@ class Drone {
          Vector angularVelocity = (new Vector((input.getPitch()-prev.getPitch())/dt,(input.getHeading()-prev.getHeading())/dt,(input.getRoll()-prev.getRoll())/dt));
 
          Vector nextTarget;
-         
-     
-         
          
          if (reachedTargets >= path.getX().length){
         	 nextTarget = finalTarget;
