@@ -25,6 +25,13 @@ public class Airport {
 		return this.centerToRunway0Z;
 	}
 	
+	float getDistanceToAirport(Airport airport) {
+		return (float) Math.sqrt(
+    			Math.pow(this.getCenterX()-airport.getCenterX(),2) +
+    			Math.pow(this.getCenterZ()-airport.getCenterZ(),2)
+    			);
+	}
+	
 	private float centerX;
 	private float centerZ;
 	private float centerToRunway0X;

@@ -1,6 +1,11 @@
 package interfaces;
 
+import java.util.ArrayList;
+
 public class AutopilotImplementation implements Autopilot {
+	
+	//TODO: een drone hoort altijd bij de airport waar hij naartoe aan het vliegen is, pas wanneer
+	//		hij daar weer vertrokken is, is dat niet meer zo en hoort hij bij de volgende. 
 
     private boolean isSimulating = false; // TODO: never used for the moment
     private AutopilotConfig config;
@@ -9,7 +14,7 @@ public class AutopilotImplementation implements Autopilot {
     private Drone drone;
     UI userInterface = new UI();
     private AutopilotOutputs move;
-    private Job job;
+    private ArrayList<Job> jobs;
 
     public AutopilotImplementation(Airport airport, int gate, int pointingToRunway, AutopilotConfig config) {
     	this.drone = new Drone(airport, gate, pointingToRunway);
@@ -73,17 +78,37 @@ public class AutopilotImplementation implements Autopilot {
     	return this.move;
     }
     
-    public Job getJob() {
-    	return this.job;
+    public Job getNextJob() {
+    	return this.getJobs().get(0);
     }
     
-    public void setJob(Job job) {
-    	if (! this.hasJob()) {
-    		this.job = job;
-    	}
+    public ArrayList<Job> getJobs() {
+    	return this.jobs;
+    }
+    
+    public void addJob(Job job) {
+    	this.jobs.add(job);
+    }
+    
+    public Drone getDrone() {
+    	return this.drone;
     }
     
     public boolean hasJob() {
-    	return (! (this.getJob() == null));
+    	return (! (this.getJobs().size() == 0));
+    }
+    
+    public float getDistanceToAirport(Airport airport) {
+    	return (float) Math.sqrt(
+    			Math.pow((getDrone().getAirport()).getCenterX()-airport.getCenterX(),2) +
+    			Math.pow((getDrone().getAirport()).getCenterZ()-airport.getCenterZ(),2)
+    			);
+    }
+    
+    public Airport getFinalAirport() {
+    	if (! hasJob()) {
+    		return this.getDrone().getAirport();
+    	}
+    	return this.getJobs().get(this.getJobs().size()-1).getAirportTo();
     }
 }

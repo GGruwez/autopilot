@@ -25,6 +25,7 @@ class Drone {
   	private Airport airport = null;
   	private int gate = 0;
   	private int pointingToRunway = 0;
+  	private Vector position = Vector.NULL;
 
   	public Drone(Airport airport, int gate, int pointingToRunway) {
   		this.airport = airport;
@@ -44,10 +45,20 @@ class Drone {
   		return this.pointingToRunway;
   	}
   	
+  	public void setPosition(float x, float y, float z) {
+  		this.position = new Vector(x,y,z);
+  	}
+  	
+  	public Vector getPosition() {
+  		return this.position;
+  	}
+  	
     public AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          
     	//TODO: aanpassen aan jobs
     	//TODO: landen op landingsbaan
+    	
+    	this.setPosition(input.getX(), input.getY(), input.getZ());
     	
     	 PreviousInputs prev = autopilot.getPreviousInput();
          float dt = -prev.getElapsedTime()+input.getElapsedTime();

@@ -1,6 +1,7 @@
 package interfaces;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 
 public class AutopilotModuleImplementation implements AutopilotModule {
 	public void defineAirportParams(float length, float width) {
@@ -67,7 +68,52 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     }
     
     public void assignJob(Job job) {
-    	//TODO: job toewijzen aan drone
+
+    	AutopilotImplementation closestDrone = null;
+		float closestDistance = Float.MAX_VALUE;
+		AutopilotImplementation idleDrone = null;
+		float minJobs = MAX_NB_JOBS;
+    	
+    	for (AutopilotImplementation drone : this.getDrones()) {
+    		
+    		// Vrije drone op vertrekplaats
+    		if (drone.getDrone().getAirport() == job.getAirportFrom() &&
+    				drone.getDrone().getGate() == job.getGateFrom() &&
+    				(! drone.hasJob())) {
+    			drone.addJob(job);
+    			job.setDrone(drone);
+    		}
+    		
+    		else {
+    			// Dichtstbijzijnde drone zoeken --> vind je sowieso
+    			if (drone.getDistanceToAirport(job.getAirportFrom()) < closestDistance) {
+	    			closestDrone = drone;
+	    			closestDistance = drone.getFinalAirport().getDistanceToAirport(job.getAirportFrom());
+	    		}
+    		
+    			// Drone met minste jobs onder max aantal --> vind je niet sowieso als alle drones vol zijn
+	    		else if (drone.getJobs().size() < minJobs) {
+	    			idleDrone = drone;
+	    			minJobs = drone.getJobs().size();
+	    		}
+    		}
+    	}
+		
+		if (closestDrone.getJobs().size() < MAX_NB_JOBS) {
+			closestDrone.addJob(job);
+			job.setDrone(closestDrone);
+		}
+		
+		else {
+			if (idleDrone != null) {
+				idleDrone.addJob(job);
+				job.setDrone(idleDrone);
+			}
+			else {
+				MAX_NB_JOBS += 1;
+				assignJob(job);
+			}
+		}
     }
     
     public float airportLength;
@@ -75,4 +121,5 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     public ArrayList<Airport> airports;
     public ArrayList<AutopilotImplementation> drones;
     public ArrayList<Job> jobs;
+    public int MAX_NB_JOBS = 3;
 }
