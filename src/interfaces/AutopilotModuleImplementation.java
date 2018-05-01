@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 
 public class AutopilotModuleImplementation implements AutopilotModule {
+	
 	public void defineAirportParams(float length, float width) {
 		this.airportLength = length;
 		this.airportWidth = width;
@@ -116,10 +117,10 @@ public class AutopilotModuleImplementation implements AutopilotModule {
 		}
     }
     
-    public float airportLength;
-    public float airportWidth;
-    public ArrayList<Airport> airports;
-    public ArrayList<AutopilotImplementation> drones;
-    public ArrayList<Job> jobs;
+    public float airportLength = 1000;
+    public float airportWidth = 50;
+    public ArrayList<Airport> airports = new ArrayList<Airport>();
+    public ArrayList<AutopilotImplementation> drones = new ArrayList<AutopilotImplementation>();
+    public ArrayList<Job> jobs = new ArrayList<Job>();
     public int MAX_NB_JOBS = 3;
 }

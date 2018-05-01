@@ -15,10 +15,10 @@ public class AutopilotImplementation implements Autopilot {
     private Drone drone;
     UI userInterface = new UI();
     private AutopilotOutputs move;
-    private ArrayList<Job> jobs;
+    private ArrayList<Job> jobs = new ArrayList<Job>();
     private Airport[] currentPath;
     private int[] currentPathGates;
-    private boolean landed = false;
+    private boolean landed = true;
 
     public AutopilotImplementation(Airport airport, int gate, int pointingToRunway, AutopilotConfig config) {
     	this.drone = new Drone(airport, gate, pointingToRunway);
@@ -140,7 +140,7 @@ public class AutopilotImplementation implements Autopilot {
     	int fromGate = this.getDrone().getGate();
     	Airport to = currentJob.getAirportFrom();
     	int toGate = currentJob.getGateFrom();
-    	if (currentJob.getAirportFrom() == from) {
+    	if (to == from) {
     		to = currentJob.getAirportTo();
     		toGate = currentJob.getGateTo();
     	}
