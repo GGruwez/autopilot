@@ -4,8 +4,9 @@ import java.util.ArrayList;
 
 public class AutopilotImplementation implements Autopilot {
 	
-	//TODO: een drone hoort altijd bij de airport waar hij naartoe aan het vliegen is, pas wanneer
-	//		hij daar weer vertrokken is, is dat niet meer zo en hoort hij bij de volgende. 
+	//TODO: een drone hoort altijd bij de airport waar hij naartoe aan het vliegen is, 
+	//		of waar hij op stilstaat.
+	//TODO: variabele 'landed' zetten als hij landt, niet zetten als hij opstijgt. 
 
     private boolean isSimulating = false; // TODO: never used for the moment
     private AutopilotConfig config;
@@ -15,11 +16,22 @@ public class AutopilotImplementation implements Autopilot {
     UI userInterface = new UI();
     private AutopilotOutputs move;
     private ArrayList<Job> jobs;
+    private Airport[] currentPath;
+    private int[] currentPathGates;
+    private boolean landed = false;
 
     public AutopilotImplementation(Airport airport, int gate, int pointingToRunway, AutopilotConfig config) {
     	this.drone = new Drone(airport, gate, pointingToRunway);
     	this.config = config;
     }
+    
+  	public boolean isLanded() {
+  		return this.landed;
+  	}
+  	
+  	public void setLanded(boolean bool) {
+  		this.landed = bool;
+  	}
     
     PreviousInputs getPreviousInput() {
         return this.previousInput;
@@ -78,7 +90,10 @@ public class AutopilotImplementation implements Autopilot {
     	return this.move;
     }
     
-    public Job getNextJob() {
+    public Job getCurrentJob() {
+    	if (! this.hasJob()) {
+    		return null;
+    	}
     	return this.getJobs().get(0);
     }
     
@@ -110,5 +125,49 @@ public class AutopilotImplementation implements Autopilot {
     		return this.getDrone().getAirport();
     	}
     	return this.getJobs().get(this.getJobs().size()-1).getAirportTo();
+    }
+
+    public Airport[] getCurrentPath() {
+    	if (! hasJob()) {
+    		this.currentPathGates = null;
+    		return null;
+    	}
+    	if (! isLanded()) {
+    		return this.currentPath;
+    	}
+    	Job currentJob = this.getCurrentJob();
+    	Airport from = this.getDrone().getAirport();
+    	int fromGate = this.getDrone().getGate();
+    	Airport to = currentJob.getAirportFrom();
+    	int toGate = currentJob.getGateFrom();
+    	if (currentJob.getAirportFrom() == from) {
+    		to = currentJob.getAirportTo();
+    		toGate = currentJob.getGateTo();
+    	}
+    	this.currentPathGates = new int[]{fromGate,toGate};
+    	this.currentPath = new Airport[]{from,to};
+    	return this.currentPath;
+    }
+    
+    public int[] getCurrentPathGates() {
+    	if (! hasJob()) {
+    		this.currentPathGates = null;
+    		return null;
+    	}
+    	if (! isLanded()) {
+    		return this.currentPathGates;
+    	}
+    	Job currentJob = this.getCurrentJob();
+    	Airport from = this.getDrone().getAirport();
+    	int fromGate = this.getDrone().getGate();
+    	Airport to = currentJob.getAirportFrom();
+    	int toGate = currentJob.getGateFrom();
+    	if (currentJob.getAirportFrom() == from) {
+    		to = currentJob.getAirportTo();
+    		toGate = currentJob.getGateTo();
+    	}
+    	this.currentPathGates = new int[]{fromGate,toGate};
+    	this.currentPath = new Airport[]{from,to};
+    	return this.currentPathGates;
     }
 }

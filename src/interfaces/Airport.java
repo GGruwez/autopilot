@@ -5,8 +5,9 @@ public class Airport {
 	public Airport(float X, float Z, float toRunwayX, float toRunwayZ) {
 		this.centerX = X;
 		this.centerZ = Z;
-		this.centerToRunway0X = toRunwayX;
-		this.centerToRunway0Z = toRunwayZ;
+		float norm = (float) Math.sqrt(toRunwayZ*toRunwayZ + toRunwayX*toRunwayX);
+		this.centerToRunway0X = toRunwayX/norm;
+		this.centerToRunway0Z = toRunwayZ/norm;
 	}
 	
 	float getCenterX() {
