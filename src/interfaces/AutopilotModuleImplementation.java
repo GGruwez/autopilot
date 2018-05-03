@@ -100,21 +100,23 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     		}
     	}
 		
-		if (closestDrone.getJobs().size() < MAX_NB_JOBS) {
-			closestDrone.addJob(job);
-			job.setDrone(closestDrone);
-		}
-		
-		else {
+    	if (! job.hasDrone()) {
 			if (idleDrone != null) {
 				idleDrone.addJob(job);
 				job.setDrone(idleDrone);
 			}
+			
 			else {
-				MAX_NB_JOBS += 1;
-				assignJob(job);
+				if (closestDrone.getJobs().size() < MAX_NB_JOBS) {
+					closestDrone.addJob(job);
+					job.setDrone(closestDrone);
+				}
+				else {
+					MAX_NB_JOBS += 1;
+					assignJob(job);
+				}
 			}
-		}
+    	}
     }
     
     public float airportLength = 1000;
