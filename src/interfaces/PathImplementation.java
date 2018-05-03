@@ -26,24 +26,5 @@ public class PathImplementation implements Path {
 	public float[] Y = new float[]{30};
 	public float[] Z = new float[]{-800};
 	
-	public void addPath(Vector[] path) {
-		
-		float[] tempX = new float[this.X.length+path.length];
-		float[] tempY = new float[this.Y.length+path.length];
-		float[] tempZ = new float[this.Z.length+path.length];
-		for (int i=0;i<this.X.length+path.length;i++) {
-			if (i<X.length -1 ) {
-				tempX[i] = X[i];
-				tempY[i] = Y[i];
-				tempZ[i] = Z[i];
-				
-			}else {
-				tempX[i] = path[i].getX();
-				tempY[i] = path[i].getY();
-				tempZ[i] = path[i].getZ();
-			}
-			
-		}
-		
-	}
+	
 }
