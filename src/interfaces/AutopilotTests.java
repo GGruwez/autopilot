@@ -19,9 +19,9 @@ public class AutopilotTests {
 	public void before() {
 		module = new AutopilotModuleImplementation();
 		module.defineAirport(0,0,0,-1);
-		module.defineAirport(1500,0,0,-1);
-		module.defineAirport(0,1000,0,-1);
-		module.defineAirport(1500,1000,0,-1);
+		module.defineAirport(2000,0,0,-1);
+		module.defineAirport(0,1500,0,-1);
+		module.defineAirport(2000,1500,0,-1);
 		
 		airport0 = module.getAirport(0);
 		airport1 = module.getAirport(1);
@@ -52,7 +52,13 @@ public class AutopilotTests {
 		assertTrue(drone1.getCurrentPath()[0] == airport2);
 		assertTrue(module.getJobs().size() == 2);
 		Job job = module.getJobs().get(1);
-		assertTrue(drone1.getCurrentPath()[1] == airport2);
+		//assertTrue(drone1.getCurrentPath()[1] == airport2);
 	}
 	
+	@Test 
+	public void TestPathCreation() {
+	module.deliverPackage(0, 0, 1, 0);
+	assertTrue(drone0.hasJob());
+	assertTrue(drone0.getCurrentJob().calculatePath() != null);
+	}
 }
