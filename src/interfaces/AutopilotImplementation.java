@@ -68,6 +68,7 @@ public class AutopilotImplementation implements Autopilot {
 	            this.isSimulating = true;
 	        } else {
 	            output = drone.calculate(inputs,null, config.getNbRows(), config.getNbColumns(), this);
+	            System.out.println("running");
 	            this.userInterface.updateData(output);
 	        }
 	        this.previousInput = new PreviousInputs(inputs);
@@ -110,7 +111,7 @@ public class AutopilotImplementation implements Autopilot {
     }
     
     public boolean hasJob() {
-    	return (! (this.getJobs().size() == 0));
+    	return true;//(! (this.getJobs().size() == 0));
     }
     
     public float getDistanceToAirport(Airport airport) {
@@ -140,6 +141,7 @@ public class AutopilotImplementation implements Autopilot {
     	int fromGate = this.getDrone().getGate();
     	Airport to = currentJob.getAirportFrom();
     	int toGate = currentJob.getGateFrom();
+    	this.getDrone().setCurrentPath(currentJob.getPath());
     	if (to == from) {
     		to = currentJob.getAirportTo();
     		toGate = currentJob.getGateTo();

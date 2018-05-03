@@ -48,6 +48,7 @@ public class AutopilotTests {
 		assertTrue(module.getJobs().size() == 1);
 		assertTrue(drone0.getCurrentJob().getAirportTo() == airport1);
 		assertTrue(drone0.getCurrentJob().getAirportFrom() == airport0);
+		assertTrue(drone0.getDrone().getCurrentPath().getX().length == 68);
 		
 		module.deliverPackage(1, 0, 2, 0);
 		assertTrue(drone1.hasJob());

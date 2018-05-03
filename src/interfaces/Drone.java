@@ -1,5 +1,6 @@
 package interfaces;
 
+import java.util.ArrayList;
 
 class Drone {
 
@@ -18,15 +19,24 @@ class Drone {
   	private boolean landing = false;
   	private boolean taxi = false;
   	private boolean homing = false;
-  	private int reachedTargets = 0;
-  	private Vector finalTarget = new Vector(0,0,0);
-  	private float turningDistance = 450;
-  	private Path path = new PathImplementation();
+    private float turningDistance = 450;
+  	
   	private Airport airport = null;
   	private int gate = 0;
   	private int pointingToRunway = 0;
   	private Vector position = Vector.NULL;
 
+  	//testing
+	Airport airport1 = new Airport(0,0,0,-1);
+	Airport airport2 = new Airport(4000,0,0,-1);
+	Job job = new Job(airport1,0,airport2,0);
+	private Path path = new PathImplementation(job.getPath());
+  	//testing
+	private int reachedTargets = 0;
+  	private Vector finalTarget = new Vector(airport2.getCenterX(),0,airport2.getCenterZ());
+	
+	
+	
   	public Drone(Airport airport, int gate, int pointingToRunway) {
   		this.airport = airport;
   		this.gate = gate;
@@ -57,6 +67,9 @@ class Drone {
          
     	//TODO: aanpassen aan jobs
     	//TODO: landen op landingsbaan
+    		if (path == null) {
+    			return new AutopilotOutputsImplementation(0, 0, 0, 0, 0, 0, 0, 0);
+    		}
     	
     	this.setPosition(input.getX(), input.getY(), input.getZ());
     	
@@ -80,7 +93,7 @@ class Drone {
          nextTarget = new Vector(path.getX()[reachedTargets],path.getY()[reachedTargets],path.getZ()[reachedTargets]);
          }
          
-         if (nextTarget.calculateDistance(new Vector(input.getX(),input.getY(), input.getZ())) < 20){ //SET TO 5
+         if (nextTarget.calculateDistance(new Vector(input.getX(),nextTarget.getY(), input.getZ())) < 30){ //SET TO 5
         	 reachedTargets += 1;
          }
          
@@ -120,7 +133,7 @@ class Drone {
          	 else if ((ref > 0.f && ref  < Math.PI) || (ref < -0f && ref < -Math.PI)) {
          		//turnright
          		//System.out.println("right");
-         		if (Math.abs(ref) > 0.1f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f && 
+         		if (Math.abs(ref) > 0.03f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f && 
          			setTurnRight();
          			
          		}else{
@@ -131,7 +144,7 @@ class Drone {
          	else if ((ref >= 0.f && ref >= Math.PI) || (ref <= 0f && ref >= -Math.PI)) {
          		//turnleft
          		//System.out.println("left");
-         		if ( Math.abs(ref) > 0.1f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f&&
+         		if ( Math.abs(ref) > 0.03f && checkIfReachable(input, nextTarget)) {//Math.abs(ref) > 0.1f&&
          			setTurnLeft();
       		
          		}else{
@@ -237,7 +250,7 @@ class Drone {
 		 
 		 // cap outputs
 		 float curThrust = output.getThrust();
-		 if (nextTarget.equals(new Vector(0,0,0)) && input.getY() > 20)
+		 if (nextTarget.equals(finalTarget) && input.getY() > 20)
 			 curThrust /= 1.75;
 
 		 
@@ -458,7 +471,7 @@ class Drone {
     	float frontBrake = 0;
     	float leftBrake = 0;
     	float rightBrake = 0;
-    	Vector destination = new Vector(0, 0, 0);
+    	Vector destination = this.finalTarget;
     	
     	float targetHeading = (float) Math.atan2((destination.getX() - input.getX()),(destination.getZ()-input.getZ()));
     	targetHeading += Math.PI;
@@ -549,12 +562,13 @@ class Drone {
     	}
    	 
     	thrust =1250;
-    	if (velocityWorld.getY() > 0.01f)
+    	if (velocityWorld.getY() > 0.0f)
     		thrust = 750;
-    	if (velocityWorld.getY() < 0.01f && input.getPitch() > 0)
+    	if (velocityWorld.getY() < 0.0f && input.getPitch() > 0)
     		thrust = 1500;
     	//System.out.print("turnleft");
-   	 
+   	  	
+    	
    	 
   	 	horStabInclination = 0.05f;
    	 	if (input.getPitch() > 0.15f)
@@ -580,11 +594,14 @@ class Drone {
    	 		leftWingInclination += deltaroll; //getMaxinclination(velocityDrone, config, leftWingInclination)/4;//
    	 	}
    	 	thrust =1250;
-   	 	if (velocityWorld.getY() > 0.01f)
+   	 	if (velocityWorld.getY() > 0.0f)
    	 		thrust = 750;
-   	 	if (velocityWorld.getY() < 0.01f && input.getPitch() > 0)
+   	 	if (velocityWorld.getY() < 0.0f && input.getPitch() > 0)
    	 		thrust = 1500;
    	 	//System.out.print("turnleft");
+
+    	
+
    	 
    	 
    	 	horStabInclination = 0.05f;
@@ -884,6 +901,14 @@ class Drone {
 		float dist2 = (float) Math.sqrt(Math.pow(nextTarget.getX() - center2.getX(),2) + Math.pow(nextTarget.getZ() - center2.getZ(),2) );
 		System.out.println("dist1: " + dist1 + " dist2: " + dist2);
 		return (dist1 > 460 && dist2 > 460);
+	}
+	
+	public void setCurrentPath(ArrayList<Vector> path) {
+	//	this.path = new PathImplementation(path);
+	}
+	
+	public Path getCurrentPath() {
+		return this.path;
 	}
 }
 

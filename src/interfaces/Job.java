@@ -24,6 +24,10 @@ public class Job {
 		return this.drone;
 	}
 	
+	public ArrayList<Vector> getPath(){
+		return this.path;
+	}
+	
 	public void setDrone(Autopilot drone) {
 		if (! this.hasDrone()) {
 			this.drone = drone;
@@ -45,7 +49,7 @@ public class Job {
 	public ArrayList<Vector> calculatePath(){
 		ArrayList<Vector> path = new ArrayList<Vector>();
 		float takeoffLenght = 380;
-		float turningRadius = 480;
+		float turningRadius = 900;
 		Vector startingPoint = new Vector(from.getCenterX()+takeoffLenght*from.getCenterToRunway0X(),20,from.getCenterZ()+ takeoffLenght*from.getCenterToRunway0Z());
 		Vector centerRStart = new Vector((float)(startingPoint.getX() + turningRadius*from.getCenterToRunway0Z()),0,(float)(startingPoint.getZ() - turningRadius*from.getCenterToRunway0X()));
 		Vector centerLStart = new Vector((float)(startingPoint.getX() - turningRadius*from.getCenterToRunway0Z()),0,(float)(startingPoint.getZ() + turningRadius*from.getCenterToRunway0X()));
@@ -161,7 +165,7 @@ public class Job {
 		nbPathentry = arclenght/20;
 		stepAngle = angle/nbPathentry;
 		
-		for (int i=0;i<nbPathentry;i++) {
+		for (int i=5;i<nbPathentry;i++) {
 			x = (float) (centerREnd.getX() - Math.cos(stepAngle * i)*turningRadius);
 			y = (float) (centerREnd.getZ() + Math.sin(stepAngle * i)*turningRadius);
 			pathEntry = new Vector(x,20,y);
@@ -171,7 +175,6 @@ public class Job {
 	
 		path.add(endPoint);
 		
-		System.out.println(path.size());
 		
 		return path;
 	}

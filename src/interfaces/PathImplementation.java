@@ -3,6 +3,26 @@ package interfaces;
 import java.util.ArrayList;
 
 public class PathImplementation implements Path {
+	
+	public PathImplementation(ArrayList<Vector> newPath) {
+		float[] x = new float[newPath.size()];
+		float[] y = new float[newPath.size()];
+		float[] z = new float[newPath.size()];
+		int i = 0;
+		for (Vector Path : newPath) {
+			x[i] = Path.getX();
+			y[i] = Path.getY();
+			z[i] = Path.getZ();
+			i++;
+		}
+		
+		this.X = x;
+		this.Y = y;
+		this.Z = z;
+		System.out.println(x);
+		System.out.println(y);
+		System.out.println(z);
+	}
 
 	@Override
 	public float[] getX() {
@@ -19,12 +39,10 @@ public class PathImplementation implements Path {
 		return this.Z;
 	}
 	
-//	public float[] X = new float[]{0,0,0,0};
-//	public float[] Y = new float[]{30,30,30,30};
-//	public float[] Z = new float[]{-2000,-600,-500,-400};
-	public float[] X = new float[]{0};
-	public float[] Y = new float[]{30};
-	public float[] Z = new float[]{-800};
+
+	public float[] X = new float[]{};
+	public float[] Y = new float[]{};
+	public float[] Z = new float[]{};
 	
 	
 }
