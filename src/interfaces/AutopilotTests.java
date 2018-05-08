@@ -40,30 +40,26 @@ public class AutopilotTests {
 	public void assignJobs() {
 		assertFalse(drone0.hasJob());
 		assertFalse(drone1.hasJob());
+		assertTrue(drone1.getDrone().getAirport() == airport2);
 		
 		module.deliverPackage(0, 0, 1, 0);
 		assertTrue(drone0.hasJob());
-		assertTrue(drone0.getCurrentPath()[0] == airport0);
-		assertTrue(drone0.getCurrentPath()[1] == airport1);
 		assertTrue(module.getJobs().size() == 1);
 		assertTrue(drone0.getCurrentJob().getAirportTo() == airport1);
 		assertTrue(drone0.getCurrentJob().getAirportFrom() == airport0);
-		assertTrue(drone0.getDrone().getCurrentPath().getX().length == 68);
 		
 		module.deliverPackage(1, 0, 2, 0);
 		assertTrue(drone1.hasJob());
 		assertTrue(drone1.getCurrentPath()[0] == airport2);
 		assertTrue(module.getJobs().size() == 2);
 		assertTrue(drone1.getDrone().getAirport() == airport2);
-		assertTrue(drone1.isLanded());
-		assertTrue(drone1.getCurrentJob().getAirportTo() == airport2);
-		assertTrue(drone1.getCurrentPath()[1] == airport1);
+		assertTrue(drone1.getCurrentJob().getAirportTo() == airport1);
 	}
 	
 	@Test 
 	public void TestPathCreation() {
-	module.deliverPackage(0, 0, 1, 0);
-	assertTrue(drone0.hasJob());
-	assertTrue(drone0.getCurrentJob().calculatePath() != null);
+		module.deliverPackage(0, 0, 1, 0);
+		assertTrue(drone0.hasJob());
+		assertTrue(drone0.getCurrentJob().calculatePath() != null);
 	}
 }

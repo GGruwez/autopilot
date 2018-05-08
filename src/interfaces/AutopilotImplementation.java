@@ -19,14 +19,24 @@ public class AutopilotImplementation implements Autopilot {
     private Airport[] currentPath;
     private int[] currentPathGates;
     private boolean landed = true;
+    private AutopilotModuleImplementation module;
 
     public AutopilotImplementation(Airport airport, int gate, int pointingToRunway, AutopilotConfig config) {
     	this.drone = new Drone(airport, gate, pointingToRunway);
     	this.config = config;
+    	airport.setDroneAt(gate, this);
     }
     
   	public boolean isLanded() {
   		return this.landed;
+  	}
+  	
+  	public AutopilotModuleImplementation getModule() {
+  		return this.module;
+  	}
+  	
+  	public void setModule(AutopilotModuleImplementation module) {
+  		this.module = module;
   	}
   	
   	public void setLanded(boolean bool) {
@@ -95,6 +105,27 @@ public class AutopilotImplementation implements Autopilot {
     	if (! this.hasJob()) {
     		return null;
     	}
+    	Airport idleAirport = null;
+		int idleGate = 0;
+    	if (this.getJobs().get(0).getAirportTo().hasDroneAt(this.getJobs().get(0).getGateTo())) {
+    		AutopilotImplementation drone = this.getJobs().get(0).getAirportTo().getDroneAt(this.getJobs().get(0).getGateTo());
+    		if (! drone.hasJob()) {
+    			for (Airport airport: getModule().getAirports()) {
+    				if (! airport.hasDroneAt(0)) {
+    					idleAirport = airport;
+    					idleGate = 0;
+    				}
+    				else if (! airport.hasDroneAt(1)) {
+    					idleAirport = airport;
+    					idleGate = 1;
+    				}
+    			}
+    		}
+    		Job newJob = new Job(drone.getDrone().getAirport(),drone.getDrone().getGate(),idleAirport, idleGate);
+    		System.out.println("idleairport null?" + idleAirport == null);
+    		drone.addJob(newJob);
+    		newJob.setDrone(drone);
+    	}
     	return this.getJobs().get(0);
     }
     
@@ -111,7 +142,7 @@ public class AutopilotImplementation implements Autopilot {
     }
     
     public boolean hasJob() {
-    	return true;//(! (this.getJobs().size() == 0));
+    	return (! (this.getJobs().size() == 0));
     }
     
     public float getDistanceToAirport(Airport airport) {
@@ -171,5 +202,10 @@ public class AutopilotImplementation implements Autopilot {
     	this.currentPathGates = new int[]{fromGate,toGate};
     	this.currentPath = new Airport[]{from,to};
     	return this.currentPathGates;
+    }
+    
+    public void finishCurrentJob() {
+    	getCurrentJob().setDrone(null);
+    	this.getJobs().remove(getCurrentJob());
     }
 }

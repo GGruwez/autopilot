@@ -20,7 +20,7 @@ public class Job {
 		return this.to;
 	}
 	
-	public Autopilot getDrone() {
+	public AutopilotImplementation getDrone() {
 		return this.drone;
 	}
 	
@@ -28,7 +28,7 @@ public class Job {
 		return this.path;
 	}
 	
-	public void setDrone(Autopilot drone) {
+	public void setDrone(AutopilotImplementation drone) {
 		if (! this.hasDrone()) {
 			this.drone = drone;
 		}
@@ -170,7 +170,6 @@ public class Job {
 			y = (float) (centerREnd.getZ() + Math.sin(stepAngle * i)*turningRadius);
 			pathEntry = new Vector(x,20,y);
 			path.add(pathEntry);
-
 		}
 	
 		path.add(endPoint);
@@ -178,10 +177,10 @@ public class Job {
 		
 		return path;
 	}
-  	
+	
 	private Airport from;
 	private Airport to;
-	private Autopilot drone = null;
+	private AutopilotImplementation drone = null;
 	private int gateFrom;
 	private int gateTo;
 	private ArrayList<Vector> path = new ArrayList<Vector>() ;

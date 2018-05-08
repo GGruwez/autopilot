@@ -18,6 +18,7 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     public void defineDrone(int airport, int gate, int pointingToRunway, AutopilotConfig config) {
     	AutopilotImplementation drone = new AutopilotImplementation(getAirport(airport), gate, pointingToRunway, config);
     	this.drones.add(drone);
+    	drone.setModule(this);
     }
     	
     public void startTimeHasPassed(int drone, AutopilotInputs inputs){
@@ -100,7 +101,7 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     		}
     	}
 		
-    	if (! job.hasDrone()) {
+    	if (assignedDrone == null) {
 			if (idleDrone != null) {
 				assignedDrone = idleDrone;
 			}
@@ -116,7 +117,8 @@ public class AutopilotModuleImplementation implements AutopilotModule {
 			}
     	}
     	
-    	if (assignedDrone.getDrone().getAirport() != job.getAirportFrom()) {
+    	if ((assignedDrone.getDrone().getAirport() != job.getAirportFrom()) || 
+    			(assignedDrone.getDrone().getGate() != job.getGateFrom())) {
     		Job tussenstop = new Job(assignedDrone.getDrone().getAirport(),assignedDrone.getDrone().getGate(),
     				job.getAirportFrom(),job.getGateFrom());
     		tussenstop.setDrone(assignedDrone);

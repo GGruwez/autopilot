@@ -522,6 +522,10 @@ class Drone {
         		leftBrake = config.getRMax();
         		rightBrake = config.getRMax();
         		thrust = 0;
+        		if (Math.abs(velocityDrone.getZ()) < 0.1) {
+        			
+        		}
+        		
     		}
     		
     		
