@@ -74,6 +74,7 @@ public class AutopilotModuleImplementation implements AutopilotModule {
 		float closestDistance = Float.MAX_VALUE;
 		AutopilotImplementation idleDrone = null;
 		float minJobs = MAX_NB_JOBS;
+		AutopilotImplementation assignedDrone = null;
     	
     	for (AutopilotImplementation drone : this.getDrones()) {
     		
@@ -81,8 +82,7 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     		if (drone.getDrone().getAirport() == job.getAirportFrom() &&
     				drone.getDrone().getGate() == job.getGateFrom() &&
     				(! drone.hasJob())) {
-    			drone.addJob(job);
-    			job.setDrone(drone);
+    			assignedDrone = drone;
     		}
     		
     		else {
@@ -102,14 +102,12 @@ public class AutopilotModuleImplementation implements AutopilotModule {
 		
     	if (! job.hasDrone()) {
 			if (idleDrone != null) {
-				idleDrone.addJob(job);
-				job.setDrone(idleDrone);
+				assignedDrone = idleDrone;
 			}
 			
 			else {
 				if (closestDrone.getJobs().size() < MAX_NB_JOBS) {
-					closestDrone.addJob(job);
-					job.setDrone(closestDrone);
+					assignedDrone = closestDrone;
 				}
 				else {
 					MAX_NB_JOBS += 1;
@@ -117,6 +115,15 @@ public class AutopilotModuleImplementation implements AutopilotModule {
 				}
 			}
     	}
+    	
+    	if (assignedDrone.getDrone().getAirport() != job.getAirportFrom()) {
+    		Job tussenstop = new Job(assignedDrone.getDrone().getAirport(),assignedDrone.getDrone().getGate(),
+    				job.getAirportFrom(),job.getGateFrom());
+    		tussenstop.setDrone(assignedDrone);
+    		assignedDrone.addJob(tussenstop);
+    	}
+    	job.setDrone(assignedDrone);
+		assignedDrone.addJob(job);
     }
     
     public float airportLength = 1000;
