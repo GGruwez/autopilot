@@ -22,6 +22,7 @@ public class PathImplementation implements Path {
 		System.out.println(x);
 		System.out.println(y);
 		System.out.println(z);
+		this.arraylist = newPath;
 	}
 
 	@Override
@@ -39,10 +40,20 @@ public class PathImplementation implements Path {
 		return this.Z;
 	}
 	
+	public void collisionUpdate() {
+		for (float y: getY()) {
+			y = y+10;
+		}
+	}
+	
+	public ArrayList<Vector> getArrayList() {
+		return this.arraylist;
+	}
 
 	public float[] X = new float[]{};
 	public float[] Y = new float[]{};
 	public float[] Z = new float[]{};
+	public ArrayList<Vector> arraylist = new ArrayList<Vector>();
 	
 	
 }

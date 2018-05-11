@@ -33,6 +33,16 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     	Job job = new Job(this.getAirport(fromAirport), fromGate, this.getAirport(toAirport), toGate);
     	this.jobs.add(job);
     	this.assignJob(job);
+    	
+    	for (AutopilotImplementation drone: this.getDrones()) {
+    		for (Vector cube1: drone.getCurrentPath().getArrayList()) {
+    			for (Vector cube2: job.getDrone().getCurrentPath().getArrayList()) {
+    				if (cube1.calculateDistance(cube2) < 10) {
+    					job.getDrone().getCurrentPath().collisionUpdate();
+    				}
+    			}
+    		}
+    	}
     }
     
     public void simulationEnded() {

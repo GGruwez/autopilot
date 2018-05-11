@@ -24,7 +24,7 @@ public class Job {
 		return this.drone;
 	}
 	
-	public ArrayList<Vector> getPath(){
+	public PathImplementation getPath(){
 		return this.path;
 	}
 	
@@ -46,7 +46,7 @@ public class Job {
 		return this.gateTo;
 	}
 	
-	public ArrayList<Vector> calculatePath(){
+	public PathImplementation calculatePath(){
 		ArrayList<Vector> path = new ArrayList<Vector>();
 		float takeoffLenght = 380;
 		float turningRadius = 900;
@@ -174,8 +174,7 @@ public class Job {
 	
 		path.add(endPoint);
 		
-		
-		return path;
+		return new PathImplementation(path);
 	}
 	
 	private Airport from;
@@ -183,7 +182,7 @@ public class Job {
 	private AutopilotImplementation drone = null;
 	private int gateFrom;
 	private int gateTo;
-	private ArrayList<Vector> path = new ArrayList<Vector>() ;
+	private PathImplementation path;
 }
 
 

@@ -50,7 +50,6 @@ public class AutopilotTests {
 		
 		module.deliverPackage(1, 0, 2, 0);
 		assertTrue(drone1.hasJob());
-		assertTrue(drone1.getCurrentPath()[0] == airport2);
 		assertTrue(module.getJobs().size() == 2);
 		assertTrue(drone1.getDrone().getAirport() == airport2);
 		assertTrue(drone1.getCurrentJob().getAirportTo() == airport1);

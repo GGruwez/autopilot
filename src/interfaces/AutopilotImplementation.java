@@ -16,8 +16,6 @@ public class AutopilotImplementation implements Autopilot {
     UI userInterface = new UI();
     private AutopilotOutputs move;
     private ArrayList<Job> jobs = new ArrayList<Job>();
-    private Airport[] currentPath;
-    private int[] currentPathGates;
     private boolean landed = true;
     private AutopilotModuleImplementation module;
 
@@ -159,49 +157,11 @@ public class AutopilotImplementation implements Autopilot {
     	return this.getJobs().get(this.getJobs().size()-1).getAirportTo();
     }
 
-    public Airport[] getCurrentPath() {
+    public PathImplementation getCurrentPath() {
     	if (! hasJob()) {
-    		this.currentPathGates = null;
     		return null;
     	}
-    	if (! isLanded()) {
-    		return this.currentPath;
-    	}
-    	Job currentJob = this.getCurrentJob();
-    	Airport from = this.getDrone().getAirport();
-    	int fromGate = this.getDrone().getGate();
-    	Airport to = currentJob.getAirportFrom();
-    	int toGate = currentJob.getGateFrom();
-    	this.getDrone().setCurrentPath(currentJob.getPath());
-    	if (to == from) {
-    		to = currentJob.getAirportTo();
-    		toGate = currentJob.getGateTo();
-    	}
-    	this.currentPathGates = new int[]{fromGate,toGate};
-    	this.currentPath = new Airport[]{from,to};
-    	return this.currentPath;
-    }
-    
-    public int[] getCurrentPathGates() {
-    	if (! hasJob()) {
-    		this.currentPathGates = null;
-    		return null;
-    	}
-    	if (! isLanded()) {
-    		return this.currentPathGates;
-    	}
-    	Job currentJob = this.getCurrentJob();
-    	Airport from = this.getDrone().getAirport();
-    	int fromGate = this.getDrone().getGate();
-    	Airport to = currentJob.getAirportFrom();
-    	int toGate = currentJob.getGateFrom();
-    	if (currentJob.getAirportFrom() == from) {
-    		to = currentJob.getAirportTo();
-    		toGate = currentJob.getGateTo();
-    	}
-    	this.currentPathGates = new int[]{fromGate,toGate};
-    	this.currentPath = new Airport[]{from,to};
-    	return this.currentPathGates;
+    	return this.getCurrentJob().getPath();
     }
     
     public void finishCurrentJob() {
