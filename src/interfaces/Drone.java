@@ -30,7 +30,7 @@ class Drone {
 	Airport airport1 = new Airport(0,0,0,-1);
 	Airport airport2 = new Airport(4000,0,0,-1);
 	Job job = new Job(airport1,0,airport2,0);
-	private Path path = new PathImplementation(job.getPath());
+	private PathImplementation path = new PathImplementation(job.getPath().getArrayList());
   	//testing
 	private int reachedTargets = 0;
   	private Vector finalTarget = new Vector(airport2.getCenterX(),0,airport2.getCenterZ());
