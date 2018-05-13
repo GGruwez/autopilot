@@ -34,13 +34,16 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     	this.jobs.add(job);
     	this.assignJob(job);
     	
+    	// Collision detection
     	for (AutopilotImplementation drone: this.getDrones()) {
-    		for (Vector cube1: drone.getCurrentPath().getArrayList()) {
-    			for (Vector cube2: job.getDrone().getCurrentPath().getArrayList()) {
-    				if (cube1.calculateDistance(cube2) < 10) {
-    					job.getDrone().getCurrentPath().collisionUpdate();
-    				}
-    			}
+    		if (drone.hasJob()) {
+	    		for (Vector cube1: drone.getCurrentPath().getArrayList()) {
+	    			for (Vector cube2: job.getDrone().getCurrentPath().getArrayList()) {
+	    				if (cube1.calculateDistance(cube2) < 10) {
+	    					job.getDrone().getCurrentPath().collisionUpdate();
+	    				}
+	    			}
+	    		}
     		}
     	}
     }
