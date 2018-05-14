@@ -26,15 +26,16 @@ class Drone {
   	private int pointingToRunway = 0;
   	private Vector position = Vector.NULL;
 
-  	//testing
-	Airport airport1 = new Airport(0,0,0,-1);
-	Airport airport2 = new Airport(4000,0,0,-1);
-	Job job = new Job(airport1,0,airport2,0);
-	private PathImplementation path = new PathImplementation(job.getPath().getArrayList());
-  	//testing
+//  	//testing
+//	Airport airport1 = new Airport(0,0,0,-1);
+//	Airport airport2 = new Airport(4000,0,0,-1);
+//	Job job = new Job(airport1,0,airport2,0);
+//	private PathImplementation path = new PathImplementation(job.getPath().getArrayList());
+//  	//testing
+    private Job job = null;
+    private PathImplementation path = null;
 	private int reachedTargets = 0;
-  	private Vector finalTarget = new Vector(airport2.getCenterX(),0,airport2.getCenterZ());
-	
+  	private Vector finalTarget;
 	
 	
   	public Drone(Airport airport, int gate, int pointingToRunway) {
@@ -70,8 +71,8 @@ class Drone {
     		if (path == null) {
     			return new AutopilotOutputsImplementation(0, 0, 0, 0, 0, 0, 0, 0);
     		}
-    	
-    	this.setPosition(input.getX(), input.getY(), input.getZ());
+        finalTarget = new Vector(job.getAirportTo().getCenterX(),0,job.getAirportTo().getCenterZ());
+        this.setPosition(input.getX(), input.getY(), input.getZ());
     	
     	 PreviousInputs prev = autopilot.getPreviousInput();
          float dt = -prev.getElapsedTime()+input.getElapsedTime();

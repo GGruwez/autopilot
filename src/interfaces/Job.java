@@ -55,7 +55,6 @@ public class Job {
 		Vector startingPoint = new Vector(from.getCenterX()+takeoffLenght*from.getCenterToRunway0X(),20,from.getCenterZ()+ takeoffLenght*from.getCenterToRunway0Z());
 		Vector centerLStart = new Vector((float)(startingPoint.getX() + turningRadius*from.getCenterToRunway0Z()),0,(float)(startingPoint.getZ() - turningRadius*from.getCenterToRunway0X()));
 		Vector centerRStart = new Vector((float)(startingPoint.getX() - turningRadius*from.getCenterToRunway0Z()),0,(float)(startingPoint.getZ() + turningRadius*from.getCenterToRunway0X()));
-		centerLStart.printVector("Lstart: ");
 		Vector endPoint = new Vector(to.getCenterX()-takeoffLenght*to.getCenterToRunway0X(),20,to.getCenterZ()- takeoffLenght*to.getCenterToRunway0Z());
 		Vector centerLEnd = new Vector((float)(endPoint.getX() + turningRadius*to.getCenterToRunway0Z()),0,(float)(endPoint.getZ() - turningRadius*to.getCenterToRunway0X()));
 		Vector centerREnd = new Vector((float)(endPoint.getX() - turningRadius*to.getCenterToRunway0Z()),0,(float)(endPoint.getZ() + turningRadius*to.getCenterToRunway0X()));
@@ -92,8 +91,7 @@ public class Job {
 				r1.printVector("r1:  ");
 				r2.printVector("r2:  ");
 
-				t2 = t1;
-				r2 = r1;
+
 				//get path on first circle
 //todo add support for turned airports
 				Vector a1 = t2.subtract(centerRStart);
@@ -102,21 +100,28 @@ public class Job {
 				float arclenght = (float) (turningRadius*angle/(2*Math.PI));
 				float nbPathentry = arclenght/20;
 				float stepAngle = angle/nbPathentry;
+
 				Vector nzAxis = new Vector(0,0,-1);
 				Vector Airportaxis = new Vector(from.getCenterToRunway0X(),0,from.getCenterToRunway0Z());
 				float bias = nzAxis.angleBetween(Airportaxis);
+				if (from.getCenterToRunway0X() < 0){
+					bias -= Math.PI;
+				}
+				System.out.println(bias);
+				float signx = -1;
+				float signz = -1;
+
 				for (int i=0;i<nbPathentry;i++) {
-					float x = (float) (centerRStart.getX() - Math.cos(bias + stepAngle * i)*turningRadius);
-					float y = (float) (centerRStart.getZ() + Math.sin(bias + stepAngle * i)*turningRadius);
+					float x = (float) (centerRStart.getX() + signx * Math.cos(bias + stepAngle * i)*turningRadius);
+					float y = (float) (centerRStart.getZ() + signz * Math.sin(bias + stepAngle * i)*turningRadius);
 					Vector pathEntry = new Vector(x,20,y);
 					path.add(pathEntry);
 
 				}
-				float x = (float) (centerRStart.getX() - Math.cos(bias +angle)*turningRadius);
-				float y = (float) (centerRStart.getZ() + Math.sin(bias +angle)*turningRadius);
+				float x = (float) (centerRStart.getX() + signx * Math.cos(bias + angle)*turningRadius);
+				float y = (float) (centerRStart.getZ() + signz * Math.sin(bias + angle)*turningRadius);
 				Vector pathEntry = new Vector(x,20,y);
 				path.add(pathEntry);
-				System.out.println(path);
 
 				// get path on tangent
 
@@ -142,10 +147,15 @@ public class Job {
 				nzAxis = new Vector(0,0,-1);
 				Airportaxis = new Vector(to.getCenterToRunway0X(),0,to.getCenterToRunway0Z());
 				bias = nzAxis.angleBetween(Airportaxis);
-				for (int i= (int) (Math.floor(nbPathentry));i>5;i--) {
-
-					x = (float) (centerREnd.getX() - Math.cos(bias + stepAngle * i)*turningRadius);
-					y = (float) (centerREnd.getZ() - Math.sin(bias + stepAngle * i)*turningRadius);
+				if (from.getCenterToRunway0X() < 0) {
+					bias -= Math.PI;
+				}
+				System.out.println(bias);
+				signx = -1;
+				signz = 1;
+				for (int i= 1; i <nbPathentry;i++) {
+					x = (float) (centerREnd.getX() + signx * Math.cos(bias + angle - stepAngle * i)*turningRadius);
+					y = (float) (centerREnd.getZ() + signz * Math.sin(bias + angle - stepAngle * i)*turningRadius);
 					pathEntry = new Vector(x,20,y);
 					path.add(pathEntry);
 				}
@@ -209,15 +219,25 @@ public class Job {
 				float nbPathentry = arclenght/20;
 				float stepAngle = angle/nbPathentry;
 
+				Vector nzAxis = new Vector(0,0,-1);
+				Vector Airportaxis = new Vector(from.getCenterToRunway0X(),0,from.getCenterToRunway0Z());
+				float bias = nzAxis.angleBetween(Airportaxis);
+				if (from.getCenterToRunway0X() < 0){
+					bias -= Math.PI;
+				}
+				System.out.println(bias);
+				float signx = -1;
+				float signz = -1;
+
 				for (int i=0;i<nbPathentry;i++) {
-					float x = (float) (centerRStart.getX() - Math.cos(stepAngle * i)*turningRadius);
-					float y = (float) (centerRStart.getZ() - Math.sin(stepAngle * i)*turningRadius);
+					float x = (float) (centerRStart.getX() + signx * Math.cos(bias + stepAngle * i)*turningRadius);
+					float y = (float) (centerRStart.getZ() + signz * Math.sin(bias + stepAngle * i)*turningRadius);
 					Vector pathEntry = new Vector(x,20,y);
 					path.add(pathEntry);
 
 				}
-				float x = (float) (centerRStart.getX() - Math.cos(angle)*turningRadius);
-				float y = (float) (centerRStart.getZ() - Math.sin(angle)*turningRadius);
+				float x = (float) (centerRStart.getX() + signx * Math.cos(bias + angle)*turningRadius);
+				float y = (float) (centerRStart.getZ() + signz * Math.sin(bias + angle)*turningRadius);
 				Vector pathEntry = new Vector(x,20,y);
 				path.add(pathEntry);
 
@@ -242,10 +262,18 @@ public class Job {
 				arclenght = (float) (turningRadius*angle/(2*Math.PI));
 				nbPathentry = arclenght/20;
 				stepAngle = angle/nbPathentry;
-
-				for (int i=5;i<nbPathentry;i++) {
-					x = (float) (centerLEnd.getX() - Math.cos(stepAngle * i)*turningRadius);
-					y = (float) (centerLEnd.getZ() + Math.sin(stepAngle * i)*turningRadius);
+				nzAxis = new Vector(0,0,-1);
+				Airportaxis = new Vector(to.getCenterToRunway0X(),0,to.getCenterToRunway0Z());
+				bias = nzAxis.angleBetween(Airportaxis);
+				if (from.getCenterToRunway0X() < 0) {
+					bias -= Math.PI;
+				}
+				System.out.println(bias);
+				signx = 1;
+				signz = 1;
+				for (int i= 1; i <nbPathentry;i++) {
+					x = (float) (centerLEnd.getX() + signx * Math.cos(bias + angle - stepAngle * i)*turningRadius);
+					y = (float) (centerLEnd.getZ() + signz * Math.sin(bias + angle - stepAngle * i)*turningRadius);
 					pathEntry = new Vector(x,20,y);
 					path.add(pathEntry);
 				}
@@ -259,11 +287,7 @@ public class Job {
 				//takeRightEndCircle
 				System.out.println("L-R");
 
-				//testing
-				Vector temp = centerLStart;
-				centerLStart = centerREnd;
-				centerREnd = temp;
-				//testing
+
 
 
 				float x1 = centerLStart.getX();
@@ -295,8 +319,8 @@ public class Job {
 				Vector offset2 = centerREnd.subtract(t2);
 				t2 = centerLStart.add(t2.subtract(centerLStart).constantProduct(.5f));
 
-//				centerLStart.printVector("start:  ");
-//				centerREnd.printVector("end:  ");
+				centerLStart.printVector("start:  ");
+				centerREnd.printVector("end:  ");
 				t1.printVector("t1:  ");
 				t2.printVector("t2:  ");
 
@@ -309,11 +333,9 @@ public class Job {
 
 
 				//testing
-				temp = centerLStart;
-				centerLStart = centerREnd;
-				centerREnd = temp;
-				t2 = r1;
-				r2 = t1;
+
+				r2 = r1;
+				t2 = t1;
 				//testing
 
 
@@ -328,16 +350,24 @@ public class Job {
 				float nbPathentry = arclenght/20;
 				float stepAngle = angle/nbPathentry;
 
+				Vector nzAxis = new Vector(0,0,-1);
+				Vector Airportaxis = new Vector(from.getCenterToRunway0X(),0,from.getCenterToRunway0Z());
+				float bias = nzAxis.angleBetween(Airportaxis);
+				if (from.getCenterToRunway0X() > 0){
+					bias -= Math.PI;
+				}
+				System.out.println(bias);
+				float signx = 1;
+				float signz = -1;
+
 				for (int i=0;i<nbPathentry;i++) {
-					float x = (float) (centerLStart.getX() + Math.cos(stepAngle * i)*turningRadius);
-					float y = (float) (centerLStart.getZ() -
-							Math.sin(stepAngle * i)*turningRadius);
+					float x = (float) (centerLStart.getX() + signx * Math.cos(bias + stepAngle * i)*turningRadius);
+					float y = (float) (centerLStart.getZ() + signz * Math.sin(bias + stepAngle * i)*turningRadius);
 					Vector pathEntry = new Vector(x,20,y);
 					path.add(pathEntry);
-
 				}
-				float x = (float) (centerLStart.getX() + Math.cos(angle)*turningRadius);
-				float y = (float) (centerLStart.getZ() - Math.sin(angle)*turningRadius);
+				float x = (float) (centerLStart.getX() + signx * Math.cos(bias + angle)*turningRadius);
+				float y = (float) (centerLStart.getZ() + signz * Math.sin(bias + angle)*turningRadius);
 				Vector pathEntry = new Vector(x,20,y);
 				path.add(pathEntry);
 
@@ -362,10 +392,18 @@ public class Job {
 				arclenght = (float) (turningRadius*angle/(2*Math.PI));
 				nbPathentry = arclenght/20;
 				stepAngle = angle/nbPathentry;
-
-				for (int i=5;i<nbPathentry;i++) {
-					x = (float) (centerREnd.getX() + Math.cos(stepAngle * i)*turningRadius);
-					y = (float) (centerREnd.getZ() + Math.sin(stepAngle * i)*turningRadius);
+				nzAxis = new Vector(0,0,-1);
+				Airportaxis = new Vector(to.getCenterToRunway0X(),0,to.getCenterToRunway0Z());
+				bias = nzAxis.angleBetween(Airportaxis);
+				if (from.getCenterToRunway0X() > 0) {
+					bias -= Math.PI;
+				}
+				System.out.println(bias);
+				signx = -1;
+				signz = 1;
+				for (int i= 1; i <nbPathentry;i++) {
+					x = (float) (centerREnd.getX() + signx * Math.cos(bias + angle - stepAngle * i)*turningRadius);
+					y = (float) (centerREnd.getZ() + signz * Math.sin(bias + angle - stepAngle * i)*turningRadius);
 					pathEntry = new Vector(x,20,y);
 					path.add(pathEntry);
 				}
@@ -403,7 +441,8 @@ public class Job {
 //				r1.printVector("r1:  ");
 //				r2.printVector("r2:  ");
 
-
+                t2 = t1;
+				r2 = r1;
 
 				//get path on first circle
 //todo add support for turned airports
@@ -413,22 +452,28 @@ public class Job {
 				float arclenght = (float) (turningRadius*angle/(2*Math.PI));
 				float nbPathentry = arclenght/20;
 				float stepAngle = angle/nbPathentry;
-				Vector nzAxis = new Vector(0,0,-1);
+
+                Vector nzAxis = new Vector(0,0,-1);
 				Vector Airportaxis = new Vector(from.getCenterToRunway0X(),0,from.getCenterToRunway0Z());
 				float bias = nzAxis.angleBetween(Airportaxis);
+				if (from.getCenterToRunway0X() > 0){
+					bias -= Math.PI;
+				}
 				System.out.println(bias);
+                float signx = 1;
+                float signz = -1;
+
 				for (int i=0;i<nbPathentry;i++) {
-					float x = (float) (centerLStart.getX() + Math.cos(bias + stepAngle * i)*turningRadius);
-					float y = (float) (centerLStart.getZ() + Math.sin(bias + stepAngle * i)*turningRadius);
+					float x = (float) (centerLStart.getX() + signx * Math.cos(bias + stepAngle * i)*turningRadius);
+					float y = (float) (centerLStart.getZ() + signz * Math.sin(bias + stepAngle * i)*turningRadius);
 					Vector pathEntry = new Vector(x,20,y);
 					path.add(pathEntry);
 
 				}
-				float x = (float) (centerLStart.getX() + Math.cos(bias + angle)*turningRadius);
-				float y = (float) (centerLStart.getZ() + Math.sin(bias + angle)*turningRadius);
+				float x = (float) (centerLStart.getX() + signx * Math.cos(bias + angle)*turningRadius);
+				float y = (float) (centerLStart.getZ() + signz * Math.sin(bias + angle)*turningRadius);
 				Vector pathEntry = new Vector(x,20,y);
 				path.add(pathEntry);
-				System.out.println(path);
 
 				// get path on tangent
 
@@ -454,9 +499,15 @@ public class Job {
 				nzAxis = new Vector(0,0,-1);
 				Airportaxis = new Vector(to.getCenterToRunway0X(),0,to.getCenterToRunway0Z());
 				bias = nzAxis.angleBetween(Airportaxis);
-				for (int i= (int) (Math.floor(nbPathentry));i>5;i--) {
-					x = (float) (centerLEnd.getX() + Math.cos(bias + stepAngle * i)*turningRadius);
-					y = (float) (centerLEnd.getZ() - Math.sin(bias + stepAngle * i)*turningRadius);
+				if (from.getCenterToRunway0X() > 0) {
+					bias -= Math.PI;
+				}
+				System.out.println(bias);
+				signx = 1;
+				signz = 1;
+				for (int i= 1; i <nbPathentry;i++) {
+					x = (float) (centerLEnd.getX() + signx * Math.cos(bias + angle - stepAngle * i)*turningRadius);
+					y = (float) (centerLEnd.getZ() + signz * Math.sin(bias + angle - stepAngle * i)*turningRadius);
 					pathEntry = new Vector(x,20,y);
 					path.add(pathEntry);
 				}
@@ -467,14 +518,11 @@ public class Job {
 
 			}
 		}
-		
-		// if rightCircle to rightCircle or leftCircle to leftCircle -> tangent // lines between centers
-		
-		// if left to right
+
 		
 
 
-		
+        System.out.println(path);
 		return new PathImplementation(path);
 	}
 	
