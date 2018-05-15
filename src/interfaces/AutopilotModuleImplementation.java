@@ -130,6 +130,7 @@ public class AutopilotModuleImplementation implements AutopilotModule {
 				else {
 					MAX_NB_JOBS += 1;
 					assignJob(job);
+					return;
 				}
 			}
     	}
