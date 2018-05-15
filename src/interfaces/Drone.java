@@ -27,13 +27,13 @@ class Drone {
   	private Vector position = Vector.NULL;
 
 //  	//testing
-//	Airport airport1 = new Airport(0,0,0,-1);
-//	Airport airport2 = new Airport(4000,0,0,-1);
-//	Job job = new Job(airport1,0,airport2,0);
-//	private PathImplementation path = new PathImplementation(job.getPath().getArrayList());
+	Airport airport1 = new Airport(0,0,0,-1);
+	Airport airport2 = new Airport(4000,0,0,-1);
+	Job job = new Job(airport1,0,airport2,0);
+	private PathImplementation path = new PathImplementation(job.getPath().getArrayList());
 //  	//testing
-    private Job job = null;
-    private PathImplementation path = null;
+//    private Job job = null;
+//    private PathImplementation path = null;
 	private int reachedTargets = 0;
   	private Vector finalTarget;
 	
