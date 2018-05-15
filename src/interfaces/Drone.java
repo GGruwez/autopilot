@@ -230,7 +230,7 @@ class Drone {
 		 else if (takeoff) {
 			 output = takeoff(input, velocityDrone, velocityWorld, config);
 		 }else if (taxi) {
-			 output = taxi(input, velocityDrone, velocityWorld, config);
+			 output = taxi(input, velocityDrone, velocityWorld, config, autopilot);
 		 }
 		 if (turnLeft) {
 			 output = turnLeft(input, velocityDrone, velocityWorld, config,output);
@@ -453,7 +453,7 @@ class Drone {
     	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, 0, 0);
     }
 
-    public  AutopilotOutputsImplementation taxi(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config) {
+    public  AutopilotOutputsImplementation taxi(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config, AutopilotImplementation autopilotImplementation) {
     	float horStabInclination = 0;
     	float rightWingInclination = 0;
     	float leftWingInclination = 0;
@@ -513,7 +513,7 @@ class Drone {
         		rightBrake = config.getRMax();
         		thrust = 0;
         		if (Math.abs(velocityDrone.getZ()) < 0.1) {
-        			
+					autopilotImplementation.finishCurrentJob();
         		}
         		
     		}
