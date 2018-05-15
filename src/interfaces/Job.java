@@ -199,13 +199,13 @@ public class Job {
 				centerRStart.printVector("start:  ");
 				centerLEnd.printVector("end:  ");
 //				t1.printVector("t1:  ");
-//				t2.printVector("t2:  ");
+				t2.printVector("t2:  ");
 
 
 
 				Vector r1 = t1.add(offset1);
 				Vector r2 = t2.add(offset2);
-//				r1.printVector("r1:  ");
+				r1.printVector("r1:  ");
 //				r2.printVector("r2:  ");
 
 
@@ -244,7 +244,7 @@ public class Job {
 				// get path on tangent
 
 				Vector tangent = r2.subtract(t2);
-				nbPathentry = tangent.euclideanLength()/20;
+				nbPathentry = tangent.euclideanLength()/40;
 				for (int i= 1; i <nbPathentry;i++) {
 					float partOfTangent = i/nbPathentry;
 					pathEntry = t2.add(tangent.constantProduct(partOfTangent));
@@ -280,6 +280,9 @@ public class Job {
 
 				path.add(endPoint);
 
+
+
+
 			}
 		}else {
 			//takeLeftCircle
@@ -290,11 +293,13 @@ public class Job {
 
 
 
+
+
 				float x1 = centerLStart.getX();
 				float y1 = centerLStart.getZ();
 				float x2 = centerREnd.getX();
 				float y2 = centerREnd.getZ();
-				float r = turningRadius;
+				float r = turningRadius + 40;
 				float d = centerLEnd.subtract(centerLStart).euclideanLength()/2;
 
 
@@ -334,8 +339,8 @@ public class Job {
 
 				//testing
 
-				r2 = r1;
-				t2 = t1;
+				r2 = t1;
+				t2 = r1;
 				//testing
 
 
@@ -369,18 +374,20 @@ public class Job {
 				float x = (float) (centerLStart.getX() + signx * Math.cos(bias + angle)*turningRadius);
 				float y = (float) (centerLStart.getZ() + signz * Math.sin(bias + angle)*turningRadius);
 				Vector pathEntry = new Vector(x,20,y);
-				path.add(pathEntry);
+//				path.add(pathEntry);
 
 				// get path on tangent
 
-				Vector tangent = r2.subtract(t2);
-				nbPathentry = tangent.euclideanLength()/20;
-				for (int i= 1; i <nbPathentry;i++) {
-					float partOfTangent = i/nbPathentry;
-					pathEntry = t2.add(tangent.constantProduct(partOfTangent));
-					pathEntry = new Vector(pathEntry.getX(),20,pathEntry.getZ());
-					path.add(pathEntry);
-				}
+//				Vector tangent = r2.subtract(t2);
+//				nbPathentry = tangent.euclideanLength()/40;
+//				for (int i= 1; i <nbPathentry;i++) {
+//					float partOfTangent = i/nbPathentry;
+//					pathEntry = r2.add(tangent.constantProduct(-partOfTangent));
+//					pathEntry = new Vector(pathEntry.getX(),20,pathEntry.getZ());
+//					path.add(pathEntry);
+//				}
+
+
 
 
 				// get path on second circle
@@ -390,7 +397,7 @@ public class Job {
 				angle = a2.angleBetween(a1);
 
 				arclenght = (float) (turningRadius*angle/(2*Math.PI));
-				nbPathentry = arclenght/20;
+				nbPathentry = arclenght/10;
 				stepAngle = angle/nbPathentry;
 				nzAxis = new Vector(0,0,-1);
 				Airportaxis = new Vector(to.getCenterToRunway0X(),0,to.getCenterToRunway0Z());
@@ -401,7 +408,25 @@ public class Job {
 				System.out.println(bias);
 				signx = -1;
 				signz = 1;
-				for (int i= 1; i <nbPathentry;i++) {
+				//testing testing
+				x = (float) (centerREnd.getX() + signx * Math.cos(bias + angle)*turningRadius);
+				y = (float) (centerREnd.getZ() + signz * Math.sin(bias + angle)*turningRadius);
+				Vector pathEntry2 = new Vector(x,20,y);
+				Vector vectan = pathEntry2.subtract(pathEntry);
+
+					path.add(pathEntry.add(vectan.constantProduct(0.5f)));
+					path.add(pathEntry.add(vectan.constantProduct(0.6f)));
+					path.add(pathEntry.add(vectan.constantProduct(0.7f)));
+					path.add(pathEntry.add(vectan.constantProduct(0.8f)));
+					path.add(pathEntry.add(vectan.constantProduct(0.9f)));
+
+
+				System.out.println(pathEntry);
+				System.out.println(pathEntry2);
+
+
+				//testing testing
+				for (int i= 2; i <nbPathentry;i++) {
 					x = (float) (centerREnd.getX() + signx * Math.cos(bias + angle - stepAngle * i)*turningRadius);
 					y = (float) (centerREnd.getZ() + signz * Math.sin(bias + angle - stepAngle * i)*turningRadius);
 					pathEntry = new Vector(x,20,y);

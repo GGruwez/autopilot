@@ -28,7 +28,7 @@ class Drone {
 
 //  	//testing
 	Airport airport1 = new Airport(0,0,0,-1);
-	Airport airport2 = new Airport(4000,0,0,-1);
+	Airport airport2 = new Airport(-4000,0,0,-1);
 	Job job = new Job(airport1,0,airport2,0);
 	private PathImplementation path = new PathImplementation(job.getPath().getArrayList());
 //  	//testing
@@ -173,10 +173,10 @@ class Drone {
      		
          	}else if (input.getY() - nextTarget.getY() > 10 && Math.abs(input.getRoll()) < 0.1 ){
          		
-         			setDescending();
+         			//setDescending();
          		
          	}else if (input.getY() - nextTarget.getY() < -10 && Math.abs(input.getRoll()) < 0.1 ){
-         			setAscending();
+         			//setAscending();
          		
          	}else{
          		setCruising(nextTarget.getY());
@@ -190,10 +190,10 @@ class Drone {
      			setTurnLeft();
      		
          	}else if (input.getY() - nextTarget.getY() > 10 && Math.abs(input.getRoll()) < 0.1  ){
-         			setDescending();
+         			//setDescending();
          		
          	}else if (input.getY() - nextTarget.getY() < -10 && Math.abs(input.getRoll()) < 0.1 ){
-         			setAscending();
+         			//setAscending();
          	
          	}else{
          		setCruising(nextTarget.getY());
@@ -320,11 +320,11 @@ class Drone {
 //     		thrust = (float) (acceleration*(config.getEngineMass()+config.getTailMass()+2*config.getWingMass()));
 //     	}
 //
-		thrust =950;
+		thrust =1050;
 		if (velocityWorld.getY() > 0.0f && position.getY() > refHeight + 1)
 			thrust = 850;
 		if (velocityWorld.getY() < 0.0f  && position.getY() < refHeight -1)
-			thrust = 1150;
+			thrust = 1100;
 
 
 
