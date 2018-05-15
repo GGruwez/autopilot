@@ -36,13 +36,17 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     	
     	// Collision detection
     	for (AutopilotImplementation drone: this.getDrones()) {
+    		boolean bool = false;
     		if (drone.hasJob()) {
 	    		for (Vector cube1: drone.getCurrentPath().getArrayList()) {
 	    			for (Vector cube2: job.getDrone().getCurrentPath().getArrayList()) {
 	    				if (cube1.calculateDistance(cube2) < 10) {
-	    					job.getDrone().getCurrentPath().collisionUpdate();
+	    					bool = true;
 	    				}
 	    			}
+	    		}
+	    		if (bool) {
+	    			job.getDrone().getCurrentPath().collisionUpdate();
 	    		}
     		}
     	}
@@ -126,6 +130,7 @@ public class AutopilotModuleImplementation implements AutopilotModule {
 				else {
 					MAX_NB_JOBS += 1;
 					assignJob(job);
+					return;
 				}
 			}
     	}
