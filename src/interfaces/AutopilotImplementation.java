@@ -78,7 +78,6 @@ public class AutopilotImplementation implements Autopilot {
     @Override
     public AutopilotOutputs timePassed(AutopilotInputs inputs) {
         AutopilotOutputsImplementation output = new AutopilotOutputsImplementation(0,0,0,0,0,0,0,0);
-        //System.out.println("no job");
         if (this.hasJob()) {
 	        if (!isSimulating) {
 	            output = new AutopilotOutputsImplementation();
