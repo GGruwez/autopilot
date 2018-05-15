@@ -136,6 +136,7 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     	
     	if ((assignedDrone.getDrone().getAirport() != job.getAirportFrom()) || 
     			(assignedDrone.getDrone().getGate() != job.getGateFrom())) {
+    		System.out.println("tussenstop");
     		Job tussenstop = new Job(assignedDrone.getDrone().getAirport(),assignedDrone.getDrone().getGate(),
     				job.getAirportFrom(),job.getGateFrom());
     		tussenstop.setDrone(assignedDrone);

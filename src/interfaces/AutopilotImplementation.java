@@ -16,10 +16,6 @@ public class AutopilotImplementation implements Autopilot {
     UI userInterface = new UI();
     private AutopilotOutputs move;
 
-    //testing
-	Airport airport1 = new Airport(0,0,0,-1);
-	Airport airport2 = new Airport(4000,0,0,-1);
-	Job job = new Job(airport1,0,airport2,0);
 	//testing
 	private ArrayList<Job> jobs = new ArrayList<Job>();
     private boolean landed = true;
@@ -29,9 +25,6 @@ public class AutopilotImplementation implements Autopilot {
     	this.drone = new Drone(airport, gate, pointingToRunway);
     	this.config = config;
     	airport.setDroneAt(gate, this);
-    	//todo remove this
-		 jobs.add(job);
-
     }
     
   	public boolean isLanded() {

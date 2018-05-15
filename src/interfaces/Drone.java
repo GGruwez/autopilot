@@ -70,10 +70,10 @@ class Drone {
 				return new AutopilotOutputsImplementation(0, 0, 0, 0, 0, 0, 0, 0);
 
     		}
+    	System.out.println("nb of autopilot jobs: "+ autopilot.getJobs().size()); 
     	
         finalTarget = new Vector(job.getAirportTo().getCenterX(),0,job.getAirportTo().getCenterZ());
 		refHeight = getCurrentPath().getY()[1];
-		System.out.println(refHeight);
         this.setPosition(input.getX(), input.getY(), input.getZ());
     	
     	 PreviousInputs prev = autopilot.getPreviousInput();
@@ -100,11 +100,13 @@ class Drone {
         	 reachedTargets += 1;
          }
          
+         nextTarget.printVector("next target: "); 
+         
     	 float targetHeading = (float) Math.atan2(-(nextTarget.getX() - input.getX()),-(nextTarget.getZ()-input.getZ()));
      	 float currentHeading = (float) (input.getHeading());
      	 float ref = -(targetHeading - currentHeading);
 
-     	 if (input.getY() < 20 && reachedTargets == 0 && input.getElapsedTime() <15){
+     	 if (input.getY() < 20 && reachedTargets == 0){
         	 setTakeoff();
          }
          //// START FINAL APROACH
@@ -514,6 +516,7 @@ class Drone {
         		thrust = 0;
         		if (Math.abs(velocityDrone.getZ()) < 0.1) {
 					autopilotImplementation.finishCurrentJob();
+					reachedTargets = 0;
         		}
         		
     		}
@@ -720,6 +723,7 @@ class Drone {
     }
     
     public   void setLanding() {
+    	System.out.println("landing");
     	cruising = false;
     	landing = true;
     	takeoff = false;
@@ -732,6 +736,7 @@ class Drone {
   }
     
     public   void setTakeoff() {
+    	System.out.println("take off");
     	cruising = false;
     	landing = false;
     	takeoff = true;
