@@ -27,13 +27,13 @@ class Drone {
   	private Vector position = Vector.NULL;
 
 //  	//testing
-//	Airport airport1 = new Airport(0,0,0,-1);
-//	Airport airport2 = new Airport(4000,0,0,-1);
-//	Job job = new Job(airport1,0,airport2,0);
-//	private PathImplementation path = new PathImplementation(job.getPath().getArrayList());
+	Airport airport1 = new Airport(0,0,0,-1);
+	Airport airport2 = new Airport(4000,0,0,-1);
+	Job job = new Job(airport1,0,airport2,0);
+	private PathImplementation path = new PathImplementation(job.getPath().getArrayList());
 //  	//testing
-    private Job job = null;
-    private PathImplementation path = null;
+//    private Job job = null;
+//    private PathImplementation path = null;
 	private int reachedTargets = 0;
   	private Vector finalTarget;
 	
@@ -66,11 +66,13 @@ class Drone {
   	
     public AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          
-    	//TODO: aanpassen aan jobs
-    	//TODO: landen op landingsbaan
+
     		if (path == null) {
-    			return new AutopilotOutputsImplementation(0, 0, 0, 0, 0, 0, 0, 0);
+				System.out.println("stuck");
+				return new AutopilotOutputsImplementation(0, 0, 0, 0, 0, 0, 0, 0);
+
     		}
+    		System.out.println("reached");
         finalTarget = new Vector(job.getAirportTo().getCenterX(),0,job.getAirportTo().getCenterZ());
         this.setPosition(input.getX(), input.getY(), input.getZ());
     	

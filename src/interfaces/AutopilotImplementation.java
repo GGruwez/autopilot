@@ -15,7 +15,13 @@ public class AutopilotImplementation implements Autopilot {
     private Drone drone;
     UI userInterface = new UI();
     private AutopilotOutputs move;
-    private ArrayList<Job> jobs = new ArrayList<Job>();
+
+    //testing
+	Airport airport1 = new Airport(0,0,0,-1);
+	Airport airport2 = new Airport(4000,0,0,-1);
+	Job job = new Job(airport1,0,airport2,0);
+	//testing
+	private ArrayList<Job> jobs = new ArrayList<Job>();
     private boolean landed = true;
     private AutopilotModuleImplementation module;
 
@@ -23,6 +29,9 @@ public class AutopilotImplementation implements Autopilot {
     	this.drone = new Drone(airport, gate, pointingToRunway);
     	this.config = config;
     	airport.setDroneAt(gate, this);
+    	//todo remove this
+		 jobs.add(job);
+
     }
     
   	public boolean isLanded() {
@@ -69,7 +78,7 @@ public class AutopilotImplementation implements Autopilot {
     @Override
     public AutopilotOutputs timePassed(AutopilotInputs inputs) {
         AutopilotOutputsImplementation output = new AutopilotOutputsImplementation(0,0,0,0,0,0,0,0);
-        
+        System.out.println("no job");
         if (this.hasJob()) {
 	        if (!isSimulating) {
 	            output = new AutopilotOutputsImplementation();
