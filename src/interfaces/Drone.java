@@ -66,11 +66,13 @@ class Drone {
   	
     public AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
          
-    	//TODO: aanpassen aan jobs
-    	//TODO: landen op landingsbaan
+
     		if (path == null) {
-    			return new AutopilotOutputsImplementation(0, 0, 0, 0, 0, 0, 0, 0);
+				System.out.println("stuck");
+				return new AutopilotOutputsImplementation(0, 0, 0, 0, 0, 0, 0, 0);
+
     		}
+    		System.out.println("reached");
         finalTarget = new Vector(job.getAirportTo().getCenterX(),0,job.getAirportTo().getCenterZ());
         this.setPosition(input.getX(), input.getY(), input.getZ());
     	
