@@ -78,14 +78,14 @@ public class AutopilotImplementation implements Autopilot {
     @Override
     public AutopilotOutputs timePassed(AutopilotInputs inputs) {
         AutopilotOutputsImplementation output = new AutopilotOutputsImplementation(0,0,0,0,0,0,0,0);
-        System.out.println("no job");
+        //System.out.println("no job");
         if (this.hasJob()) {
 	        if (!isSimulating) {
 	            output = new AutopilotOutputsImplementation();
 	            this.isSimulating = true;
 	        } else {
 	            output = drone.calculate(inputs,null, config.getNbRows(), config.getNbColumns(), this);
-	            System.out.println("running");
+	            //System.out.println("running");
 	            this.userInterface.updateData(output);
 	        }
 	        this.previousInput = new PreviousInputs(inputs);

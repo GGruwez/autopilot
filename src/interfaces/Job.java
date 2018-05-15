@@ -518,11 +518,6 @@ public class Job {
 
 			}
 		}
-
-		
-
-
-        System.out.println("path: "+path);
 		return new PathImplementation(path);
 	}
 	
