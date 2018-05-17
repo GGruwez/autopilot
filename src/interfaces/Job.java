@@ -338,9 +338,14 @@ public class Job {
 
 
 				//testing
-
-				r2 = t1;
-				t2 = r1;
+				if (Math.abs(getAirportTo().getCenterToRunway0X()) == Math.abs(getAirportFrom().getCenterToRunway0X())) {
+					r2 = t1;
+					t2 = r1;
+				}else{
+//					Vector t = r2;
+					t2 = t1;
+//					t2 = t;
+				}
 				//testing
 
 
