@@ -18,8 +18,8 @@ public class AutopilotTests {
 	@Before
 	public void before() {
 		module = new AutopilotModuleImplementation();
-		module.defineAirport(0,0,0,-1);
 		module.defineAirport(-4000,0,0,-1);
+		module.defineAirport(0,0,0,-1);
 //		module.defineAirport(0,0,-1,0);
 //		module.defineAirport(0,4000,-1,0);
 		module.defineAirport(0,1500,0,-1);
@@ -66,6 +66,6 @@ public class AutopilotTests {
 		module.deliverPackage(0, 0, 1, 0);
 		assertTrue(drone0.hasJob());
 		assertTrue(drone0.getCurrentJob().calculatePath() != null);
-		System.out.println(drone0.getCurrentJob().getPath());
+		System.out.println(drone0.getCurrentJob().getPath().getArrayList());
 	}
 }

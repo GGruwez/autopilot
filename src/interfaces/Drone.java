@@ -65,6 +65,7 @@ class Drone {
     public AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
     	
     	this.job = autopilot.getCurrentJob();
+    	System.out.println(autopilot.getJobs().indexOf(job));
     	this.path = job.getPath();
     	
     		if (path == null) {
