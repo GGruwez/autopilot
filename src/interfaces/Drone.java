@@ -72,9 +72,22 @@ class Drone {
 				return new AutopilotOutputsImplementation(0, 0, 0, 0, 0, 0, 0, 0);
 
     		}
-    	System.out.println("nb of autopilot jobs: "+ autopilot.getJobs().size()); 
-    	
-        finalTarget = new Vector(job.getAirportTo().getCenterX(),0,job.getAirportTo().getCenterZ());
+    	System.out.println("nb of autopilot jobs: "+ autopilot.getJobs().size());
+
+		float offset = autopilot.getModule().airportWidth/2;
+		if (job.getGateTo() == 0){
+			offset = -offset;
+		}
+
+		Vector nzAxis = new Vector(0,0,-1);
+		Vector Airportaxis = new Vector(job.getAirportTo().getCenterToRunway0X(),0,job.getAirportTo().getCenterToRunway0Z());
+		float bias = nzAxis.angleBetween(Airportaxis);
+		if (airport.getCenterToRunway0X() < 0){
+			bias -= Math.PI;
+		}
+
+
+        finalTarget = new Vector((float) (job.getAirportTo().getCenterX() +  offset * Math.cos(bias)) , 1.22f,(float) (job.getAirportTo().getCenterZ() + offset * Math.sin(bias)));
 		refHeight = getCurrentPath().getY()[1];
         this.setPosition(input.getX(), input.getY(), input.getZ());
     	
@@ -310,11 +323,11 @@ class Drone {
 //     		thrust = (float) (acceleration*(config.getEngineMass()+config.getTailMass()+2*config.getWingMass()));
 //     	}
 //
-		thrust =1050;
+		thrust =1250;
 		if (velocityWorld.getY() > 0.0f && position.getY() > refHeight + 1)
 			thrust = 850;
 		if (velocityWorld.getY() < 0.0f  && position.getY() < refHeight -1)
-			thrust = 1100;
+			thrust = 1300;
 
 
 
@@ -385,6 +398,8 @@ class Drone {
     	float horStabInclination;
     	float rightWingInclination;
     	float leftWingInclination;
+    	float leftBrake = 0;
+    	float rightBrake = 0;
     	float thrust = 0;
 
     	thrust = config.getMaxThrust();
@@ -393,13 +408,34 @@ class Drone {
     	if (input.getPitch() > 0.08f) {
     		horStabInclination = -input.getPitch();
     	}
+		Vector destination = new Vector(path.getX()[reachedTargets],path.getY()[reachedTargets],path.getZ()[reachedTargets]);
+		float targetHeading = (float) Math.atan2((destination.getX() - input.getX()),(destination.getZ()-input.getZ()));
+		float currentHeading = (float) (input.getHeading());
+		float ref = targetHeading - currentHeading;
+		System.out.println("ref" + ref);
+
+		if ((ref > 0 && ref < Math.PI) || (ref < 0 && ref < -Math.PI)) {
+			//turnright
+			//System.out.println("right");
+			if (Math.abs(ref) > 0.05f) {
+				rightBrake = config.getRMax()/10;
+			}
+
+		}
+		else if ((ref > 0 && ref > Math.PI) || (ref < 0 && ref > -Math.PI)) {
+			//turnleft
+			//System.out.println("left");
+			if (Math.abs(ref) > 0.05f) {
+				leftBrake = config.getRMax()/10;
+			}
+		}
     	
     	float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
      	rightWingInclination = (float) (-currentProjAirspeed+0.9*config.getMaxAOA());
     	leftWingInclination = rightWingInclination;
     	prevtakeoff = true;
     	
-    	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, 0, 0);
+    	return new AutopilotOutputsImplementation(thrust, leftWingInclination, rightWingInclination, -horStabInclination, 0, 0, leftBrake, rightBrake);
     }
 
     public  AutopilotOutputsImplementation ascending(AutopilotInputs input, Vector velocityDrone, Vector velocityWorld, AutopilotConfig config) {
