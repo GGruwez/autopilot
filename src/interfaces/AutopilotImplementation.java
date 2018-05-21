@@ -119,8 +119,7 @@ public class AutopilotImplementation implements Autopilot {
     					idleGate = 1;
     				}
     			}
-	    		Job newJob = new Job(drone.getDrone().getAirport(),drone.getDrone().getGate(),idleAirport, idleGate);
-	        	System.out.println("idleairport null?" + idleAirport == null);
+	    		Job newJob = new Job(module.getAirport(0),0,module.getAirport(0), 1);
 	        	drone.addJob(newJob);
 	        	newJob.setDrone(drone);
     		}
