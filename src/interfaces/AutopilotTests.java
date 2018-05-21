@@ -18,8 +18,8 @@ public class AutopilotTests {
 	@Before
 	public void before() {
 		module = new AutopilotModuleImplementation();
-		module.defineAirport(0,5000,1,0);
-		module.defineAirport(-5000,0,0,1);
+		module.defineAirport(0,-5000,-1,0);
+		module.defineAirport(0,0,0,-1);
 //		module.defineAirport(0,0,-1,0);
 //		module.defineAirport(0,4000,-1,0);
 		module.defineAirport(0,1500,0,-1);

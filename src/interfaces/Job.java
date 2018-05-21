@@ -50,12 +50,13 @@ public class Job {
 	
 	public PathImplementation calculatePath(){
 		ArrayList<Vector> path = new ArrayList<Vector>();
-		float takeoffLenght = 480;
+		float takeoffLenght = 500;
+		float LandingLenght = 430;
 		float turningRadius = 900;
 		Vector startingPoint = new Vector(from.getCenterX()+takeoffLenght*from.getCenterToRunway0X(),20,from.getCenterZ()+ takeoffLenght*from.getCenterToRunway0Z());
 		Vector centerLStart = new Vector((float)(startingPoint.getX() + turningRadius*from.getCenterToRunway0Z()),0,(float)(startingPoint.getZ() - turningRadius*from.getCenterToRunway0X()));
 		Vector centerRStart = new Vector((float)(startingPoint.getX() - turningRadius*from.getCenterToRunway0Z()),0,(float)(startingPoint.getZ() + turningRadius*from.getCenterToRunway0X()));
-		Vector endPoint = new Vector(to.getCenterX()-takeoffLenght*to.getCenterToRunway0X(),20,to.getCenterZ()- takeoffLenght*to.getCenterToRunway0Z());
+		Vector endPoint = new Vector(to.getCenterX()-LandingLenght*to.getCenterToRunway0X(),20,to.getCenterZ()- LandingLenght*to.getCenterToRunway0Z());
 		Vector centerLEnd = new Vector((float)(endPoint.getX() + turningRadius*to.getCenterToRunway0Z()),0,(float)(endPoint.getZ() - turningRadius*to.getCenterToRunway0X()));
 		Vector centerREnd = new Vector((float)(endPoint.getX() - turningRadius*to.getCenterToRunway0Z()),0,(float)(endPoint.getZ() + turningRadius*to.getCenterToRunway0X()));
 
