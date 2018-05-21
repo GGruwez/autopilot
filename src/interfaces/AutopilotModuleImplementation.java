@@ -138,7 +138,6 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     	
     	if (!assignedDrone.hasJob() && ((assignedDrone.getDrone().getAirport() != job.getAirportFrom()) ||
     			(assignedDrone.getDrone().getGate() != job.getGateFrom()))){
-    		System.out.println("tussenstop");
     		Job tussenstop = new Job(assignedDrone.getDrone().getAirport(),assignedDrone.getDrone().getGate(),
     				job.getAirportFrom(),job.getGateFrom());
     		tussenstop.setDrone(assignedDrone);
@@ -146,7 +145,6 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     	}
     	else if (assignedDrone.hasJob() &&(assignedDrone.getJobs().get(assignedDrone.getJobs().size()-1).getAirportTo() != job.getAirportFrom() ||
 				assignedDrone.getJobs().get(assignedDrone.getJobs().size()-1).getGateTo() != job.getGateFrom())) {
-			System.out.println("tussenstop");
 			Job tussenstop = new Job(assignedDrone.getDrone().getAirport(),assignedDrone.getDrone().getGate(),
 					job.getAirportFrom(),job.getGateFrom());
 			tussenstop.setDrone(assignedDrone);

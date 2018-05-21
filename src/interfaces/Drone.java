@@ -72,14 +72,14 @@ class Drone {
     	
     	this.autopilot = autopilot;
     	this.job = autopilot.getCurrentJob();
-    	System.out.println(autopilot.getJobs().indexOf(job));
+    	//System.out.println(autopilot.getJobs().indexOf(job));
     	this.path = job.getPath();
     	
     		if (path == null) {
 				return new AutopilotOutputsImplementation(0, 0, 0, 0, 0, 0, 0, 0);
 
     		}
-    	System.out.println("nb of autopilot jobs: "+ autopilot.getJobs().size());
+    	//System.out.println("nb of autopilot jobs: "+ autopilot.getJobs().size());
 
 		float offset = autopilot.getModule().airportWidth/2;
 		if (job.getGateTo() == 0){
@@ -122,7 +122,7 @@ class Drone {
         	 reachedTargets += 1;
          }
          
-         nextTarget.printVector("next target: "); 
+         //nextTarget.printVector("next target: "); 
          
     	 float targetHeading = (float) Math.atan2(-(nextTarget.getX() - input.getX()),-(nextTarget.getZ()-input.getZ()));
      	 float currentHeading = (float) (input.getHeading());
@@ -490,7 +490,7 @@ class Drone {
 		float targetHeading = (float) Math.atan2((destination.getX() - input.getX()),(destination.getZ()-input.getZ()));
 		float currentHeading = (float) (input.getHeading());
 		float ref = targetHeading - currentHeading;
-		System.out.println("ref" + ref);
+		//System.out.println("ref" + ref);
 
 		if ((ref > 0 && ref < Math.PI) || (ref < 0 && ref < -Math.PI)) {
 			//turnright
@@ -840,7 +840,7 @@ class Drone {
     }
     
     public   void setLanding() {
-    	System.out.println("landing");
+    	//System.out.println("landing");
     	cruising = false;
     	landing = true;
     	takeoff = false;
@@ -853,7 +853,7 @@ class Drone {
   }
     
     public   void setTakeoff() {
-    	System.out.println("take off");
+    	//System.out.println("take off");
     	cruising = false;
     	landing = false;
     	takeoff = true;
@@ -1036,7 +1036,7 @@ class Drone {
 		Vector center2 = new Vector((float)(input.getX() - 480*Math.cos(input.getHeading())),0,(float)(input.getZ() + 480*Math.sin(input.getHeading())));
 		float dist1 = (float) Math.sqrt(Math.pow(nextTarget.getX() - center1.getX(),2) + Math.pow(nextTarget.getZ() - center1.getZ(),2) );
 		float dist2 = (float) Math.sqrt(Math.pow(nextTarget.getX() - center2.getX(),2) + Math.pow(nextTarget.getZ() - center2.getZ(),2) );
-		System.out.println("dist1: " + dist1 + " dist2: " + dist2);
+		//System.out.println("dist1: " + dist1 + " dist2: " + dist2);
 		return (dist1 > 460 && dist2 > 460);
 	}
 	

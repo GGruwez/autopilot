@@ -34,6 +34,7 @@ class UI extends JFrame {
         this.add(this.getRightWingJLabel());
         this.add(this.getVerstabJLabel());
         this.add(this.getHorstabJLabel());
+        this.add(this.getStatusJLabel());
     }
 
     //getters and setters
@@ -68,24 +69,23 @@ class UI extends JFrame {
     }
 
     private void simpleUpdate() {
-        this.getLeftWingJLabel().setText(this.getLeftWingText()+this.getAutopilotOutput().getLeftWingInclination());
-        this.getRightWingJLabel().setText(this.getRightWingText()+this.getAutopilotOutput().getRightWingInclination());
-        this.getThrustJLabel().setText((this.getThrustText()+this.getAutopilotOutput().getThrust()));
-        this.getHorstabJLabel().setText(this.getHorStabText()+this.getAutopilotOutput().getHorStabInclination());
-        this.getVerstabJLabel().setText(this.getVerStabText()+this.getAutopilotOutput().getVerStabInclination());
-        
-        String status = "idle";
+    	String status = "idle";
         for (Job job: getModule().getJobs()) {
-        	if (job == this.getAutopilot().getCurrentJob()) {
-        		if (this.getAutopilot().getDrone().getAirport() == job.getAirportFrom()) {
+        	if (job.getDrone() == this.getAutopilot()) {
+        		if (this.getAutopilot().getCurrentJob().getAirportTo() == job.getAirportFrom()) {
         			status = "in transit";
         		}
-        		else if (this.getAutopilot().getDrone().getAirport() == job.getAirportTo()) {
+        		else if (this.getAutopilot().getCurrentJob().getAirportTo() == job.getAirportTo()) {
         			status = "delivering";
         		}
         	}
         }
         
         this.getStatusJLabel().setText(this.getStatusText() + status);
+        this.getLeftWingJLabel().setText(this.getLeftWingText()+this.getAutopilotOutput().getLeftWingInclination());
+        this.getRightWingJLabel().setText(this.getRightWingText()+this.getAutopilotOutput().getRightWingInclination());
+        this.getThrustJLabel().setText((this.getThrustText()+this.getAutopilotOutput().getThrust()));
+        this.getHorstabJLabel().setText(this.getHorStabText()+this.getAutopilotOutput().getHorStabInclination());
+        this.getVerstabJLabel().setText(this.getVerStabText()+this.getAutopilotOutput().getVerStabInclination());
     }
 }
