@@ -138,6 +138,7 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     	
     	if (!assignedDrone.hasJob() && ((assignedDrone.getDrone().getAirport() != job.getAirportFrom()) ||
     			(assignedDrone.getDrone().getGate() != job.getGateFrom()))){
+    		Log.println("tussenstop");
     		Job tussenstop = new Job(assignedDrone.getDrone().getAirport(),assignedDrone.getDrone().getGate(),
     				job.getAirportFrom(),job.getGateFrom());
     		tussenstop.setDrone(assignedDrone);
@@ -145,6 +146,7 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     	}
     	else if (assignedDrone.hasJob() &&(assignedDrone.getJobs().get(assignedDrone.getJobs().size()-1).getAirportTo() != job.getAirportFrom() ||
 				assignedDrone.getJobs().get(assignedDrone.getJobs().size()-1).getGateTo() != job.getGateFrom())) {
+			Log.println("tussenstop");
 			Job tussenstop = new Job(assignedDrone.getDrone().getAirport(),assignedDrone.getDrone().getGate(),
 					job.getAirportFrom(),job.getGateFrom());
 			tussenstop.setDrone(assignedDrone);
@@ -154,8 +156,8 @@ public class AutopilotModuleImplementation implements AutopilotModule {
 		assignedDrone.addJob(job);
     }
     
-    public float airportLength = 1000;
-    public float airportWidth = 50;
+    public float airportLength = 650;
+    public float airportWidth = 60;
     public ArrayList<Airport> airports = new ArrayList<Airport>();
     public ArrayList<AutopilotImplementation> drones = new ArrayList<AutopilotImplementation>();
     public ArrayList<Job> jobs = new ArrayList<Job>();
