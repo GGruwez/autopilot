@@ -15,8 +15,12 @@ class UI extends JFrame {
     private JLabel horstabJLabel = new JLabel();
     private static String verStabText = "VerStabInclination:    ";
     private JLabel verstabJLabel = new JLabel();
+    private static String statusText = "Status:    ";
+    private JLabel statusJLabel = new JLabel();
 
     private AutopilotOutputsImplementation autopilotOutput;
+    private AutopilotModuleImplementation module;
+    private AutopilotImplementation autopilot;
 
     UI() {
         super("UI");
@@ -43,14 +47,23 @@ class UI extends JFrame {
     private JLabel getHorstabJLabel() {return horstabJLabel;}
     private String getVerStabText() {return verStabText;}
     private JLabel getVerstabJLabel() {return verstabJLabel;}
+    private String getStatusText() {return statusText;}
+    private JLabel getStatusJLabel() {return statusJLabel;}
     private AutopilotOutputsImplementation getAutopilotOutput(){
         return this.autopilotOutput;
     }
+    private AutopilotModuleImplementation getModule() {
+    	return this.module;
+    }
+    private AutopilotImplementation getAutopilot() {
+    	return this.autopilot;
+    }
 
 
-
-    void updateData(AutopilotOutputsImplementation data) {
+    void updateData(AutopilotOutputsImplementation data, AutopilotModuleImplementation module, AutopilotImplementation autopilot) {
         this.autopilotOutput = data;
+        this.module = module;
+        this.autopilot = autopilot;
         this.simpleUpdate();
     }
 
@@ -60,5 +73,19 @@ class UI extends JFrame {
         this.getThrustJLabel().setText((this.getThrustText()+this.getAutopilotOutput().getThrust()));
         this.getHorstabJLabel().setText(this.getHorStabText()+this.getAutopilotOutput().getHorStabInclination());
         this.getVerstabJLabel().setText(this.getVerStabText()+this.getAutopilotOutput().getVerStabInclination());
+        
+        String status = "idle";
+        for (Job job: getModule().getJobs()) {
+        	if (job == this.getAutopilot().getCurrentJob()) {
+        		if (this.getAutopilot().getDrone().getAirport() == job.getAirportFrom()) {
+        			status = "in transit";
+        		}
+        		else if (this.getAutopilot().getDrone().getAirport() == job.getAirportTo()) {
+        			status = "delivering";
+        		}
+        	}
+        }
+        
+        this.getStatusJLabel().setText(this.getStatusText() + status);
     }
 }
