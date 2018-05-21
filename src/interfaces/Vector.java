@@ -119,7 +119,7 @@ public class Vector {
 	}
 	
         public void printVector(String name){
-        System.out.println(name + this.getX() + " " + this.getY() + " " + this.getZ());
+        Log.println(name + this.getX() + " " + this.getY() + " " + this.getZ());
         }
         
 	/**

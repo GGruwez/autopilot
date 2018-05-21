@@ -19,9 +19,9 @@ public class PathImplementation implements Path {
 		this.X = x;
 		this.Y = y;
 		this.Z = z;
-		System.out.println(x);
-		System.out.println(y);
-		System.out.println(z);
+		Log.println(x);
+		Log.println(y);
+		Log.println(z);
 		this.arraylist = newPath;
 	}
 
