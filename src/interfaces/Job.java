@@ -79,7 +79,7 @@ public class Job {
 			if(centerRStart.calculateDistance(centerREnd) < centerRStart.calculateDistance(centerLEnd)) {
 				//takeRightEndCircle
 
-				System.out.println("R-R");
+				Log.println("R-R");
 
 				float x1 = centerRStart.getX();
 				float y1 = centerRStart.getZ();
@@ -122,7 +122,7 @@ public class Job {
 				if (from.getCenterToRunway0X() < 0){
 					bias -= Math.PI;
 				}
-				System.out.println(bias);
+				Log.println(bias);
 				float signx = -1;
 				float signz = -1;
 
@@ -165,7 +165,7 @@ public class Job {
 				if (from.getCenterToRunway0X() < 0) {
 					bias -= Math.PI;
 				}
-				System.out.println(bias);
+				Log.println(bias);
 				signx = -1;
 				signz = 1;
 				for (int i= 1; i <nbPathentry;i++) {
@@ -180,7 +180,7 @@ public class Job {
 
 			}else {
 				//takeLeftEndCircle
-				System.out.println("R-L");
+				Log.println("R-L");
 
 				float x1 = centerRStart.getX();
 				float y1 = centerRStart.getZ();
@@ -240,7 +240,7 @@ public class Job {
 				if (from.getCenterToRunway0X() < 0){
 					bias -= Math.PI;
 				}
-				System.out.println(bias);
+				Log.println(bias);
 				float signx = -1;
 				float signz = -1;
 
@@ -283,7 +283,7 @@ public class Job {
 				if (from.getCenterToRunway0X() < 0) {
 					bias -= Math.PI;
 				}
-				System.out.println(bias);
+				Log.println(bias);
 				signx = 1;
 				signz = 1;
 				for (int i= 1; i <nbPathentry;i++) {
@@ -303,7 +303,7 @@ public class Job {
 			//takeLeftCircle
 			if(centerLStart.calculateDistance(centerREnd) < centerLStart.calculateDistance(centerLEnd)) {
 				//takeRightEndCircle
-				System.out.println("L-R");
+				Log.println("L-R");
 
 
 
@@ -381,7 +381,7 @@ public class Job {
 				if (from.getCenterToRunway0X() > 0){
 					bias -= Math.PI;
 				}
-				System.out.println(bias);
+				Log.println(bias);
 				float signx = 1;
 				float signz = -1;
 
@@ -425,7 +425,7 @@ public class Job {
 				if (to.getCenterToRunway0X() > 0) {
 					bias -= Math.PI;
 				}
-				System.out.println(bias);
+				Log.println(bias);
 				signx = -1;
 				signz = 1;
 				//testing testing
@@ -444,8 +444,8 @@ public class Job {
 				}
 
 
-				System.out.println(pathEntry);
-				System.out.println(pathEntry2);
+				Log.println(pathEntry);
+				Log.println(pathEntry2);
 
 
 				//testing testing
@@ -461,7 +461,7 @@ public class Job {
 			}else {
 				//takeLeftEndCircle
 
-				System.out.println("L-L");
+				Log.println("L-L");
 
 
 				float x1 = centerLStart.getX();
@@ -512,7 +512,7 @@ public class Job {
 				if (from.getCenterToRunway0X() > 0){
 					bias -= Math.PI;
 				}
-				System.out.println(bias);
+				Log.println(bias);
                 float signx = 1;
                 float signz = -1;
 
@@ -555,7 +555,7 @@ public class Job {
 				if (from.getCenterToRunway0X() > 0) {
 					bias -= Math.PI;
 				}
-				System.out.println(bias);
+				Log.println(bias);
                 //testing
                 if (getAirportTo().getCenterToRunway0Z() == 1 && getAirportFrom().getCenterToRunway0X() == 1) {
                     signx = -1;

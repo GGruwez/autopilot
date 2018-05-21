@@ -66,6 +66,6 @@ public class AutopilotTests {
 		module.deliverPackage(0, 0, 1, 0);
 		assertTrue(drone0.hasJob());
 		assertTrue(drone0.getCurrentJob().calculatePath() != null);
-		System.out.println(drone0.getCurrentJob().getPath().getArrayList());
+		Log.println(drone0.getCurrentJob().getPath().getArrayList());
 	}
 }

@@ -83,7 +83,7 @@ public class AutopilotImplementation implements Autopilot {
 	            this.isSimulating = true;
 	        } else {
 	            output = drone.calculate(inputs,null, config.getNbRows(), config.getNbColumns(), this);
-	            //System.out.println("running");
+	            //Log.println("running");
 	            this.userInterface.updateData(output, this.getModule(), this);
 	        }
 	        this.previousInput = new PreviousInputs(inputs);
