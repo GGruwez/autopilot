@@ -359,6 +359,9 @@ class Drone {
      		thrust = (float) (acceleration*(config.getEngineMass()+config.getTailMass()+2*config.getWingMass()));
      	}
 //
+		if (position.getY() > refHeight +5)
+			thrust /= 2;
+
 //		thrust = 1000;
 //		//horStabInclination = config.getMaxAOA()*0.4f;
 //		if (velocityWorld.getY() > 0.0f && position.getY() > refHeight + 1) {
@@ -694,7 +697,9 @@ class Drone {
 		if (position.getY() > refHeight + 10){
 			thrust /= 1.5f;
 		}
-
+		if (position.getY() < refHeight - 10 && input.getPitch() > 0){
+			thrust *= 2f;
+		}
 
 		horStabInclination = 0.05f;
    	 	if (input.getPitch() > 0.15f)
@@ -734,6 +739,8 @@ class Drone {
 
         if (position.getY() > refHeight + 10){
         	thrust /= 1.5f;
+		}if (position.getY() < refHeight - 10 && input.getPitch() > 0){
+			thrust *= 2f;
 		}
 		//System.out.print("turnleft");
 
