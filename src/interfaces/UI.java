@@ -74,7 +74,7 @@ class UI extends JFrame {
             if (this.getAutopilot().getCurrentJob() != null) {
                 if (job.getDrone() == this.getAutopilot()) {
                     if (this.getAutopilot().getCurrentJob().getAirportTo() == job.getAirportFrom()) {
-                        status = "in transit";
+                        status = "retrieving";
                     } else if (this.getAutopilot().getCurrentJob().getAirportTo() == job.getAirportTo()) {
                         status = "delivering";
                     }
