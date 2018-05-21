@@ -329,7 +329,9 @@ class Drone {
 		if (velocityWorld.getY() < 0.0f  && position.getY() < refHeight -1)
 			thrust = 1300;
 
-
+		if (position.getY() > refHeight + 10){
+			thrust /= 1.2f;
+		}
 
 		if  (!(turnLeft || turnRight)) {
      		float deltaroll = 0.02f;//(float) 0.02*config.getMaxAOA();
