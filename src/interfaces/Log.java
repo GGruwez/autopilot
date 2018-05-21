@@ -2,7 +2,7 @@ package interfaces;
 
 public class Log {
 
-    public static boolean LOG = false;
+    public static boolean LOG = true;
 
     public static void println(Object s){
         if(LOG)

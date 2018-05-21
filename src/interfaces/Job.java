@@ -243,7 +243,10 @@ public class Job {
 				Log.println(bias);
 				float signx = -1;
 				float signz = -1;
-
+				if (getAirportTo().getCenterToRunway0X() == -1 && getAirportFrom().getCenterToRunway0Z() == -1){
+					signx = -1;
+					signz = -1;
+				}
 				for (int i=0;i<nbPathentry;i++) {
 					float x = (float) (centerRStart.getX() + signx * Math.cos(bias + stepAngle * i)*turningRadius);
 					float y = (float) (centerRStart.getZ() + signz * Math.sin(bias + stepAngle * i)*turningRadius);
@@ -286,6 +289,10 @@ public class Job {
 				Log.println(bias);
 				signx = 1;
 				signz = 1;
+				if (getAirportTo().getCenterToRunway0X() == -1 && getAirportFrom().getCenterToRunway0Z() == -1){
+					signx = -1;
+					signz = -1;
+				}
 				for (int i= 1; i <nbPathentry;i++) {
 					x = (float) (centerLEnd.getX() + signx * Math.cos(bias + angle - stepAngle * i)*turningRadius);
 					y = (float) (centerLEnd.getZ() + signz * Math.sin(bias + angle - stepAngle * i)*turningRadius);

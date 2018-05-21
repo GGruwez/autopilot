@@ -419,9 +419,11 @@ class Drone {
 			thrust = 1000;
 
 		if (input.getY() < 2) {
-			frontBrake = config.getRMax()/1.5f;
+			frontBrake = config.getRMax();
 			leftBrake = config.getRMax()/1.5f;
 			rightBrake = config.getRMax()/1.5f;
+			rightWingInclination = (float) (-currentProjAirspeed+0.3*config.getMaxAOA());
+			leftWingInclination =(float) (-currentProjAirspeed+0.3*config.getMaxAOA());
 		}
 
 		float deltaroll = 0.02f;//(float) 0.02*config.getMaxAOA();
@@ -677,9 +679,9 @@ class Drone {
         	leftWingInclination -= 6*deltaroll;//= getMininclination(velocityDrone, config, leftWingInclination)/4;//
     	}
 
-		thrust =900;
+		thrust =1000;
 		if (velocityWorld.getY() > 0.0f && position.getY() > refHeight )
-			thrust =700;
+			thrust =850;
 		if (velocityWorld.getY() < 0.0f  && position.getY() < refHeight )
 			thrust = 1100;
 //    	//System.out.print("turnleft");
@@ -689,7 +691,9 @@ class Drone {
 //		else if ((input.getY() > refHeight + 1)) {
 //			thrust  = 750;
 //		}
-
+		if (position.getY() > refHeight + 10){
+			thrust /= 1.5f;
+		}
 
 
 		horStabInclination = 0.05f;
@@ -722,12 +726,15 @@ class Drone {
 
 
 
-        thrust = 900;
+        thrust = 1000;
         if (velocityWorld.getY() > 0.0f && position.getY() > refHeight )
-            thrust = 700;
+            thrust = 850;
         if (velocityWorld.getY() < 0.0f  && position.getY() < refHeight)
             thrust = 1100;
 
+        if (position.getY() > refHeight + 10){
+        	thrust /= 1.5f;
+		}
 		//System.out.print("turnleft");
 
 //		if (input.getY() < refHeight - 1) {
