@@ -70,13 +70,16 @@ class UI extends JFrame {
 
     private void simpleUpdate() {
     	String status = "idle";
-        for (Job job: getModule().getJobs()) {
-            if (this.getAutopilot().getCurrentJob() != null) {
+        if (this.getAutopilot().getCurrentJob() != null) {
+            for (Job job : getModule().getJobs()) {
                 if (job.getDrone() == this.getAutopilot()) {
-                    if (this.getAutopilot().getCurrentJob().getAirportTo() == job.getAirportFrom()) {
-                        status = "retrieving";
-                    } else if (this.getAutopilot().getCurrentJob().getAirportTo() == job.getAirportTo()) {
+                    if (this.getAutopilot().getCurrentJob() == job) {
                         status = "delivering";
+                        break; // Delivering status has priority on retrieving
+                    } else if (this.getAutopilot().getCurrentJob().getAirportTo() == job.getAirportFrom() &&
+                            this.getAutopilot().getCurrentJob().getGateTo() == job.getGateFrom()) {
+                        // Aircraft is flying towards the airport and gate where this job starts
+                        status = "retrieving";
                     }
                 }
             }
