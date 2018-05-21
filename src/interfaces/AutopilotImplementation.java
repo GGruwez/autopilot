@@ -83,13 +83,8 @@ public class AutopilotImplementation implements Autopilot {
 	            this.isSimulating = true;
 	        } else {
 	            output = drone.calculate(inputs,null, config.getNbRows(), config.getNbColumns(), this);
-<<<<<<< HEAD
 	            //Log.println("running");
-	            this.userInterface.updateData(output);
-=======
-	            //System.out.println("running");
 	            this.userInterface.updateData(output, this.getModule(), this);
->>>>>>> f06fab07fdc5417b12b3b4b522dc9b4f938ba822
 	        }
 	        this.previousInput = new PreviousInputs(inputs);
 	        this.previousOutput = output;
@@ -131,10 +126,6 @@ public class AutopilotImplementation implements Autopilot {
     				}
     			}
 	    		Job newJob = new Job(drone.getDrone().getAirport(),drone.getDrone().getGate(),idleAirport, idleGate);
-<<<<<<< HEAD
-	        	Log.println("idleairport null?" + idleAirport == null);
-=======
->>>>>>> f06fab07fdc5417b12b3b4b522dc9b4f938ba822
 	        	drone.addJob(newJob);
 	        	newJob.setDrone(drone);
     		}
