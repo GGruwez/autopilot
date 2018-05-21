@@ -37,10 +37,11 @@ public class AutopilotModuleImplementation implements AutopilotModule {
     	// Collision detection
     	for (AutopilotImplementation drone: this.getDrones()) {
     		boolean bool = false;
-    		if (drone.hasJob()) {
+    		if (drone.hasJob() && job.getDrone() != drone) {
 	    		for (Vector cube1: drone.getCurrentPath().getArrayList()) {
 	    			for (Vector cube2: job.getDrone().getCurrentPath().getArrayList()) {
-	    				if (cube1.calculateDistance(cube2) < 10) {
+	    				if (Math.sqrt(Math.pow(cube1.getX() - cube2.getX(),2) + Math.pow(cube1.getZ() - cube2.getZ(),2)) < 200
+								&& Math.abs(cube1.getY()-cube2.getY()) < 10) {
 	    					bool = true;
 	    				}
 	    			}

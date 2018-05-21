@@ -128,7 +128,7 @@ class Drone {
      	 float currentHeading = (float) (input.getHeading());
      	 float ref = -(targetHeading - currentHeading);
 
-     	 if (input.getY() < 20 && reachedTargets == 0){
+     	 if (input.getY() < refHeight-5 && reachedTargets == 0){
         	 setTakeoff();
          }
          //// START FINAL APROACH
@@ -151,7 +151,7 @@ class Drone {
          	 if (input.getY() < 1.5 && velocityDrone.getZ() > -15){
          		 setTaxi();
          	 }
-         	 else if (Math.abs(ref) < 0.05f || Math.abs(ref) > Math.PI*2 + 0.05f || landing){
+         	 else if (Math.abs(ref) < 0.03f || Math.abs(ref) > Math.PI*2 + 0.03f || landing){
          		 setLanding();
          	 }
          	 else if ((ref > 0.f && ref  < Math.PI) || (ref < -0f && ref < -Math.PI)) {
@@ -161,7 +161,7 @@ class Drone {
          			setTurnRight();
          			
          		}else{
-         			setCruising(20);
+         			setCruising(refHeight);
          		}
       		
          	}
@@ -172,7 +172,7 @@ class Drone {
          			setTurnLeft();
       		
          		}else{
-         			setCruising(20);
+         			setCruising(refHeight);
          		}
          	}
          	 
@@ -232,9 +232,11 @@ class Drone {
 //         setLanding();
          //
    
-         
+         int temp;
+		 if (reachedTargets < path.getY().length) temp = reachedTargets; else temp =  reachedTargets-1;
          refHeight = path.getY()[0];
-         
+
+
 		 AutopilotOutputsImplementation output = null;
 		 if (cruising) {
 			 output = cruising(input, velocityDrone, velocityWorld, config);
@@ -290,9 +292,10 @@ class Drone {
 		 
 		 // cap outputs
 		 float curThrust = output.getThrust();
-		 if (nextTarget.equals(finalTarget) && input.getY() > 20)
+		 if (nextTarget.equals(finalTarget) && finalTarget.calculateDistance(positionDrone) < 300 && positionDrone.getY() > 15)
 			 curThrust /= 1.75;
-
+		 if (curThrust > config.getMaxThrust())
+		 	curThrust = config.getMaxThrust();
 		 
 		 output = new AutopilotOutputsImplementation(curThrust,
 				 									capInclination(velocityDrone, config, output.getLeftWingInclination()),
@@ -339,27 +342,34 @@ class Drone {
       	//System.out.println("inclination: "+ rightWingInclination);
       	leftWingInclination = rightWingInclination;
     	 
-//     	float gravityToCompensate = (config.getEngineMass()+config.getTailMass()+2*config.getWingMass())*config.getGravity();
-//     	float horLift = (float) (config.getHorStabLiftSlope()*velocityDrone.dotProduct(velocityDrone)*(currentProjAirspeed+horStabInclination)*Math.cos(horStabInclination));
-//     	float cancelY;
-// 		cancelY = (float) (-velocityWorld.getY()/SIMULATION_PERIOD)*(config.getEngineMass()+2*config.getWingMass()+config.getTailMass());
-//     	float forceToCompensate = gravityToCompensate - horLift + cancelY;
-//     	Vector lift = (new Vector(0, (float) ((2*config.getWingLiftSlope()*config.getMaxAOA()*0.9)*Math.cos(rightWingInclination)), 0)).inverseTransform(
-//     			input.getHeading(), input.getPitch(), input.getRoll());
-//     	float minSpeed = (float) Math.sqrt((forceToCompensate)/lift.getY());
-//     	//System.out.println("minSpeed: "+ minSpeed);
+     	float gravityToCompensate = (config.getEngineMass()+config.getTailMass()+2*config.getWingMass())*config.getGravity();
+     	float horLift = (float) (config.getHorStabLiftSlope()*velocityDrone.dotProduct(velocityDrone)*(currentProjAirspeed+horStabInclination)*Math.cos(horStabInclination));
+     	float cancelY;
+ 		cancelY = (float) (-velocityWorld.getY()/SIMULATION_PERIOD)*(config.getEngineMass()+2*config.getWingMass()+config.getTailMass());
+     	float forceToCompensate = gravityToCompensate - horLift + cancelY;
+     	Vector lift = (new Vector(0, (float) ((2*config.getWingLiftSlope()*config.getMaxAOA()*0.9)*Math.cos(rightWingInclination)), 0)).inverseTransform(
+     			input.getHeading(), input.getPitch(), input.getRoll());
+     	float minSpeed = (float) Math.sqrt((forceToCompensate)/lift.getY());
+     	//System.out.println("minSpeed: "+ minSpeed);
+
+
+     	if (-velocityDrone.getZ() < minSpeed) {
+     		double acceleration = (minSpeed - Math.abs(velocityDrone.getZ()))/SIMULATION_PERIOD;
+     		thrust = (float) (acceleration*(config.getEngineMass()+config.getTailMass()+2*config.getWingMass()));
+     	}
 //
-//
-//     	if (-velocityDrone.getZ() < minSpeed) {
-//     		double acceleration = (minSpeed - Math.abs(velocityDrone.getZ()))/SIMULATION_PERIOD;
-//     		thrust = (float) (acceleration*(config.getEngineMass()+config.getTailMass()+2*config.getWingMass()));
-//     	}
-//
-		thrust =1100;
-		if (velocityWorld.getY() > 0.0f && position.getY() > refHeight + 1)
-			thrust = 900;
-		if (velocityWorld.getY() < 0.0f  && position.getY() < refHeight -1)
-			thrust = 1200;
+//		thrust = 1000;
+//		//horStabInclination = config.getMaxAOA()*0.4f;
+//		if (velocityWorld.getY() > 0.0f && position.getY() > refHeight + 1) {
+//			rightWingInclination += 0.02 * config.getMaxAOA();
+//			leftWingInclination = rightWingInclination;
+//		//	thrust += 150;
+//		}
+//		if (velocityWorld.getY() < 0.0f  && position.getY() < refHeight -1){
+//			rightWingInclination -= 0.02 * config.getMaxAOA();
+//			leftWingInclination = rightWingInclination;
+//			thrust -= 100;
+//		}
 
 
 
@@ -403,8 +413,10 @@ class Drone {
 
     	leftWingInclination = rightWingInclination;
  	 
-    	if (velocityDrone.getY() < -3)
-    		thrust = 1000;
+    	if (velocityDrone.getY() < -3 && position.getY() < 10) {
+			//thrust = 1000;
+			horStabInclination = config.getMaxAOA()*0.7f;
+		}
    	
     	if (input.getY() < 2) {
     		frontBrake = config.getRMax()/1.5f;
@@ -420,6 +432,40 @@ class Drone {
  			rightWingInclination += deltaroll;
 			leftWingInclination -= deltaroll*6;
  		}
+
+        if (position.getY() > 5) {
+            Vector destination = finalTarget;
+            float targetHeading = (float) Math.atan2((destination.getX() - input.getX()), (destination.getZ() - input.getZ()));
+            float currentHeading = (float) (input.getHeading());
+            float ref = targetHeading - currentHeading;
+
+            if ((ref > 0 && ref < Math.PI) || (ref < 0 && ref < -Math.PI)) {
+                //turnright
+                //System.out.println("right");
+                if (Math.abs(ref) > 0.03f) {
+                    if (input.getRoll() > 0.05f) {//0.01f
+                        rightWingInclination -= deltaroll * 6;
+                        leftWingInclination += deltaroll;
+                    } else if (input.getRoll() < 0.05f) {
+                        rightWingInclination += deltaroll;
+                        leftWingInclination -= deltaroll * 6;
+                    }
+                }
+
+            } else if ((ref > 0 && ref > Math.PI) || (ref < 0 && ref > -Math.PI)) {
+                //turnleft
+                //System.out.println("left");
+                if (Math.abs(ref) > 0.03f) {
+                    if (input.getRoll() > -0.05f) {//0.01f
+                        rightWingInclination -= deltaroll * 6;
+                        leftWingInclination += deltaroll;
+                    } else if (input.getRoll() < -0.05f) {
+                        rightWingInclination += deltaroll;
+                        leftWingInclination -= deltaroll * 6;
+                    }
+                }
+            }
+        }
 	 
     	//System.out.println("desc hstab: " +horStabInclination);
     	
@@ -628,12 +674,11 @@ class Drone {
         	leftWingInclination -= 6*deltaroll;//= getMininclination(velocityDrone, config, leftWingInclination)/4;//
     	}
 
-		thrust =1000;
+		thrust =1100;
 		if (velocityWorld.getY() > 0.0f && position.getY() > refHeight + 1)
-			thrust = 850;
+			thrust = 500;
 		if (velocityWorld.getY() < 0.0f  && position.getY() < refHeight -1)
-			thrust = 1150;
-
+			thrust = 1500;
 //    	//System.out.print("turnleft");
 //		if (input.getY() < refHeight - 1) {
 //			thrust *= 1.5;
@@ -674,11 +719,11 @@ class Drone {
 
 
 
-		thrust =1000;
-		if (velocityWorld.getY() > 0.0f && position.getY() > refHeight + 1)
-			thrust = 850;
-		if (velocityWorld.getY() < 0.0f  && position.getY() < refHeight -1)
-			thrust = 1150;
+        thrust =1100;
+        if (velocityWorld.getY() > 0.0f && position.getY() > refHeight + 1)
+            thrust = 500;
+        if (velocityWorld.getY() < 0.0f  && position.getY() < refHeight -1)
+            thrust = 1500;
 
 		//System.out.print("turnleft");
 
@@ -995,12 +1040,20 @@ class Drone {
 		return (dist1 > 460 && dist2 > 460);
 	}
 	
-	public void setCurrentPath(ArrayList<Vector> path) {
-	//	this.path = new PathImplementation(path);
-	}
+//	public void setCurrentPath(ArrayList<Vector> path) {
+//	//	this.path = new PathImplementation(path);
+//	}
 	
 	public Path getCurrentPath() {
 		return this.path;
 	}
+
+	public void setAirport(Airport airport){
+  	    this.airport = airport;
+    }
+    public void setGate(int gate){
+  	    this.gate = gate;
+    }
+
 }
 

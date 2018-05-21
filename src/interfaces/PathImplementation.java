@@ -41,9 +41,11 @@ public class PathImplementation implements Path {
 	}
 	
 	public void collisionUpdate() {
-		for (float y: getY()) {
-			y = y+10;
+		float[] newY = new float[getY().length];
+		for (int i = 0; i < getY().length;i++) {
+			newY[i] = Y[i]+20;
 		}
+		this.Y = newY;
 	}
 	
 	public ArrayList<Vector> getArrayList() {
