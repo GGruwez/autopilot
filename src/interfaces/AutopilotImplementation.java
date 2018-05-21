@@ -108,7 +108,7 @@ public class AutopilotImplementation implements Autopilot {
 		int idleGate = 0;
     	if (this.getJobs().get(0).getAirportTo().hasDroneAt(this.getJobs().get(0).getGateTo())) {
     		AutopilotImplementation drone = this.getJobs().get(0).getAirportTo().getDroneAt(this.getJobs().get(0).getGateTo());
-    		if (! drone.hasJob()) {
+    		if (! drone.hasJob() && drone != this) {
     			for (Airport airport: getModule().getAirports()) {
     				if (! airport.hasDroneAt(0)) {
     					idleAirport = airport;
