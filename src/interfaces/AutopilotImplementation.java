@@ -78,7 +78,7 @@ public class AutopilotImplementation implements Autopilot {
 	        } else {
 	            output = drone.calculate(inputs,null, config.getNbRows(), config.getNbColumns(), this);
 	            //System.out.println("running");
-	            this.userInterface.updateData(output);
+	            this.userInterface.updateData(output, this.getModule(), this);
 	        }
 	        this.previousInput = new PreviousInputs(inputs);
 	        this.previousOutput = output;
@@ -120,7 +120,6 @@ public class AutopilotImplementation implements Autopilot {
     				}
     			}
 	    		Job newJob = new Job(drone.getDrone().getAirport(),drone.getDrone().getGate(),idleAirport, idleGate);
-	        	System.out.println("idleairport null?" + idleAirport == null);
 	        	drone.addJob(newJob);
 	        	newJob.setDrone(drone);
     		}
