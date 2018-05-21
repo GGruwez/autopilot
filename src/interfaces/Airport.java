@@ -56,11 +56,20 @@ public class Airport {
 		}
 	}
 	
+	public boolean takeOffTaken() {
+		return this.takeOffTaken;
+	}
+	
+	public void setTakeOffTaken(boolean bool) {
+		this.takeOffTaken = bool;
+	}
+	
 	private float centerX;
 	private float centerZ;
 	private float centerToRunway0X;
 	private float centerToRunway0Z;
 	private AutopilotImplementation drone0 = null;
 	private AutopilotImplementation drone1 = null;
+	private boolean takeOffTaken = false;
 	
 }

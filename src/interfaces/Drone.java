@@ -20,6 +20,8 @@ class Drone {
   	private boolean taxi = false;
   	private boolean homing = false;
     private float turningDistance = 450;
+    private boolean masterOfAirport = false;
+    private AutopilotImplementation autopilot;
   	
   	private Airport airport = null;
   	private int gate = 0;
@@ -62,8 +64,13 @@ class Drone {
   		return this.position;
   	}
   	
+  	public Job getJob() {
+  		return this.job;
+  	}
+  	
     public AutopilotOutputsImplementation calculate(AutopilotInputs input, float[] targetVector, int nbColumns, int nbRows, AutopilotImplementation autopilot) {
     	
+    	this.autopilot = autopilot;
     	this.job = autopilot.getCurrentJob();
     	System.out.println(autopilot.getJobs().indexOf(job));
     	this.path = job.getPath();
@@ -254,6 +261,31 @@ class Drone {
 		 }
 		 if (turnRight) {
 			 output = turnRight(input, velocityDrone, velocityWorld, config,output);
+		 }
+		 
+		 // Reservatie opstijgbaan
+		 if (takeoff && getAirport().takeOffTaken() && ! masterOfAirport) {
+			 output = new AutopilotOutputsImplementation(0, 0, 0, 0, 0, 0, 0, 0);
+		 }
+		 else if (takeoff && (! getAirport().takeOffTaken() || masterOfAirport)) {
+			 this.getAirport().setTakeOffTaken(true);
+			 this.masterOfAirport = true;
+		 }
+		 else {
+			 this.getAirport().setTakeOffTaken(false);
+			 this.masterOfAirport = false;
+		 }
+		 
+		 // Reservatie landingsbaan
+		 if (takeoff) {
+			 if (this.getJob().getAirportTo().hasDroneAt(this.getJob().getGateTo())
+					 && this.getJob().getAirportTo().getDroneAt(this.getJob().getGateTo()).getDrone() != this) {
+				 output = new AutopilotOutputsImplementation(0, 0, 0, 0, 0, 0, 0, 0);
+			 }
+			 else {
+				 this.getJob().getAirportTo().setDroneAt(this.getJob().getGateTo(), this.autopilot);
+				 this.getJob().getAirportFrom().setDroneAt(this.getJob().getGateFrom(), null);
+			 }
 		 }
 		 
 		 // cap outputs
