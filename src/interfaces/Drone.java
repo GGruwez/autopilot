@@ -128,7 +128,7 @@ class Drone {
      	 float currentHeading = (float) (input.getHeading());
      	 float ref = -(targetHeading - currentHeading);
 
-     	 if (input.getY() < refHeight-5 && reachedTargets == 0){
+     	 if (input.getY() < refHeight && reachedTargets == 0){
         	 setTakeoff();
          }
          //// START FINAL APROACH
@@ -405,7 +405,7 @@ class Drone {
     		horStabInclination = -input.getPitch();
     	}
     	else if (input.getPitch() < -0.01f) {
-    		horStabInclination = config.getMaxAOA()*0.6f;
+    		horStabInclination = config.getMaxAOA()*0.9f;
     	}
 
     	float currentProjAirspeed = (float) -Math.atan2(velocityDrone.getY(),-velocityDrone.getZ());
@@ -413,9 +413,9 @@ class Drone {
 
     	leftWingInclination = rightWingInclination;
  	 
-    	if (velocityDrone.getY() < -3 && position.getY() < 10) {
-			//thrust = 1000;
-			horStabInclination = config.getMaxAOA()*0.7f;
+    	if (velocityDrone.getY() < -3 && position.getY() < 20 && input.getPitch() > 0) {
+			thrust = 1500;
+			//horStabInclination =-currentProjAirspeed+ config.getMaxAOA()*0.9f;
 		}
    	
     	if (input.getY() < 2) {

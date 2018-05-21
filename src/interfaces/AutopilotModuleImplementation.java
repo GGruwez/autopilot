@@ -156,8 +156,8 @@ public class AutopilotModuleImplementation implements AutopilotModule {
 		assignedDrone.addJob(job);
     }
     
-    public float airportLength = 1000;
-    public float airportWidth = 50;
+    public float airportLength = 650;
+    public float airportWidth = 60;
     public ArrayList<Airport> airports = new ArrayList<Airport>();
     public ArrayList<AutopilotImplementation> drones = new ArrayList<AutopilotImplementation>();
     public ArrayList<Job> jobs = new ArrayList<Job>();
