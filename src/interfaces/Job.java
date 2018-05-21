@@ -58,7 +58,21 @@ public class Job {
 		Vector endPoint = new Vector(to.getCenterX()-takeoffLenght*to.getCenterToRunway0X(),20,to.getCenterZ()- takeoffLenght*to.getCenterToRunway0Z());
 		Vector centerLEnd = new Vector((float)(endPoint.getX() + turningRadius*to.getCenterToRunway0Z()),0,(float)(endPoint.getZ() - turningRadius*to.getCenterToRunway0X()));
 		Vector centerREnd = new Vector((float)(endPoint.getX() - turningRadius*to.getCenterToRunway0Z()),0,(float)(endPoint.getZ() + turningRadius*to.getCenterToRunway0X()));
-		
+
+
+		Vector fromAirportaxis = new Vector(from.getCenterToRunway0X(),0,from.getCenterToRunway0Z());
+		Vector toAirportaxis = new Vector(to.getCenterToRunway0X(),0,to.getCenterToRunway0Z());
+		Vector diff = toAirportaxis.subtract(fromAirportaxis);
+		if (fromAirportaxis.angleBetween(toAirportaxis) == 0 && Math.abs(fromAirportaxis.angleBetween(diff)) < 0.03f){
+			path.add(startingPoint);
+			path.add(endPoint);
+			return new PathImplementation(path);
+		}
+
+
+
+
+
 		if(centerRStart.calculateDistance(endPoint) < centerLStart.calculateDistance(endPoint)) {
 			//takeRightStartCircle
 			if(centerRStart.calculateDistance(centerREnd) < centerRStart.calculateDistance(centerLEnd)) {
