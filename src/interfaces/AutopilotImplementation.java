@@ -27,9 +27,9 @@ public class AutopilotImplementation implements Autopilot {
     	airport.setDroneAt(gate, this);
 
     	//testing
-		Airport airportt = new Airport(0,0,0,1);
-    	Job job = new Job(airportt,0,airportt,1);
-    	addJob(job);
+//		Airport airportt = new Airport(0,0,0,1);
+//    	Job job = new Job(airportt,0,airportt,1);
+//    	addJob(job);
     	//
     }
     
@@ -172,7 +172,9 @@ public class AutopilotImplementation implements Autopilot {
     }
     
     public void finishCurrentJob() {
-    	getCurrentJob().setDrone(null);
+		getDrone().setAirport(this.getCurrentJob().getAirportTo());
+		getDrone().setGate(this.getCurrentJob().getGateTo());
+		getCurrentJob().setDrone(null);
     	this.getJobs().remove(getCurrentJob());
     }
 }
