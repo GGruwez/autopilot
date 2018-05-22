@@ -420,7 +420,7 @@ class Drone {
 			//turnright
 			//System.out.println("right");
 			if (Math.abs(ref) > 0.05f) {
-				rightBrake = config.getRMax()/10;
+				rightBrake = config.getRMax()/4;
 			}
 
 		}
@@ -428,7 +428,7 @@ class Drone {
 			//turnleft
 			//System.out.println("left");
 			if (Math.abs(ref) > 0.05f) {
-				leftBrake = config.getRMax()/10;
+				leftBrake = config.getRMax()/4;
 			}
 		}
     	
