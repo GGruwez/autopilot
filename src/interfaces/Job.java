@@ -52,7 +52,7 @@ public class Job {
 		ArrayList<Vector> path = new ArrayList<Vector>();
 		float takeoffLenght = 500;
 		float LandingLenght = 430;
-		float turningRadius = 900;
+		float turningRadius = 950;
 		Vector startingPoint = new Vector(from.getCenterX()+takeoffLenght*from.getCenterToRunway0X(),20,from.getCenterZ()+ takeoffLenght*from.getCenterToRunway0Z());
 		Vector centerLStart = new Vector((float)(startingPoint.getX() + turningRadius*from.getCenterToRunway0Z()),0,(float)(startingPoint.getZ() - turningRadius*from.getCenterToRunway0X()));
 		Vector centerRStart = new Vector((float)(startingPoint.getX() - turningRadius*from.getCenterToRunway0Z()),0,(float)(startingPoint.getZ() + turningRadius*from.getCenterToRunway0X()));

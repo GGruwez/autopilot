@@ -43,7 +43,7 @@ public class PathImplementation implements Path {
 	public void collisionUpdate() {
 		float[] newY = new float[getY().length];
 		for (int i = 0; i < getY().length;i++) {
-			newY[i] = Y[i]+20;
+			newY[i] = Y[i]+10;
 		}
 		this.Y = newY;
 	}
