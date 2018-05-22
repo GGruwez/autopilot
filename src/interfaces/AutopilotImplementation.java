@@ -163,9 +163,14 @@ public class AutopilotImplementation implements Autopilot {
     	}
     	return this.getCurrentJob().getPath();
     }
-    
-    public void finishCurrentJob() {
-    	getCurrentJob().setDrone(null);
-    	this.getJobs().remove(getCurrentJob());
-    }
+
+
+	public void finishCurrentJob() {
+		getDrone().setAirport(this.getCurrentJob().getAirportTo());
+		getDrone().setGate(this.getCurrentJob().getGateTo());
+		getCurrentJob().setDrone(null);
+		this.getJobs().remove(getCurrentJob());
+	}
 }
+
+

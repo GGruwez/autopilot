@@ -970,5 +970,13 @@ class Drone {
 	public Path getCurrentPath() {
 		return this.path;
 	}
+
+	public void setAirport(Airport airport){
+  		this.airport = airport;
+	}
+	public void setGate(int gate){
+		this.gate = gate;
+	}
+
 }
 
